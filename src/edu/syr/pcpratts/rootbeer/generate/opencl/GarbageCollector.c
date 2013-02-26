@@ -1,3 +1,12 @@
+//see: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#formatted-output
+#include "stdio.h"
+// printf() is only supported
+// for devices of compute capability 2.0 and higher
+#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ < 200)
+  #define printf(f, ...) ((void)(f, __VA_ARGS__),0)
+#endif
+
+
 #define GC_OBJ_TYPE_COUNT char
 #define GC_OBJ_TYPE_COLOR char
 #define GC_OBJ_TYPE_TYPE char
@@ -15,6 +24,7 @@ $$__device__$$ int edu_syr_pcpratts_gc_malloc($$__global$$ char * gc_info, long 
 $$__device__$$ long long edu_syr_pcpratts_gc_malloc_no_fail($$__global$$ char * gc_info, long long size);
 $$__device__$$ int edu_syr_pcpratts_classConstant(int type_num);
 $$__device__$$ long long java_lang_System_nanoTime($$__global$$ char * gc_info, int * exception);
+$$__device__$$ int instance_getter_java_lang_String_value($$__global$$ char * gc_info, int line, int * exception);
 
 #define CACHE_SIZE_BYTES 32
 #define CACHE_SIZE_INTS (CACHE_SIZE_BYTES / sizeof(int))
@@ -530,6 +540,24 @@ edu_syr_pcpratts_array_length($$__global$$ char * gc_info, int thisref){
     return ret;
   //}
 }
+
+$$__device__$$ void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_print(char * gc_info , int line , int * exception ) { 
+  int value;
+  int len;
+  int i;
+  
+  value = instance_getter_java_lang_String_value(gc_info, line, exception);
+  len = edu_syr_pcpratts_array_length(gc_info, value);
+  for(i = 0; i < len; ++i){
+    char c = char__array_get(gc_info, value, i, exception);
+    printf("%c", c);
+  }
+} 
+
+$$__device__$$ void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_println(char * gc_info , int line , int * exception ) { 
+  edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_print(gc_info, line, exception);
+  printf("\n");
+} 
 
 $$__device__$$ void
 edu_syr_pcpratts_gc_assign($$__global$$ char * gc_info, int * lhs_ptr, int rhs){

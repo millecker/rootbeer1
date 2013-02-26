@@ -92,6 +92,14 @@ public class RootbeerGpu {
     }
   }
   
+  public static void println(String line){
+    System.out.println(line);
+  }
+  
+  public static void print(String str){
+    System.out.print(str);
+  }
+  
   public static void setSharedBoolean(int index, boolean value){
     byte value_byte;
     if(value == true){

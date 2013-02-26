@@ -161,6 +161,7 @@ public class RootbeerCompiler {
     
     List<String> cuda_fields = new ArrayList<String>();
     cuda_fields.add("<java.lang.Class: java.lang.String name>");
+    cuda_fields.add("<java.lang.String: char[] value>");
     RootbeerClassLoader.v().setCudaFields(cuda_fields);
     
     RootbeerClassLoader.v().loadNecessaryClasses();
