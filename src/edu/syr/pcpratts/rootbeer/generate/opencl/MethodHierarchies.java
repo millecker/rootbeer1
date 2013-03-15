@@ -149,11 +149,28 @@ public class MethodHierarchies {
           AnySubType any_sub_type = (AnySubType) type;
           RefType base = any_sub_type.getBase();
           SootClass soot_class = base.getSootClass();
-          FastHierarchy fast_hierarchy = Scene.v().getOrMakeFastHierarchy();
-          Collection<SootClass> subclasses_col = fast_hierarchy.getSubclassesOf(soot_class);
           List<SootClass> subclasses = new ArrayList<SootClass>();
-          subclasses.addAll(subclasses_col);
-          subclasses.add(soot_class);
+          
+          if(soot_class.isInterface()){
+            List<Type> hierarchy = RootbeerClassLoader.v().getDfsInfo().getHierarchy(soot_class);
+            for(int i = 0; i < hierarchy.size(); ++i){
+              Type curr_type = hierarchy.get(i);
+              if(curr_type instanceof RefType){
+                RefType ref_type = (RefType) curr_type;
+                SootClass ref_class = ref_type.getSootClass();
+                subclasses.add(ref_class);
+                if(ref_class.equals(soot_class)){
+                  break;
+                }
+              } 
+            }
+          } else {
+            FastHierarchy fast_hierarchy = Scene.v().getOrMakeFastHierarchy();
+            Collection<SootClass> subclasses_col = fast_hierarchy.getSubclassesOf(soot_class);
+            subclasses.addAll(subclasses_col);
+            subclasses.add(soot_class);
+          }
+          
           for(SootClass subclass : subclasses){
             if(valid_hierarchy_classes.contains(subclass) == false){
               continue;

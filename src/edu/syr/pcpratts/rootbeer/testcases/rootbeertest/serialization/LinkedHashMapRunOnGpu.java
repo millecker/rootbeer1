@@ -26,6 +26,10 @@ public class LinkedHashMapRunOnGpu implements Kernel {
   }
 
   public boolean compare(LinkedHashMapRunOnGpu rhs) {
+    if(rhs.m_map == null){
+      System.out.println("rhs map == null");
+      return false;
+    }
     if(m_map.size() != rhs.m_map.size()){
       System.out.println("size");
       return false;

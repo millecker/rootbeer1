@@ -57,7 +57,7 @@ public class OpenCLBody {
     m_SootMethod = method;
 
     m_SootClass = method.getDeclaringClass();
-    Body body = method.retrieveActiveBody();
+    Body body = method.getActiveBody();
     setup(body);
   }
   

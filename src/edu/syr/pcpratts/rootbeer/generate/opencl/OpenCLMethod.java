@@ -12,6 +12,7 @@ import edu.syr.pcpratts.rootbeer.generate.bytecode.StaticOffsets;
 import edu.syr.pcpratts.rootbeer.generate.opencl.body.MethodJimpleValueSwitch;
 import edu.syr.pcpratts.rootbeer.generate.opencl.body.OpenCLBody;
 import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.Tweaks;
+import edu.syr.pcpratts.rootbeer.util.JimpleWriter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -230,6 +231,13 @@ public class OpenCLMethod {
           } catch(Exception ex){
             ex.printStackTrace();
             System.out.println("soot_method: "+m_sootMethod.getSignature());
+            System.out.println("declaring class: "+m_sootMethod.getDeclaringClass().toString());
+            Body body = m_sootMethod.getActiveBody();
+            Iterator<Unit> iter = body.getUnits().iterator();
+            while(iter.hasNext()){
+              Unit curr = iter.next();
+              System.out.println("  "+curr.toString());
+            }
             System.exit(1);
           }
           if(isSynchronized()){
@@ -303,6 +311,7 @@ public class OpenCLMethod {
   }
 
   public String getInstanceInvokeString(InstanceInvokeExpr arg0){
+    System.out.println("instance_invoke: "+arg0.toString());
     Value base = arg0.getBase();
     Type base_type = base.getType();
     List<Type> hierarchy;
@@ -317,7 +326,14 @@ public class OpenCLMethod {
       PointsToAnalysis analysis = Scene.v().getPointsToAnalysis();
       PointsToSet set = analysis.reachingObjects((Local) base);
       
+      System.out.println("getInstanceInvokeString: "+arg0.toString());
+      System.out.println("  hierarchy: ");
+      printCollection(hierarchy);
+      System.out.println("  PointsToSet: ");
+      printCollection(set.possibleTypes());
       hierarchy = trimHierarchy(hierarchy, set);
+      System.out.println("  hierarchy trimmed: ");
+      printCollection(hierarchy);
       
     } else {
       throw new UnsupportedOperationException("how do we handle this case?");
@@ -545,12 +561,30 @@ public class OpenCLMethod {
         AnySubType any_sub_type = (AnySubType) type;
         RefType base = any_sub_type.getBase();
         
-        FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
-        Collection<SootClass> subclasses = fh.getSubclassesOf(base.getSootClass());
         List<SootClass> to_proc = new ArrayList<SootClass>();
-        to_proc.add(base.getSootClass());
-        to_proc.addAll(subclasses);
+        SootClass base_class = base.getSootClass();
+        if(base_class.isInterface()){
+          for(int i = 0; i < hierarchy.size(); ++i){
+            Type curr_type = hierarchy.get(i);
+            if(curr_type instanceof RefType){
+              RefType ref_type = (RefType) curr_type;
+              SootClass ref_class = ref_type.getSootClass();
+              to_proc.add(ref_class);
+              if(ref_class.equals(base_class)){
+                break;
+              }
+            } 
+          }
+        } else {
+          FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
+          Collection<SootClass> subclasses = fh.getSubclassesOf(base.getSootClass());
+        
+          to_proc.add(base.getSootClass());
+          to_proc.addAll(subclasses); 
+        }
+        
         for(SootClass subclass : to_proc){
+          System.out.println("      to_proc: "+subclass);
           if(hierarchy.contains(subclass.getType())){
             ret.add(subclass.getType());
           }
@@ -560,5 +594,11 @@ public class OpenCLMethod {
       }
     }
     return ret;
+  }
+
+  private void printCollection(Collection<Type> collection) {
+    for(Type type : collection){
+      System.out.println("    "+type.toString());
+    }
   }
 }
