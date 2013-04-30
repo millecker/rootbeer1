@@ -7,9 +7,11 @@
 
 package edu.syr.pcpratts.rootbeer.runtime.gpu;
 
+import edu.syr.pcpratts.rootbeer.entry.Aug4th2011PerformanceStudy;
 import edu.syr.pcpratts.rootbeer.configuration.Configuration;
 import edu.syr.pcpratts.rootbeer.runtime.Serializer;
 import edu.syr.pcpratts.rootbeer.runtime.PartiallyCompletedParallelJob;
+import edu.syr.pcpratts.rootbeer.runtime.Kernel;
 import edu.syr.pcpratts.rootbeer.runtime.CompiledKernel;
 import edu.syr.pcpratts.rootbeer.runtime.memory.Memory;
 import edu.syr.pcpratts.rootbeer.runtime.memory.BufferPrinter;
@@ -21,11 +23,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class GcHeap<T> {
+public abstract class GcHeap {
   private List<CompiledKernel> mBlocks;
 
   protected final int mGcInfoSpaceSize = 64;
-  private GpuDevice<T> mDevice;
+  private GpuDevice mDevice;
 
   private long m_PreviousRef;
   private long m_PreviousSize;
@@ -46,17 +48,17 @@ public abstract class GcHeap<T> {
 
   private long mMaxToHandleMapAddress;
 
-  private PartiallyCompletedParallelJob<T> mWriteRet;
+  private PartiallyCompletedParallelJob mWriteRet;
 
   private static Map<GpuDevice, GcHeap> mInstances = new HashMap<GpuDevice, GcHeap>();
 
-  public static <T> GcHeap<T> v(GpuDevice<T> device){
+  public static GcHeap v(GpuDevice device){
     if(mInstances.containsKey(device)){
-      GcHeap<T> ret = mInstances.get(device);
+      GcHeap ret = mInstances.get(device);
       ret.reset();
       return ret;
     }
-    GcHeap<T> ret = device.CreateHeap();
+    GcHeap ret = device.CreateHeap();
     //mInstances.put(device, ret);
     return ret;
   }
@@ -83,7 +85,7 @@ public abstract class GcHeap<T> {
     mWriteRet = null;
   }
   
-  protected GcHeap(GpuDevice<T> device){
+  protected GcHeap(GpuDevice device){
     mDevice = device;
     m_HandlesList = new ArrayList<Long>();
   }
@@ -108,13 +110,13 @@ public abstract class GcHeap<T> {
     m_PreviousRef = ref; 
   }
   
-  private CompiledKernel getBlock(Iterator<T> jobs){
-    T job = jobs.next();
+  private CompiledKernel getBlock(Iterator<Kernel> jobs){
+    Kernel job = jobs.next();
     mWriteRet.enqueueJob(job);
     return (CompiledKernel) job;
   }
 
-  public int writeRuntimeBasicBlock(T kernel_template, int num_threads){
+  public int writeRuntimeBasicBlock(Kernel kernel_template, int num_threads){
     Stopwatch watch = new Stopwatch();
     watch.start();
     
@@ -167,14 +169,14 @@ public abstract class GcHeap<T> {
     return m_CountWritten;
   }
   
-  public int writeRuntimeBasicBlocks(Iterator<T> jobs){
+  public int writeRuntimeBasicBlocks(Iterator<Kernel> jobs){
     Stopwatch watch = new Stopwatch();
     watch.start();
     
     mBlocks = new ArrayList<CompiledKernel>();
     m_HandlesList.clear();
     
-    mWriteRet = new PartiallyCompletedParallelJob<T>(jobs);
+    mWriteRet = new PartiallyCompletedParallelJob(jobs);
 
     CompiledKernel first_block = getBlock(jobs);
 
@@ -232,7 +234,7 @@ public abstract class GcHeap<T> {
   protected abstract void allocateMemory();
 
 
-  public void readRuntimeBasicBlock(T kernel_template) {
+  public void readRuntimeBasicBlock(Kernel kernel_template) {
     if(Configuration.getPrintMem()){
       BufferPrinter printer1 = new BufferPrinter();
       printer1.print(mToSpaceMemory, 0, 1024);
@@ -291,7 +293,7 @@ public abstract class GcHeap<T> {
     }
   }
   
-  public PartiallyCompletedParallelJob<T> readRuntimeBasicBlocks(){    
+  public PartiallyCompletedParallelJob readRuntimeBasicBlocks(){    
     if(Configuration.getPrintMem()){
       BufferPrinter printer1 = new BufferPrinter();
       printer1.print(mToSpaceMemory, 0, 1024);

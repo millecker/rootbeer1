@@ -7,17 +7,20 @@
 
 package edu.syr.pcpratts.rootbeer.runtime.nativecpu;
 
+import edu.syr.pcpratts.rootbeer.runtime.Kernel;
 import edu.syr.pcpratts.rootbeer.runtime.Serializer;
 import edu.syr.pcpratts.rootbeer.runtime.gpu.GcHeap;
 import edu.syr.pcpratts.rootbeer.runtime.gpu.GpuDevice;
+import edu.syr.pcpratts.rootbeer.runtime.memory.BasicMemory;
 import edu.syr.pcpratts.rootbeer.runtime.memory.BasicSwappedMemory;
+import edu.syr.pcpratts.rootbeer.runtime.memory.BasicUnswappedMemory;
 import edu.syr.pcpratts.rootbeer.runtime.memory.Memory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NativeCpuGcHeap<T> extends GcHeap<T> {
+public class NativeCpuGcHeap extends GcHeap {
 
-  public NativeCpuGcHeap(GpuDevice<T> device){
+  public NativeCpuGcHeap(GpuDevice device){
     super(device);  
     allocateMemory();
   }

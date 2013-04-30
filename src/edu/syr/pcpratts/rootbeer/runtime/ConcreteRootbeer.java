@@ -17,7 +17,7 @@ import edu.syr.pcpratts.rootbeer.runtime.cpu.CpuRuntime;
 import edu.syr.pcpratts.rootbeer.runtime.nativecpu.NativeCpuRuntime;
 import edu.syr.pcpratts.rootbeer.runtime2.cuda.CudaRuntime2;
 
-public class ConcreteRootbeer<T> implements IRootbeerInternal<T> {
+public class ConcreteRootbeer implements IRootbeerInternal {
 
   private boolean m_GpuWorking;
   private Rootbeer m_rootbeer;
@@ -28,17 +28,17 @@ public class ConcreteRootbeer<T> implements IRootbeerInternal<T> {
     m_GpuWorking = true;
   }
 
-  public void runAll(List<T> list){
+  public void runAll(List<Kernel> list){
     if(list.isEmpty()) {
       return;
     }
-    Iterator<T> iter = run(list.iterator(), list.get(0));
+    Iterator<Kernel> iter = run(list.iterator(), list.get(0));
     while(iter.hasNext()) {
       iter.next();
     }
   }
 
-  private Iterator<T> run(Iterator<T> iter, T first){
+  private Iterator<Kernel> run(Iterator<Kernel> iter, Kernel first){
     if(Configuration.runtimeInstance().getMode() == Configuration.MODE_NEMU) {
       return runOnNativeCpu(iter);
     } else if(Configuration.runtimeInstance().getMode() == Configuration.MODE_JEMU
@@ -50,7 +50,7 @@ public class ConcreteRootbeer<T> implements IRootbeerInternal<T> {
     }
   }
 
-  public void runAll(T kernel){
+  public void runAll(Kernel kernel){
     if(kernel instanceof CompiledKernel == false) {
       runKernelTemplateJava(kernel);
       return;
@@ -66,7 +66,7 @@ public class ConcreteRootbeer<T> implements IRootbeerInternal<T> {
 
   }
 
-  public Iterator<T> run(Iterator<T> iter){
+  public Iterator<Kernel> run(Iterator<Kernel> iter){
     if(Configuration.runtimeInstance().getMode() == Configuration.MODE_NEMU) {
       return runOnNativeCpu(iter);
     } else if(Configuration.runtimeInstance().getMode() == Configuration.MODE_JEMU) {
@@ -76,11 +76,11 @@ public class ConcreteRootbeer<T> implements IRootbeerInternal<T> {
     }
   }
 
-  private Iterator<T> runOnCpu(Iterator<T> jobs){
+  private Iterator<Kernel> runOnCpu(Iterator<Kernel> jobs){
     try {
-      PartiallyCompletedParallelJob<T> partial = CpuRuntime.v().run(jobs,
+      PartiallyCompletedParallelJob partial = CpuRuntime.v().run(jobs,
           m_rootbeer, m_threadConfig);
-      return new ResultIterator<T>(partial, CpuRuntime.v(), m_rootbeer);
+      return new ResultIterator(partial, CpuRuntime.v(), m_rootbeer);
     } catch(Exception ex) {
       ex.printStackTrace();
       System.exit(-1);
@@ -88,18 +88,18 @@ public class ConcreteRootbeer<T> implements IRootbeerInternal<T> {
     }
   }
 
-  private Iterator<T> runOnCudaGpu(Iterator<T> jobs){
+  private Iterator<Kernel> runOnCudaGpu(Iterator<Kernel> jobs){
     Tweaks.setInstance(new CudaTweaks());
-    PartiallyCompletedParallelJob<T> partial = CudaRuntime2.v<T>().run(jobs,
+    PartiallyCompletedParallelJob partial = CudaRuntime2.v().run(jobs,
         m_rootbeer, m_threadConfig);
-    return new ResultIterator<T>(partial, CudaRuntime2.v(), m_rootbeer);
+    return new ResultIterator(partial, CudaRuntime2.v(), m_rootbeer);
   }
 
-  private Iterator<T> runOnNativeCpu(Iterator<T> jobs){
+  private Iterator<Kernel> runOnNativeCpu(Iterator<Kernel> jobs){
     Tweaks.setInstance(new NativeCpuTweaks());
-    PartiallyCompletedParallelJob<T> partial = NativeCpuRuntime.v().run(jobs,
+    PartiallyCompletedParallelJob partial = NativeCpuRuntime.v().run(jobs,
         m_rootbeer, m_threadConfig);
-    return new ResultIterator<T>(partial, NativeCpuRuntime.v(), m_rootbeer);
+    return new ResultIterator(partial, NativeCpuRuntime.v(), m_rootbeer);
   }
 
   public void setThreadConfig(ThreadConfig thread_config){
@@ -110,15 +110,15 @@ public class ConcreteRootbeer<T> implements IRootbeerInternal<T> {
     m_threadConfig = null;
   }
 
-  private void runKernelTemplateJava(T kernel){
+  private void runKernelTemplateJava(Kernel kernel){
     int warp = 32;
-    TemplateThreadListsProvider<T> templateThreadListsProvider = new TemplateThreadListsProvider<T>();
+    TemplateThreadListsProvider templateThreadListsProvider = new TemplateThreadListsProvider();
 
     for(int i = 0; i < m_threadConfig.getBlockShapeX()
         * m_threadConfig.getGridShapeX() - warp; i += warp) {
       while(templateThreadListsProvider.getSleeping().isEmpty())
         ;
-      TemplateThread<T> t = (TemplateThread<T>) templateThreadListsProvider.getSleeping().remove(0);
+      TemplateThread t = templateThreadListsProvider.getSleeping().remove(0);
       t.kernel = kernel;
       t.m_blockIdxx = 0;
       t.startid = i;

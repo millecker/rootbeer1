@@ -8,25 +8,27 @@
 package edu.syr.pcpratts.rootbeer.runtime2.cuda;
 
 import edu.syr.pcpratts.rootbeer.runtime.Serializer;
+import edu.syr.pcpratts.rootbeer.runtime.Kernel;
+import edu.syr.pcpratts.rootbeer.runtime.memory.Memory;
 import java.util.List;
 
-public class ToSpaceReader<T> {
+public class ToSpaceReader {
 
-  private BlockingQueue<InputItem<T>> m_InputQueue;
-  private BlockingQueue<InputItem<T>> m_OutputQueue;
+  private BlockingQueue<InputItem> m_InputQueue;
+  private BlockingQueue<InputItem> m_OutputQueue;
   private Thread m_Thread;
   
   public ToSpaceReader(){
-    m_InputQueue = new BlockingQueue<InputItem<T>>();
-    m_OutputQueue = new BlockingQueue<InputItem<T>>();
-    ReadThreadProc<T> proc = new ReadThreadProc<T>(m_InputQueue, m_OutputQueue);
+    m_InputQueue = new BlockingQueue<InputItem>();
+    m_OutputQueue = new BlockingQueue<InputItem>();
+    ReadThreadProc proc = new ReadThreadProc(m_InputQueue, m_OutputQueue);
     m_Thread = new Thread(proc);
     m_Thread.setDaemon(true);
     m_Thread.start();
   }
   
-  public void read(List<T> items, List<Long> handles, Serializer visitor){
-    InputItem<T> item = new InputItem<T>();
+  public void read(List<Kernel> items, List<Long> handles, Serializer visitor){
+    InputItem item = new InputItem();
     item.m_Items = items;
     item.m_HandlesCache = handles;
     item.m_Visitor = visitor;
@@ -37,19 +39,19 @@ public class ToSpaceReader<T> {
     m_OutputQueue.take();
   }
   
-  private class InputItem<E> {
-    public List<E> m_Items;
+  private class InputItem {
+    public List<Kernel> m_Items;
     public List<Long> m_HandlesCache;
     public Serializer m_Visitor;
   }
     
-  private class ReadThreadProc<E> implements Runnable {
+  private class ReadThreadProc implements Runnable {
        
-    private BlockingQueue<InputItem<E>> m_InputQueue;
-    private BlockingQueue<InputItem<E>> m_OutputQueue;
+    private BlockingQueue<InputItem> m_InputQueue;
+    private BlockingQueue<InputItem> m_OutputQueue;
   
-    public ReadThreadProc(BlockingQueue<InputItem<E>> input_queue,
-      BlockingQueue<InputItem<E>> output_queue){
+    public ReadThreadProc(BlockingQueue<InputItem> input_queue,
+      BlockingQueue<InputItem> output_queue){
       
       m_InputQueue = input_queue;
       m_OutputQueue = output_queue;
@@ -57,12 +59,12 @@ public class ToSpaceReader<T> {
         
     public void run(){
       while(true){
-        InputItem<E> input_item = m_InputQueue.take();
+        InputItem input_item = m_InputQueue.take();
         for(int i = 0; i < input_item.m_Items.size(); ++i){
-          E item = input_item.m_Items.get(i);
+          Kernel item = input_item.m_Items.get(i);
           long handle = input_item.m_HandlesCache.get(i);
           
-          E new_item = (E) input_item.m_Visitor.readFromHeap(item, true, handle);
+          Kernel new_item = (Kernel) input_item.m_Visitor.readFromHeap(item, true, handle);
           input_item.m_Items.set(i, new_item);
         }
         m_OutputQueue.put(input_item);

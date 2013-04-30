@@ -22,11 +22,12 @@ public class Transform2 {
     m_Uuid = 1;
   }
 
-  public void run(String cls, String methodStr){    
+  public void run(String cls){    
     OpenCLScene scene = new OpenCLScene();
     OpenCLScene.setInstance(scene);
+    
     SootClass soot_class1 = Scene.v().getSootClass(cls);
-    SootMethod method = soot_class1.getMethod(methodStr);
+    SootMethod method = soot_class1.getMethod("void gpuMethod()");
     
     //generate RuntimeBasicBlock and GcObjectVisitor
     String uuid = getUuid();

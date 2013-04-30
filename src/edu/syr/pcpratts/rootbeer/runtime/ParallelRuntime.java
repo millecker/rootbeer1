@@ -9,8 +9,8 @@ package edu.syr.pcpratts.rootbeer.runtime;
 
 import java.util.Iterator;
 
-public interface ParallelRuntime<T> {
+public interface ParallelRuntime {
 
-  public PartiallyCompletedParallelJob<T> run(Iterator<T> blocks, Rootbeer rootbeer, ThreadConfig thread_config) throws Exception;
+  public PartiallyCompletedParallelJob run(Iterator<Kernel> blocks, Rootbeer rootbeer, ThreadConfig thread_config) throws Exception;
   public boolean isGpuPresent();
 }

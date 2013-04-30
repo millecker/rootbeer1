@@ -11,13 +11,13 @@ import edu.syr.pcpratts.rootbeer.runtime.PartiallyCompletedParallelJob;
 import edu.syr.pcpratts.rootbeer.runtime.Kernel;
 import java.util.Iterator;
 
-public interface GpuDevice<T> {
+public interface GpuDevice {
 
-  public GcHeap<T> CreateHeap();
+  public GcHeap CreateHeap();
   public long getMaxEnqueueSize();
   public long getNumBlocks();
   public void flushQueue();  
-  public PartiallyCompletedParallelJob<T> run(Iterator<T> blocks);  
+  public PartiallyCompletedParallelJob run(Iterator<Kernel> blocks);  
   public long getMaxMemoryAllocSize();
   public long getGlobalMemSize();
 }

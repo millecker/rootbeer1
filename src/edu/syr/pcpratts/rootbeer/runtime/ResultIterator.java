@@ -10,21 +10,21 @@ package edu.syr.pcpratts.rootbeer.runtime;
 import java.util.Iterator;
 import java.util.List;
 
-public class ResultIterator<T> implements Iterator<T> {
+public class ResultIterator implements Iterator<Kernel> {
 
-  private Iterator<T> m_currIter;
-  private Iterator<T> m_jobsToEnqueue;
-  private ParallelRuntime<T> m_runtime;
+  private Iterator<Kernel> m_currIter;
+  private Iterator<Kernel> m_jobsToEnqueue;
+  private ParallelRuntime m_runtime;
   private Rootbeer m_rootbeer;
 
-  public ResultIterator(PartiallyCompletedParallelJob<T> partial, ParallelRuntime<T> runtime, Rootbeer rootbeer){
+  public ResultIterator(PartiallyCompletedParallelJob partial, ParallelRuntime runtime, Rootbeer rootbeer){
     readPartial(partial);
     m_runtime = runtime;
     m_rootbeer = rootbeer;
   }
 
-  private void readPartial(PartiallyCompletedParallelJob<T> partial){
-    List<T> active_jobs = partial.getActiveJobs();
+  private void readPartial(PartiallyCompletedParallelJob partial){
+    List<Kernel> active_jobs = partial.getActiveJobs();
     m_currIter = active_jobs.iterator();
     m_jobsToEnqueue = partial.getJobsToEnqueue();
   }
@@ -43,7 +43,7 @@ public class ResultIterator<T> implements Iterator<T> {
     return m_currIter.hasNext();
   }
 
-  public T next() {
+  public Kernel next() {
     return m_currIter.next();
   }
 

@@ -12,13 +12,13 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
-class CpuCore<T> implements Runnable{
+class CpuCore implements Runnable{
 
-  private LinkedBlockingQueue<T> m_InQueue;
-  private LinkedBlockingQueue<T> m_OutQueue;
+  private LinkedBlockingQueue<Kernel> m_InQueue;
+  private LinkedBlockingQueue<Kernel> m_OutQueue;
   public CpuCore(){
-    m_InQueue = new LinkedBlockingQueue<T>();
-    m_OutQueue = new LinkedBlockingQueue<T>();
+    m_InQueue = new LinkedBlockingQueue<Kernel>();
+    m_OutQueue = new LinkedBlockingQueue<Kernel>();
     Thread t = new Thread(this);
     t.setDaemon(true);
     t.start();
@@ -27,7 +27,7 @@ class CpuCore<T> implements Runnable{
   public void run() {
     while(true){
       try {
-        T job = m_InQueue.take();
+        Kernel job = m_InQueue.take();
         job.gpuMethod();
         m_OutQueue.put(job);
       } catch(Exception ex){
@@ -36,7 +36,7 @@ class CpuCore<T> implements Runnable{
     }
   }
 
-  void enqueue(T job) {
+  void enqueue(Kernel job) {
     while(true){
       try {
         m_InQueue.put(job);
@@ -47,7 +47,7 @@ class CpuCore<T> implements Runnable{
     }
   }
 
-  T getResult() {
+  Kernel getResult() {
     while(true){
       try {
         return m_OutQueue.take();

@@ -129,7 +129,7 @@ public class Main {
       return;
     } 
     
-    RootbeerCompiler compiler = new DefaultRootbeerCompiler();
+    RootbeerCompiler compiler = new RootbeerCompiler();
     if(m_disableClassRemapping){
       compiler.disableClassRemapping(); 
     }
