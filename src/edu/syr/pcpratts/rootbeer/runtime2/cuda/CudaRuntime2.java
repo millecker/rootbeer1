@@ -39,13 +39,13 @@ import edu.syr.pcpratts.rootbeer.runtime.util.Stopwatch;
 import edu.syr.pcpratts.rootbeer.runtimegpu.GpuException;
 import edu.syr.pcpratts.rootbeer.util.ResourceReader;
 
-public class CudaRuntime2 implements ParallelRuntime {
+public class CudaRuntime2<T> implements ParallelRuntime<T> {
 
   private static CudaRuntime2 m_Instance;
 
-  public static CudaRuntime2 v(){
+  public static <T> CudaRuntime2<T> v(){
     if(m_Instance == null) {
-      m_Instance = new CudaRuntime2();
+      m_Instance = new CudaRuntime2<T>();
     }
     return m_Instance;
   }
@@ -70,17 +70,17 @@ public class CudaRuntime2 implements ParallelRuntime {
   private long m_initTime;
   private long m_overallTime;
 
-  private List<Kernel> m_JobsToWrite;
-  private List<Kernel> m_JobsWritten;
-  private List<Kernel> m_NotWritten;
+  private List<T> m_JobsToWrite;
+  private List<T> m_JobsWritten;
+  private List<T> m_NotWritten;
   private List<Long> m_HandlesCache;
   private CompiledKernel m_FirstJob;
-  private PartiallyCompletedParallelJob m_Partial;
+  private PartiallyCompletedParallelJob<T> m_Partial;
 
   private List<Memory> m_ToSpace;
   private List<Memory> m_Texture;
-  private List<ToSpaceReader> m_Readers;
-  private List<ToSpaceWriter> m_Writers;
+  private List<ToSpaceReader<T>> m_Readers;
+  private List<ToSpaceWriter<T>> m_Writers;
 
   private List<Serializer> m_serializers;
 
@@ -104,14 +104,14 @@ public class CudaRuntime2 implements ParallelRuntime {
 
     m_BlockShaper = new BlockShaper();
 
-    m_JobsToWrite = new ArrayList<Kernel>();
-    m_JobsWritten = new ArrayList<Kernel>();
-    m_NotWritten = new ArrayList<Kernel>();
+    m_JobsToWrite = new ArrayList<T>();
+    m_JobsWritten = new ArrayList<T>();
+    m_NotWritten = new ArrayList<T>();
     m_HandlesCache = new ArrayList<Long>();
     m_ToSpace = new ArrayList<Memory>();
     m_Texture = new ArrayList<Memory>();
-    m_Readers = new ArrayList<ToSpaceReader>();
-    m_Writers = new ArrayList<ToSpaceWriter>();
+    m_Readers = new ArrayList<ToSpaceReader<T>>();
+    m_Writers = new ArrayList<ToSpaceWriter<T>>();
 
     m_writeBlocksStopwatch = new Stopwatch();
     m_runStopwatch = new Stopwatch();
@@ -235,8 +235,8 @@ public class CudaRuntime2 implements ParallelRuntime {
           .add(new FastMemory(currentGpuCard.getTextureAddr(),
               texture_inst_ptr, texture_static_ptr, currentGpuCard
                   .getToSpaceSize()));
-      m_Readers.add(new ToSpaceReader());
-      m_Writers.add(new ToSpaceWriter());
+      m_Readers.add(new ToSpaceReader<T>());
+      m_Writers.add(new ToSpaceWriter<T>());
     }
     m_Handles = new Handles(currentGpuCard.getHandlesAddr(),
         currentGpuCard.getGpuHandlesAddr());
@@ -249,7 +249,7 @@ public class CudaRuntime2 implements ParallelRuntime {
     test.run(m_ToSpace.get(0));
   }
 
-  public void run(Kernel job_template, Rootbeer rootbeer,
+  public void run(T job_template, Rootbeer rootbeer,
       ThreadConfig thread_config){
     m_runStopwatch.start();
     RootbeerGpu.setIsOnGpu(true);
@@ -314,12 +314,12 @@ public class CudaRuntime2 implements ParallelRuntime {
     }
   }
 
-  public PartiallyCompletedParallelJob run(Iterator<Kernel> jobs,
+  public PartiallyCompletedParallelJob<T> run(Iterator<T> jobs,
       Rootbeer rootbeer, ThreadConfig thread_config){
 
     m_runStopwatch.start();
     RootbeerGpu.setIsOnGpu(true);
-    m_Partial = new PartiallyCompletedParallelJob(jobs);
+    m_Partial = new PartiallyCompletedParallelJob<T>(jobs);
 
     boolean any_jobs = writeBlocks(jobs);
     if(any_jobs == false) {
@@ -378,7 +378,7 @@ public class CudaRuntime2 implements ParallelRuntime {
     }
   }
 
-  public void writeSingleBlock(Kernel kernel){
+  public void writeSingleBlock(T kernel){
     m_writeBlocksStopwatch.start();
     for(Memory mem : m_ToSpace) {
       mem.setAddress(0);
@@ -405,10 +405,10 @@ public class CudaRuntime2 implements ParallelRuntime {
     // write the statics to the heap
     m_serializers.get(0).writeStaticsToHeap();
 
-    List<Kernel> items = new ArrayList<Kernel>();
+    List<T> items = new ArrayList<T>();
     items.add(kernel);
     m_Writers.get(0).write(items, visitor);
-    ToSpaceWriterResult result = m_Writers.get(0).join();
+    ToSpaceWriterResult<T> result = m_Writers.get(0).join();
     List<Long> handles = result.getHandles();
     long handle = handles.get(0);
     m_HandlesCache.add(handle);
@@ -427,7 +427,7 @@ public class CudaRuntime2 implements ParallelRuntime {
     }
   }
 
-  public boolean writeBlocks(Iterator<Kernel> iter){
+  public boolean writeBlocks(Iterator<T> iter){
     m_writeBlocksStopwatch.start();
     for(Memory mem : m_ToSpace) {
       mem.setAddress(0);
@@ -445,7 +445,7 @@ public class CudaRuntime2 implements ParallelRuntime {
     boolean first_block = true;
     int count = 0;
     while(iter.hasNext()) {
-      Kernel job = iter.next();
+      T job = iter.next();
       if(first_block) {
         m_FirstJob = (CompiledKernel) job;
         first_block = false;
@@ -486,14 +486,14 @@ public class CudaRuntime2 implements ParallelRuntime {
       } else {
         end_index = (i + 1) * items_per;
       }
-      List<Kernel> items = m_JobsToWrite.subList(i * items_per, end_index);
+      List<T> items = m_JobsToWrite.subList(i * items_per, end_index);
       m_Writers.get(i).write(items, visitor);
     }
 
     for(int i = 0; i < m_NumCores; ++i) {
-      ToSpaceWriterResult result = m_Writers.get(i).join();
+      ToSpaceWriterResult<T> result = m_Writers.get(i).join();
       List<Long> handles = result.getHandles();
-      List<Kernel> items = result.getItems();
+      List<T> items = result.getItems();
       m_JobsWritten.addAll(items);
       m_Partial.enqueueJobs(items);
       m_HandlesCache.addAll(handles);
@@ -562,7 +562,7 @@ public class CudaRuntime2 implements ParallelRuntime {
     m_BlockShape = m_BlockShaper.blockShape();
   }
 
-  public void readSingleBlock(Kernel kernel){
+  public void readSingleBlock(T kernel){
     m_readBlocksStopwatch.start();
     m_ToSpace.get(0).setAddress(0);
 
@@ -610,7 +610,7 @@ public class CudaRuntime2 implements ParallelRuntime {
     long handle = m_HandlesCache.get(0);
     List<Long> handles = new ArrayList<Long>();
     handles.add(handle);
-    List<Kernel> jobs = new ArrayList<Kernel>();
+    List<T> jobs = new ArrayList<T>();
     jobs.add(kernel);
     m_Readers.get(0).read(jobs, handles, visitor);
     m_Readers.get(0).join();
@@ -667,7 +667,7 @@ public class CudaRuntime2 implements ParallelRuntime {
         end_index = (i + 1) * items_per;
       }
       List<Long> handles = m_HandlesCache.subList(i * items_per, end_index);
-      List<Kernel> jobs = m_JobsWritten.subList(i * items_per, end_index);
+      List<T> jobs = m_JobsWritten.subList(i * items_per, end_index);
       m_Readers.get(i).read(jobs, handles, visitor);
     }
 

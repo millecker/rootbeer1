@@ -7,17 +7,16 @@
 
 package edu.syr.pcpratts.rootbeer.runtime2.cuda;
 
-import edu.syr.pcpratts.rootbeer.runtime.Kernel;
 import java.util.List;
 
-public class ToSpaceWriterResult {
+public class ToSpaceWriterResult<T> {
   
   private List<Long> m_Handles;
-  private List<Kernel> m_Items;
-  private List<Kernel> m_NotWrittenItems;
+  private List<T> m_Items;
+  private List<T> m_NotWrittenItems;
   
-  public ToSpaceWriterResult(List<Long> handles, List<Kernel> items,
-    List<Kernel> not_written){
+  public ToSpaceWriterResult(List<Long> handles, List<T> items,
+    List<T> not_written){
     
     m_Handles = handles;
     m_Items = items;
@@ -28,11 +27,11 @@ public class ToSpaceWriterResult {
     return m_Handles;
   }
   
-  public List<Kernel> getItems(){
+  public List<T> getItems(){
     return m_Items;
   }
   
-  public List<Kernel> getNotWrittenItems(){
+  public List<T> getNotWrittenItems(){
     return m_NotWrittenItems; 
   }
 }

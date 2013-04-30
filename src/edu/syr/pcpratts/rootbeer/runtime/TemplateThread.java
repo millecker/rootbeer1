@@ -6,17 +6,17 @@
  */
 package edu.syr.pcpratts.rootbeer.runtime;
 
-public class TemplateThread extends Thread {
+public class TemplateThread<T> extends Thread {
 
-  private TemplateThreadListsProvider templateThreadListsProvider;
+  private TemplateThreadListsProvider<T> templateThreadListsProvider;
   public boolean compute = false;
   public int startid;
   public int endid;
   public int m_threadIdxx;
   public int m_blockIdxx;
-  public Kernel kernel;
+  public T kernel;
 
-  public TemplateThread(TemplateThreadListsProvider templateThreadListsProvider) {
+  public TemplateThread(TemplateThreadListsProvider<T> templateThreadListsProvider) {
     this.templateThreadListsProvider = templateThreadListsProvider;
   }
   

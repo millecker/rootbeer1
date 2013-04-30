@@ -10,7 +10,6 @@ package edu.syr.pcpratts.rootbeer.runtime.nativecpu;
 import edu.syr.pcpratts.rootbeer.configuration.RootbeerPaths;
 import edu.syr.pcpratts.rootbeer.util.WindowsCompile;
 import edu.syr.pcpratts.rootbeer.runtime.PartiallyCompletedParallelJob;
-import edu.syr.pcpratts.rootbeer.runtime.Kernel;
 import edu.syr.pcpratts.rootbeer.runtime.CompiledKernel;
 import edu.syr.pcpratts.rootbeer.runtime.Serializer;
 import edu.syr.pcpratts.rootbeer.runtime.ThreadConfig;
@@ -25,7 +24,7 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 
-public class NativeCpuDevice implements GpuDevice {
+public class NativeCpuDevice<T> implements GpuDevice<T> {
   
   private List<CompiledKernel> m_Blocks;
   private boolean m_nativeCpuInitialized;
@@ -36,8 +35,8 @@ public class NativeCpuDevice implements GpuDevice {
     m_blockShaper = new BlockShaper();
   }
   
-  public GcHeap CreateHeap() {
-    return new NativeCpuGcHeap(this);
+  public GcHeap<T> CreateHeap() {
+    return new NativeCpuGcHeap<T>(this);
   }
 
   public long getMaxEnqueueSize() {
@@ -48,11 +47,11 @@ public class NativeCpuDevice implements GpuDevice {
     
   }
   
-  public void run(Kernel kernel_template, ThreadConfig thread_config){
+  public void run(T kernel_template, ThreadConfig thread_config){
     int block_shape = thread_config.getGridShapeX();
     int thread_shape = thread_config.getBlockShapeX();
     int num_threads = block_shape * thread_shape;
-    NativeCpuGcHeap heap = new NativeCpuGcHeap(this);
+    NativeCpuGcHeap<T> heap = new NativeCpuGcHeap<T>(this);
     int size = heap.writeRuntimeBasicBlock(kernel_template, num_threads);
     m_Blocks = heap.getBlocks();
     
@@ -74,8 +73,9 @@ public class NativeCpuDevice implements GpuDevice {
     heap.readRuntimeBasicBlock(kernel_template);
   }
 
-  public PartiallyCompletedParallelJob run(Iterator<Kernel> blocks) {
-    NativeCpuGcHeap heap = new NativeCpuGcHeap(this);
+  @Override
+  public PartiallyCompletedParallelJob<T> run(Iterator<T> blocks) {
+    NativeCpuGcHeap<T> heap = new NativeCpuGcHeap<T>(this);
     int size = heap.writeRuntimeBasicBlocks(blocks);
     m_Blocks = heap.getBlocks();
     
@@ -97,7 +97,7 @@ public class NativeCpuDevice implements GpuDevice {
       gc_info.getBuffer().get(0), exceptions.getBuffer().get(0), 
       serializer.getClassRefArray(), size, block_shape, thread_shape, lib_name);
     
-    PartiallyCompletedParallelJob ret = heap.readRuntimeBasicBlocks();    
+    PartiallyCompletedParallelJob<T> ret = heap.readRuntimeBasicBlocks();    
     return ret;
   }
   

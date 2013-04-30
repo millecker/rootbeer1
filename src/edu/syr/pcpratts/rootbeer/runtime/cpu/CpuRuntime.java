@@ -12,38 +12,38 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class CpuRuntime implements ParallelRuntime {
+public class CpuRuntime<T> implements ParallelRuntime<T> {
 
   private static CpuRuntime mInstance = null;
-  private List<CpuCore> m_Cores;
+  private List<CpuCore<T>> m_Cores;
 
-  public static CpuRuntime v(){
+  public static <T> CpuRuntime v(){
     if(mInstance == null)
-      mInstance = new CpuRuntime();
+      mInstance = new CpuRuntime<T>();
     return mInstance;
   }
 
   private CpuRuntime(){
-    m_Cores = new ArrayList<CpuCore>();
+    m_Cores = new ArrayList<CpuCore<T>>();
     int num_cores = Runtime.getRuntime().availableProcessors();
     for(int i = 0; i < num_cores; ++i){
-      m_Cores.add(new CpuCore());
+      m_Cores.add(new CpuCore<T>());
     }
   }
 
-  public PartiallyCompletedParallelJob run(Iterator<Kernel> jobs, Rootbeer rootbeer, ThreadConfig thread_config) throws Exception {
-    PartiallyCompletedParallelJob ret = new PartiallyCompletedParallelJob(jobs);
+  public PartiallyCompletedParallelJob<T> run(Iterator<T> jobs, Rootbeer rootbeer, ThreadConfig thread_config) throws Exception {
+    PartiallyCompletedParallelJob<T> ret = new PartiallyCompletedParallelJob<T>(jobs);
     int enqueued = 0;
     for(int i = 0; i < m_Cores.size(); ++i){
       if(jobs.hasNext()){
-        Kernel job = jobs.next();
+        T job = jobs.next();
         m_Cores.get(i).enqueue(job);
         enqueued++;
       }
     }
 
     for(int i = 0; i < enqueued; ++i){
-      Kernel curr = m_Cores.get(i).getResult();
+      T curr = m_Cores.get(i).getResult();
       ret.enqueueJob(curr);
     }
     return ret;

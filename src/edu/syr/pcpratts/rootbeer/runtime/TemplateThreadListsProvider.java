@@ -10,24 +10,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TemplateThreadListsProvider {
+public class TemplateThreadListsProvider<T> {
 
-  private List<TemplateThread> sleeping = Collections.synchronizedList(new ArrayList<TemplateThread>());
-  private List<TemplateThread> computing = Collections.synchronizedList(new ArrayList<TemplateThread>());
+  private List<TemplateThread<T>> sleeping = Collections.synchronizedList(new ArrayList<TemplateThread<T>>());
+  private List<TemplateThread<T>> computing = Collections.synchronizedList(new ArrayList<TemplateThread<T>>());
 
   public TemplateThreadListsProvider() {
     for (int i = 0; i < Runtime.getRuntime().availableProcessors(); ++i) {
-      TemplateThread t = new TemplateThread(this);
+      TemplateThread<T> t = new TemplateThread<T>(this);
       t.start();
       sleeping.add(t);
     }
   }
   
-  public List<TemplateThread> getSleeping() {
+  public List<TemplateThread<T>> getSleeping() {
     return sleeping;
   }
 
-  public List<TemplateThread> getComputing() {
+  public List<TemplateThread<T>> getComputing() {
     return computing;
   }
 }

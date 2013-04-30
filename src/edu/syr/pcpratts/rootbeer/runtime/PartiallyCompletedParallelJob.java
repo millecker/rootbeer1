@@ -12,45 +12,45 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PartiallyCompletedParallelJob {
+public class PartiallyCompletedParallelJob<T> {
 
-  private Iterator<Kernel> m_RemainingJobs;
-  private List<Kernel> m_ActiveJobs;
-  private List<Kernel> m_NotWritten;
+  private Iterator<T> m_RemainingJobs;
+  private List<T> m_ActiveJobs;
+  private List<T> m_NotWritten;
 
-  public PartiallyCompletedParallelJob(Iterator<Kernel> remaining_jobs) {
+  public PartiallyCompletedParallelJob(Iterator<T> remaining_jobs) {
     m_RemainingJobs = remaining_jobs;
-    m_ActiveJobs = new LinkedList<Kernel>();
-    m_NotWritten = new ArrayList<Kernel>();
+    m_ActiveJobs = new LinkedList<T>();
+    m_NotWritten = new ArrayList<T>();
   }
 
-  public List<Kernel> getActiveJobs() {
+  public List<T> getActiveJobs() {
     return m_ActiveJobs;
   }
 
-  public Iterator<Kernel> getJobsToEnqueue(){
-    return new CompositeIterator(m_NotWritten, m_RemainingJobs);
+  public Iterator<T> getJobsToEnqueue(){
+    return new CompositeIterator<T>(m_NotWritten, m_RemainingJobs);
   }
 
-  public void enqueueJob(Kernel job){
+  public void enqueueJob(T job){
     m_ActiveJobs.add(job);
   }
 
-  public void enqueueJobs(List<Kernel> items) {
+  public void enqueueJobs(List<T> items) {
     m_ActiveJobs.addAll(items);
   }
 
-  public void addNotWritten(List<Kernel> not_written) {
-    m_NotWritten = new ArrayList<Kernel>();
+  public void addNotWritten(List<T> not_written) {
+    m_NotWritten = new ArrayList<T>();
     m_NotWritten.addAll(not_written);
   }
   
-  public class CompositeIterator implements Iterator<Kernel> {
+  public class CompositeIterator<E> implements Iterator<E> {
 
-    private Iterator<Kernel> m_NotWritten;
-    private Iterator<Kernel> m_Remaining;
+    private Iterator<E> m_NotWritten;
+    private Iterator<E> m_Remaining;
     
-    private CompositeIterator(List<Kernel> not_written, Iterator<Kernel> remaining) {
+    private CompositeIterator(List<E> not_written, Iterator<E> remaining) {
       m_NotWritten = not_written.iterator();
       m_Remaining = remaining;
     }    
@@ -63,7 +63,7 @@ public class PartiallyCompletedParallelJob {
       return false;
     }
 
-    public Kernel next() {
+    public E next() {
       if(m_NotWritten.hasNext())
         return m_NotWritten.next();
       if(m_Remaining.hasNext())
