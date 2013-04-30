@@ -272,11 +272,11 @@ public class OpenCLScene {
 
   private String setupEntryPoint(StringBuilder builder){
     String cuda_code = builder.toString();
-    String mangle = NameMangling.v().mangle(VoidType.v());
-    String replacement = getRuntimeBasicBlockClassName()+"_gpuMethod"+mangle;
+    //String mangle = NameMangling.v().mangle(VoidType.v());
+    //String replacement = getRuntimeBasicBlockClassName()+"_gpuMethod"+mangle;
     //class names can have $ in them, make them regex safe
-    replacement = replacement.replace("$", "\\$");
-    cuda_code = cuda_code.replaceAll("%%invoke_run%%", replacement);  
+    //replacement = replacement.replace("$", "\\$");
+    cuda_code = cuda_code.replaceAll("%%invoke_run%%", m_methodHierarchies.getMethods().get(0).toString());  
     return cuda_code;
   }
   
