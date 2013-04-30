@@ -21,6 +21,7 @@ import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.gpurequired.*;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.kerneltemplate.FastMatrixTest;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.remaptest.RemapTest;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.*;
+import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.hama.HamaTest;
 
 public class Main implements TestSerializationFactory {
 
@@ -92,6 +93,7 @@ public class Main implements TestSerializationFactory {
     ret.add(new LinkedHashMapTest());
     ret.add(new CovarientTest());
     ret.add(new GpuMethodTest());
+    ret.add(new HamaTest());
             
     if(m_hardTests){
       ret.add(new SimpleSynchronizedTest());
