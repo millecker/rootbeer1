@@ -16,19 +16,12 @@ public class HamaTest implements TestSerialization {
 
   @Override
   public List<Kernel> create(){
-    try {
-      TestBSP testBSP = (TestBSP) TestBSP.class.newInstance();
-      List<Kernel> ret = new ArrayList<Kernel>();
-      ret.add(testBSP.new SetupKernel(null));
-      ret.add(testBSP.new BspKernel(null));
-      ret.add(testBSP.new CleanupKernel(null));
-      return ret;
-    } catch(InstantiationException e) {
-      e.printStackTrace();
-    } catch(IllegalAccessException e) {
-      e.printStackTrace();
-    }
-    return null;
+    TestBSP testBSP = new TestBSP();
+    List<Kernel> ret = new ArrayList<Kernel>();
+    ret.add(testBSP.new SetupKernel(null));
+    ret.add(testBSP.new BspKernel(null));
+    ret.add(testBSP.new CleanupKernel(null));
+    return ret;
   }
 
   @Override

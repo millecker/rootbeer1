@@ -16,6 +16,10 @@ import org.apache.hama.gpu.GpuBSP;
 
 public class TestBSP extends GpuBSP<Text, Text, Text, Integer, IntWritable> {
 
+  public TestBSP() { 
+    super();
+  }
+  
   @Override
   public void setupGPU(BSPPeer<Text, Text, Text, Integer, IntWritable> peer)
       throws IOException, SyncException, InterruptedException{
