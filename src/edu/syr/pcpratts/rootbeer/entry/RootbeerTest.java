@@ -20,7 +20,7 @@ public class RootbeerTest {
   }
   
   public void runTests(String test_case, boolean run_hard_tests) {
-    RootbeerCompiler compiler = new RootbeerCompiler();
+    RootbeerCompiler compiler = new DefaultRootbeerCompiler();
     String dest_jar = "output.jar";   
     CurrJarName jar_name = new CurrJarName();
     String rootbeer_jar = jar_name.get();
