@@ -293,6 +293,12 @@ void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedDouble($$__global$$ 
 }
 
 $$__device__$$
+void java_io_PrintStream_println($$__global$$ char * gc_info, int this_ref, int str_ret, int * exception){
+  //1. take characters from str_ret
+  //2. print using printf
+}
+
+$$__device__$$
 double edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_sin($$__global$$ char * gc_info, double value, int * exception){
   return sin(value);
 }

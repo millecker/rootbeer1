@@ -1,3 +1,4 @@
+#include <stdio.h>
 #ifndef NAN
 #include <math_constants.h>
 #define NAN CUDART_NAN

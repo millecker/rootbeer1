@@ -238,10 +238,8 @@ public class CudaRuntime2 implements ParallelRuntime {
       m_Readers.add(new ToSpaceReader());
       m_Writers.add(new ToSpaceWriter());
     }
-    m_Handles = new Handles(currentGpuCard.getHandlesAddr(),
-        currentGpuCard.getGpuHandlesAddr());
-    m_ExceptionHandles = new Handles(currentGpuCard.getExceptionsHandlesAddr(),
-        currentGpuCard.getGpuExceptionsHandlesAddr());
+    m_Handles = new Handles(currentGpuCard.getHandlesAddr());
+    m_ExceptionHandles = new Handles(currentGpuCard.getExceptionsHandlesAddr());
   }
 
   public void memoryTest(){
@@ -386,7 +384,6 @@ public class CudaRuntime2 implements ParallelRuntime {
     for(Memory mem : m_ToSpace) {
       mem.setAddress(0);
     }
-    m_Handles.activate();
     m_Handles.resetPointer();
     m_JobsToWrite.clear();
     m_JobsWritten.clear();
@@ -435,7 +432,6 @@ public class CudaRuntime2 implements ParallelRuntime {
     for(Memory mem : m_ToSpace) {
       mem.setAddress(0);
     }
-    m_Handles.activate();
     m_Handles.resetPointer();
     m_JobsToWrite.clear();
     m_JobsWritten.clear();
@@ -549,11 +545,9 @@ public class CudaRuntime2 implements ParallelRuntime {
       // reinit(m_BlockShaper.getMaxBlocksPerProc(),
       // m_BlockShaper.getMaxThreadsPerBlock(), m_reserveMem);
 
-      m_Handles = new Handles(currentGpuCard.getHandlesAddr(),
-          currentGpuCard.getGpuHandlesAddr());
+      m_Handles = new Handles(currentGpuCard.getHandlesAddr());
       m_ExceptionHandles = new Handles(
-          currentGpuCard.getExceptionsHandlesAddr(),
-          currentGpuCard.getGpuExceptionsHandlesAddr());
+          currentGpuCard.getExceptionsHandlesAddr());
       throw ex;
     }
   }
@@ -568,8 +562,6 @@ public class CudaRuntime2 implements ParallelRuntime {
   public void readSingleBlock(Kernel kernel){
     m_readBlocksStopwatch.start();
     m_ToSpace.get(0).setAddress(0);
-
-    m_ExceptionHandles.activate();
 
     if(Configuration.getPrintMem()) {
       BufferPrinter printer = new BufferPrinter();
@@ -624,8 +616,6 @@ public class CudaRuntime2 implements ParallelRuntime {
     for(int i = 0; i < m_NumCores; ++i)
       m_ToSpace.get(i).setAddress(0);
 
-    m_ExceptionHandles.activate();
-
     if(Configuration.getPrintMem()) {
       BufferPrinter printer = new BufferPrinter();
       printer.print(m_ToSpace.get(0), 0, 2048);
@@ -645,6 +635,10 @@ public class CudaRuntime2 implements ParallelRuntime {
         Serializer visitor = m_serializers.get(0);
         mem.setAddress(ref);
         Object except = visitor.readFromHeap(null, true, ref);
+        System.out.println("exception.");
+        System.out.println("  ref: "+ref);
+        System.out.println("  i: "+i);
+        System.out.println("  obj: "+except.toString());
         if(except instanceof Error) {
           Error except_th = (Error) except;
           throw except_th;

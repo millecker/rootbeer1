@@ -9,35 +9,19 @@ extern "C" {
 #endif
 /*
  * Class:     edu_syr_pcpratts_rootbeer_runtime2_cuda_Handles
- * Method:    setup
- * Signature: (JJ)V
+ * Method:    doWriteLong
+ * Signature: (JIJ)V
  */
-JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_Handles_setup
-  (JNIEnv *, jobject, jlong, jlong);
+JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_Handles_doWriteLong
+  (JNIEnv *, jobject, jlong, jint, jlong);
 
 /*
  * Class:     edu_syr_pcpratts_rootbeer_runtime2_cuda_Handles
- * Method:    resetPointer
- * Signature: ()V
+ * Method:    doReadLong
+ * Signature: (JI)J
  */
-JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_Handles_resetPointer
-  (JNIEnv *, jobject);
-
-/*
- * Class:     edu_syr_pcpratts_rootbeer_runtime2_cuda_Handles
- * Method:    writeLong
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_Handles_writeLong
-  (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     edu_syr_pcpratts_rootbeer_runtime2_cuda_Handles
- * Method:    readLong
- * Signature: ()J
- */
-JNIEXPORT jlong JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_Handles_readLong
-  (JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_Handles_doReadLong
+  (JNIEnv *, jobject, jlong, jint);
 
 #ifdef __cplusplus
 }

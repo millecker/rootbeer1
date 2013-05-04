@@ -9,22 +9,29 @@ package edu.syr.pcpratts.rootbeer.runtime2.cuda;
 
 public class Handles {
   
-  private long m_CpuAddr;
-  private long m_GpuAddr;
+  private long m_addr;
+  private int m_offset;
   
-  public Handles(long cpu_base_address, long gpu_base_address){
-    m_CpuAddr = cpu_base_address;
-    m_GpuAddr = gpu_base_address;
-    setup(cpu_base_address, gpu_base_address);
+  public Handles(long base_address){
+    m_addr = base_address;
   }
 
-  public void activate(){
-    setup(m_CpuAddr, m_GpuAddr);
+  
+  public void resetPointer(){
+    m_offset = 0;
   }
   
-  private native void setup(long cpu_base_address, long gpu_base_address);
+  public void writeLong(long value){
+    doWriteLong(m_addr, m_offset, value);
+    ++m_offset;
+  }
   
-  public native void resetPointer();
-  public native void writeLong(long value);
-  public native long readLong();
+  public long readLong(){
+    long ret = doReadLong(m_addr, m_offset);
+    ++m_offset;
+    return ret;
+  }
+  
+  private native void doWriteLong(long base_addr, int offset, long value);
+  private native long doReadLong(long base_addr, int offset);
 }
