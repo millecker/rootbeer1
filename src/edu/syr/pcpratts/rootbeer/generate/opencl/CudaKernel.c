@@ -20,7 +20,6 @@ edu_syr_pcpratts_gc_malloc(char * gc_info, long long size){
   long long ret = edu_syr_pcpratts_gc_malloc_no_fail(gc_info, size);
   size_t end = ret + size + 8L;
   if(end >= space_size){
-    printf("malloc failed: %ld, %ld\n", end, space_size);
     return -1;
   }
   ret = ret >> 4;
