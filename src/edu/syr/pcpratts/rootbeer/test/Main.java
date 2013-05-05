@@ -93,10 +93,7 @@ public class Main implements TestSerializationFactory {
     ret.add(new LinkedHashMapTest());
     ret.add(new CovarientTest());
     ret.add(new GpuMethodTest());
-<<<<<<< HEAD
     ret.add(new RegularExpressionTest());
-=======
->>>>>>> e7f17920573c16ee4093db25b61bee2f89c99812
     ret.add(new HamaTest());
             
     if(m_hardTests){
