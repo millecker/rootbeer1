@@ -20,20 +20,20 @@ public class TestGpuMapper extends GpuMapper<Text, Text, Text, Text> {
   @Override
   public void configure(JobConf arg0){
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
   public void close() throws IOException{
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
   public void mapGpu(Text arg0, Text arg1, OutputCollector<Text, Text> arg2,
-      Reporter arg3) throws IOException{
+      Reporter reporter){
     System.out.println("Rootbeer TestGpuMapper mapGpu!");
-    
+
   }
 
 }

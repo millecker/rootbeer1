@@ -16,25 +16,25 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.mapred.gpu.GpuReducer;
 
-public class TestGpuReducer extends GpuReducer<Text, Text, Text, Text>  {
+public class TestGpuReducer extends GpuReducer<Text, Text, Text, Text> {
 
   @Override
   public void configure(JobConf arg0){
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
   public void close() throws IOException{
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
   public void reduceGpu(Text arg0, Iterator<Text> arg1,
-      OutputCollector<Text, Text> arg2, Reporter arg3) throws IOException{
+      OutputCollector<Text, Text> arg2, Reporter reporter){
     System.out.println("Rootbeer TestGpuReducer reduceGpu!");
-    
+
   }
 
 }

@@ -51,6 +51,7 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.Throwable: java.lang.Throwable fillInStackTrace()>");
     m_methods.add("<java.lang.Throwable: int getStackTraceDepth()>");
     m_methods.add("<java.lang.Throwable: java.lang.StackTraceElement getStackTraceElement(int)>");
+    m_methods.add("<java.lang.Throwable: void printStackTrace()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: boolean isOnGpu()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: int getThreadId()>"); 
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: int getThreadIdxx()>");
