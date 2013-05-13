@@ -4,6 +4,7 @@
  * 
  * See the file LICENSE for copying permission.
  */
+
 package edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.hama;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class HamaTest implements TestSerialization {
 
   @Override
   public List<Kernel> create(){
-    TestBSP testBSP = new TestBSP();
+    TestGpuBSP testBSP = new TestGpuBSP();
     List<Kernel> ret = new ArrayList<Kernel>();
     ret.add(testBSP.new SetupKernel(null));
     ret.add(testBSP.new BspKernel(null));

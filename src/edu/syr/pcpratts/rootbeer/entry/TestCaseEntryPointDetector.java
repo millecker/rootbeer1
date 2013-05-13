@@ -50,7 +50,8 @@ public class TestCaseEntryPointDetector implements MethodTester {
     m_testCasePackages.add("edu.syr.pcpratts.rootbeer.testcases.rootbeertest.remaptest.");
     m_testCasePackages.add("edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.");
     m_testCasePackages.add("edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.hama.");
-
+    m_testCasePackages.add("edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.hadoop.");
+    
     m_initialized = false;
     m_entryPoints = new ArrayList<String>();
   }
