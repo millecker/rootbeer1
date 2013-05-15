@@ -41,17 +41,16 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.StrictMath: double sinh(double)>");
     m_methods.add("<java.lang.StrictMath: double cosh(double)>");
     m_methods.add("<java.lang.StrictMath: double tanh(double)>");
-    m_methods.add("<java.lang.Class: java.lang.String getName()>");
     m_methods.add("<java.lang.Double: long doubleToLongBits(double)>");
     m_methods.add("<java.lang.Double: double longBitsToDouble(long)>");
     m_methods.add("<java.lang.Float: int floatToIntBits(float)>");
     m_methods.add("<java.lang.Float: float intBitsToFloat(int)>");
-    m_methods.add("<java.lang.System: long nanoTime()>");
     m_methods.add("<java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>");
     m_methods.add("<java.lang.Throwable: java.lang.Throwable fillInStackTrace()>");
     m_methods.add("<java.lang.Throwable: int getStackTraceDepth()>");
     m_methods.add("<java.lang.Throwable: java.lang.StackTraceElement getStackTraceElement(int)>");
-    m_methods.add("<java.lang.Throwable: void printStackTrace()>");
+    m_methods.add("<java.lang.Object: java.lang.Object clone()>");
+    m_methods.add("<java.lang.Object: int hashCode()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: boolean isOnGpu()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: int getThreadId()>"); 
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: int getThreadIdxx()>");
@@ -76,12 +75,12 @@ public class DontDfsMethods {
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: double getSharedDouble(int)>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: void setSharedDouble(int,double)>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: double sin(double)>");
-    m_methods.add("<java.lang.StringValue: char[] from(char[])>");
+    m_methods.add("<java.lang.System: long nanoTime()>");
+    m_methods.add("<java.lang.Class: java.lang.String getName()>");
+    m_methods.add("<java.lang.Object: java.lang.Class getClass()>");
+    m_methods.add("<java.lang.StringValue: char[] 'from'(char[])>");
     m_methods.add("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int)>");
     m_methods.add("<java.io.PrintStream: void println(java.lang.String)>");
-    m_methods.add("<java.io.PrintStream: void println(java.lang.Object)>");
-    m_methods.add("<java.io.PrintStream: void print(java.lang.String)>");
-    m_methods.add("<java.io.PrintStream: void newLine()>");
     
   }
   
