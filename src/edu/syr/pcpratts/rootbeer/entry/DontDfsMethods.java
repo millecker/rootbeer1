@@ -18,9 +18,6 @@ public class DontDfsMethods {
     m_methods = new HashSet<String>();
     m_methods.add("<java.lang.Object: void <clinit>()>");
     m_methods.add("<java.lang.Object: void registerNatives()>");
-    m_methods.add("<java.lang.Object: java.lang.Object clone()>");
-    m_methods.add("<java.lang.Object: int hashCode()>");
-    m_methods.add("<java.lang.Object: java.lang.Class getClass()>");
     m_methods.add("<java.lang.StrictMath: double exp(double)>");
     m_methods.add("<java.lang.StrictMath: double log(double)>");
     m_methods.add("<java.lang.StrictMath: double log10(double)>");
@@ -81,7 +78,6 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.StringValue: char[] 'from'(char[])>");
     m_methods.add("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int)>");
     m_methods.add("<java.io.PrintStream: void println(java.lang.String)>");
-    
   }
   
   public Set<String> get(){
