@@ -7,23 +7,6 @@
 
 package edu.syr.pcpratts.rootbeer.entry;
 
-import edu.syr.pcpratts.rootbeer.configuration.RootbeerPaths;
-import edu.syr.pcpratts.rootbeer.configuration.Configuration;
-import edu.syr.pcpratts.rootbeer.compiler.*;
-import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.CudaTweaks;
-import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.NativeCpuTweaks;
-import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.Tweaks;
-import edu.syr.pcpratts.rootbeer.runtime.CompiledKernel;
-import edu.syr.pcpratts.rootbeer.runtime.Kernel;
-import edu.syr.pcpratts.rootbeer.runtime.PartiallyCompletedParallelJob;
-import edu.syr.pcpratts.rootbeer.runtime.Serializer;
-import edu.syr.pcpratts.rootbeer.runtime.memory.Memory;
-import edu.syr.pcpratts.rootbeer.runtime2.cuda.CpuRunner;
-import edu.syr.pcpratts.rootbeer.runtime2.cuda.Handles;
-import edu.syr.pcpratts.rootbeer.runtime2.cuda.ToSpaceReader;
-import edu.syr.pcpratts.rootbeer.runtime2.cuda.ToSpaceWriter;
-import edu.syr.pcpratts.rootbeer.test.TestSerialization;
-import edu.syr.pcpratts.rootbeer.util.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,18 +15,38 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
 import pack.Pack;
-import soot.*;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
 import soot.options.Options;
 import soot.rbclassload.ListClassTester;
 import soot.rbclassload.ListMethodTester;
 import soot.rbclassload.MethodTester;
 import soot.rbclassload.RootbeerClassLoader;
 import soot.util.JasminOutputStream;
+import edu.syr.pcpratts.rootbeer.compiler.Transform2;
+import edu.syr.pcpratts.rootbeer.configuration.Configuration;
+import edu.syr.pcpratts.rootbeer.configuration.RootbeerPaths;
+import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.CudaTweaks;
+import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.NativeCpuTweaks;
+import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.Tweaks;
+import edu.syr.pcpratts.rootbeer.util.CurrJarName;
+import edu.syr.pcpratts.rootbeer.util.DeleteFolder;
+import edu.syr.pcpratts.rootbeer.util.JarEntryHelp;
+import edu.syr.pcpratts.rootbeer.util.JarToFolder;
+import edu.syr.pcpratts.rootbeer.util.JimpleWriter;
 
 public class RootbeerCompiler {
 
@@ -95,6 +98,23 @@ public class RootbeerCompiler {
   private void setupSoot(String jar_filename, String rootbeer_jar, boolean runtests){
     RootbeerClassLoader.v().setUserJar(jar_filename);
     extractJar(jar_filename);
+    
+    // Set Main-Class of jar file if available
+    try {
+      String mainClassName = "";
+      JarFile jf = new JarFile(new File(jar_filename));
+      Attributes attrs = jf.getManifest().getMainAttributes();
+      Attributes.Name mainClassAttr = new Attributes.Name("Main-Class");
+      if(attrs.containsKey(mainClassAttr)) {
+        mainClassName = attrs.getValue(mainClassAttr);
+      }
+      if(!mainClassName.isEmpty()){
+        RootbeerClassLoader.v().addNewInvoke(mainClassName);
+        RootbeerClassLoader.v().addSignaturesClass(mainClassName);
+      }
+    } catch(IOException e){
+      e.printStackTrace();
+    }
     
     List<String> proc_dir = new ArrayList<String>();
     proc_dir.add(RootbeerPaths.v().getJarContentsFolder());
