@@ -38,6 +38,7 @@ public class GencodeOptions {
       sm_12 = "--generate-code arch=compute_12,code=\"sm_12\" "; 
     }
     
+    /*
     //sm_12 doesn't support recursion
     if(Configuration.compilerInstance().getRecursion()){
       sm_12 = "";
@@ -47,6 +48,7 @@ public class GencodeOptions {
     if(Configuration.compilerInstance().getDoubles()){
       sm_12 = "";
     }
+    */
     
     if(version.equals("Cuda compilation tools, release 5.0, V0.2.1221")){
       return sm_35 + sm_30 + sm_21 + sm_20 + sm_12;
