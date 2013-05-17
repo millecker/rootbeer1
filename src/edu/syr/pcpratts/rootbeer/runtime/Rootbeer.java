@@ -63,7 +63,11 @@ public class Rootbeer implements IRootbeer {
     }
     if(jobs.get(0) instanceof CompiledKernel == false) {
       for(Kernel job : jobs) {
-        job.gpuMethod();
+        try{
+          job.gpuMethod();
+        }catch(Exception e){
+          e.printStackTrace();
+        }
       }
       m_ranGpu = false;
     } else {
