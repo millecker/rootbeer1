@@ -42,11 +42,7 @@ public class CpuRunnerCore implements Runnable {
 
   private void runJobs(List<Kernel> jobs) {
     for(Kernel job : jobs){
-      try{
-        job.gpuMethod();
-      }catch(Exception e){
-        e.printStackTrace();
-      }
+      job.gpuMethod();
     }
   }  
   

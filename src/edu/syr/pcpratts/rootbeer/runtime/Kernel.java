@@ -8,5 +8,5 @@
 package edu.syr.pcpratts.rootbeer.runtime;
 
 public interface Kernel {
-  void gpuMethod() throws Exception;
+  void gpuMethod();
 }

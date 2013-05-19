@@ -31,11 +31,7 @@ public class TemplateThread extends Thread {
       }
       templateThreadListsProvider.getComputing().add(this);
       for (m_threadIdxx = startid; m_threadIdxx < endid; ++m_threadIdxx) {
-        try{
-          kernel.gpuMethod();
-        }catch(Exception e){
-          e.printStackTrace();
-        }
+        kernel.gpuMethod();
       }
       compute = false;
       templateThreadListsProvider.getComputing().remove(this);
