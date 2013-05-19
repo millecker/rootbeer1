@@ -43,11 +43,7 @@ public class Main implements TestSerializationFactory {
     while(iter.hasNext()){
       Kernel result = iter.next();
       Kernel known_good = known_goods.get(i);
-      try{
-        known_good.gpuMethod();
-      }catch(Exception e){
-        e.printStackTrace();
-      }
+      known_good.gpuMethod();
 
       if(!provider.compare(result, known_good)){
         System.out.println("Failed at: "+i);
