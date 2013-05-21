@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
+import soot.rbclassload.Pair;
+
 import edu.syr.pcpratts.rootbeer.configuration.Configuration;
 import edu.syr.pcpratts.rootbeer.configuration.RootbeerPaths;
 import edu.syr.pcpratts.rootbeer.runtime.CompiledKernel;
