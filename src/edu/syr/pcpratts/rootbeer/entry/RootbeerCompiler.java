@@ -31,6 +31,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.options.Options;
+import soot.rbclassload.HierarchySootClass;
 import soot.rbclassload.ListClassTester;
 import soot.rbclassload.ListMethodTester;
 import soot.rbclassload.MethodTester;
@@ -98,31 +99,6 @@ public class RootbeerCompiler {
   private void setupSoot(String jar_filename, String rootbeer_jar, boolean runtests){
     RootbeerClassLoader.v().setUserJar(jar_filename);
     extractJar(jar_filename);
-    
-    String mainClass = Configuration.compilerInstance().getMainClass();
-    // If mainClass was not set by CommandLine check
-    // jar manifest for Main-Class property
-    if(mainClass.isEmpty()){
-      try {
-        JarFile jf = new JarFile(new File(jar_filename));
-        Attributes attrs = jf.getManifest().getMainAttributes();
-        Attributes.Name mainClassAttr = new Attributes.Name("Main-Class");
-        if(attrs.containsKey(mainClassAttr)) {
-          mainClass = attrs.getValue(mainClassAttr);
-          Configuration.compilerInstance().setMainClass(mainClass);
-        }
-      } catch(IOException e){
-        e.printStackTrace();
-      }
-    }
-    // If mainClass was set by CommandLine or Jar Manifest property
-    // add mainClass to NewInvoke and toSignaturesClasses
-    // to include in loadScene 
-    if(!mainClass.isEmpty()){
-      RootbeerClassLoader.v().addNewInvoke(mainClass);
-      RootbeerClassLoader.v().addSignaturesClass(mainClass);
-      RootbeerClassLoader.v().setMainClass(mainClass);
-    }
     
     List<String> proc_dir = new ArrayList<String>();
     proc_dir.add(RootbeerPaths.v().getJarContentsFolder());
@@ -207,6 +183,34 @@ public class RootbeerCompiler {
     RootbeerClassLoader.v().addDontFollowMethodTester(dont_dfs_tester);
     
     RootbeerClassLoader.v().loadField("<java.lang.Class: java.lang.String name>");
+    
+    String mainClass = Configuration.compilerInstance().getMainClass();
+    // If mainClass was not set by CommandLine check
+    // jar manifest for Main-Class property
+    if(mainClass.isEmpty()){
+      try {
+        JarFile jf = new JarFile(new File(jar_filename));
+        Attributes attrs = jf.getManifest().getMainAttributes();
+        Attributes.Name mainClassAttr = new Attributes.Name("Main-Class");
+        if(attrs.containsKey(mainClassAttr)) {
+          String main_class = attrs.getValue(mainClassAttr);
+          if(ignore_packages.test(main_class) == false){
+            mainClass = main_class;
+            Configuration.compilerInstance().setMainClass(mainClass);
+          } 
+        }
+      } catch(IOException e){
+        e.printStackTrace();
+      }
+    }
+    // If mainClass was set by CommandLine or Jar Manifest property
+    // add mainClass to NewInvoke and toSignaturesClasses
+    // to include in loadScene 
+    if(!mainClass.isEmpty()){
+      RootbeerClassLoader.v().addNewInvoke(mainClass);
+      RootbeerClassLoader.v().addSignaturesClass(mainClass);
+      RootbeerClassLoader.v().setMainClass(mainClass);
+    }
     
     RootbeerClassLoader.v().loadNecessaryClasses();
   }
