@@ -66,6 +66,10 @@ public class Main {
       } else if(arg.equals("-destjar")){
         m_destJar = safeGet(args, i+1, "-destjar");
         ++i;
+      } else if(arg.equals("-mainclass")){
+        String mainClass = safeGet(args, i+1, "-mainclass");
+        Configuration.compilerInstance().setMainClass(mainClass);
+        ++i;
       } else if(arg.equals("-runtests")){
         m_runTests = true;
         m_testCase = null;
