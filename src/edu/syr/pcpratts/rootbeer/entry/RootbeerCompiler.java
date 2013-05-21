@@ -99,21 +99,29 @@ public class RootbeerCompiler {
     RootbeerClassLoader.v().setUserJar(jar_filename);
     extractJar(jar_filename);
     
-    // Set Main-Class of jar file if available
-    try {
-      String mainClassName = "";
-      JarFile jf = new JarFile(new File(jar_filename));
-      Attributes attrs = jf.getManifest().getMainAttributes();
-      Attributes.Name mainClassAttr = new Attributes.Name("Main-Class");
-      if(attrs.containsKey(mainClassAttr)) {
-        mainClassName = attrs.getValue(mainClassAttr);
+    String mainClass = Configuration.compilerInstance().getMainClass();
+    // If mainClass was not set by CommandLine check
+    // jar manifest for Main-Class property
+    if(mainClass.isEmpty()){
+      try {
+        JarFile jf = new JarFile(new File(jar_filename));
+        Attributes attrs = jf.getManifest().getMainAttributes();
+        Attributes.Name mainClassAttr = new Attributes.Name("Main-Class");
+        if(attrs.containsKey(mainClassAttr)) {
+          mainClass = attrs.getValue(mainClassAttr);
+          Configuration.compilerInstance().setMainClass(mainClass);
+        }
+      } catch(IOException e){
+        e.printStackTrace();
       }
-      if(!mainClassName.isEmpty()){
-        RootbeerClassLoader.v().addNewInvoke(mainClassName);
-        RootbeerClassLoader.v().addSignaturesClass(mainClassName);
-      }
-    } catch(IOException e){
-      e.printStackTrace();
+    }
+    // If mainClass was set by CommandLine or Jar Manifest property
+    // add mainClass to NewInvoke and toSignaturesClasses
+    // to include in loadScene 
+    if(!mainClass.isEmpty()){
+      RootbeerClassLoader.v().addNewInvoke(mainClass);
+      RootbeerClassLoader.v().addSignaturesClass(mainClass);
+      RootbeerClassLoader.v().setMainClass(mainClass);
     }
     
     List<String> proc_dir = new ArrayList<String>();
