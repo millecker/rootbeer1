@@ -8,8 +8,9 @@
 package edu.syr.pcpratts.rootbeer.configuration;
 
 import edu.syr.pcpratts.rootbeer.util.ResourceReader;
-import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Configuration {
 
@@ -45,7 +46,7 @@ public class Configuration {
   private boolean m_arrayChecks;
   private boolean m_doubles;
   private boolean m_recursion;
-  private String m_mainClass;
+  private Set<String> m_loadClasses;
   
   static {
     m_printMem = false;
@@ -58,7 +59,7 @@ public class Configuration {
     m_arrayChecks = true;
     m_doubles = true;
     m_recursion = true;
-    m_mainClass = "";
+    m_loadClasses = new HashSet<String>();
   }
 
   private Configuration(boolean load) {
@@ -141,11 +142,11 @@ public class Configuration {
     return m_recursion;
   }
 
-  public String getMainClass(){
-    return m_mainClass;
+  public Set<String> getLoadClasses(){
+    return m_loadClasses;
   }
 
-  public void setMainClass(String mainClass){
-    this.m_mainClass = mainClass;
+  public boolean addLoadClasses(String className){
+    return m_loadClasses.add(className);
   }
 }

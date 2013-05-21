@@ -184,32 +184,31 @@ public class RootbeerCompiler {
     
     RootbeerClassLoader.v().loadField("<java.lang.Class: java.lang.String name>");
     
-    String mainClass = Configuration.compilerInstance().getMainClass();
-    // If mainClass was not set by CommandLine check
-    // jar manifest for Main-Class property
-    if(mainClass.isEmpty()){
-      try {
-        JarFile jf = new JarFile(new File(jar_filename));
-        Attributes attrs = jf.getManifest().getMainAttributes();
-        Attributes.Name mainClassAttr = new Attributes.Name("Main-Class");
-        if(attrs.containsKey(mainClassAttr)) {
-          String main_class = attrs.getValue(mainClassAttr);
-          if(ignore_packages.test(main_class) == false){
-            mainClass = main_class;
-            Configuration.compilerInstance().setMainClass(mainClass);
-          } 
-        }
-      } catch(IOException e){
-        e.printStackTrace();
+    Set<String> loadClasses = Configuration.compilerInstance().getLoadClasses();
+    // Add MainClass of jar manifest to loading classes
+    try {
+      JarFile jf = new JarFile(new File(jar_filename));
+      Attributes attrs = jf.getManifest().getMainAttributes();
+      Attributes.Name mainClassAttr = new Attributes.Name("Main-Class");
+      if(attrs.containsKey(mainClassAttr)) {
+        String main_class = attrs.getValue(mainClassAttr);
+        loadClasses.add(main_class); 
       }
+    } catch(IOException e){
+      e.printStackTrace();
     }
-    // If mainClass was set by CommandLine or Jar Manifest property
-    // add mainClass to NewInvoke and toSignaturesClasses
-    // to include in loadScene 
-    if(!mainClass.isEmpty()){
-      RootbeerClassLoader.v().addNewInvoke(mainClass);
-      RootbeerClassLoader.v().addSignaturesClass(mainClass);
-      RootbeerClassLoader.v().setMainClass(mainClass);
+    
+    // Add loadClasses to NewInvoke and toSignaturesClasses
+    // to include into loadScene 
+    if(loadClasses.isEmpty() == false){
+      for(String loadClass : loadClasses){
+        if(ignore_packages.test(loadClass) == false){
+          RootbeerClassLoader.v().addNewInvoke(loadClass);
+          RootbeerClassLoader.v().addSignaturesClass(loadClass);
+          RootbeerClassLoader.v().addLoadClasses(loadClass); 
+          System.out.println("loadClass: "+loadClass);
+        }
+      }
     }
     
     RootbeerClassLoader.v().loadNecessaryClasses();
