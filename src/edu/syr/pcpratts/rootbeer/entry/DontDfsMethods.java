@@ -78,15 +78,8 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.StringValue: char[] 'from'(char[])>");
     m_methods.add("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int)>");
     m_methods.add("<java.io.PrintStream: void println(java.lang.String)>");
-    //Apache Hama Native Implementation
+    // Apache Hama Native Implementation
     m_methods.add("<org.apache.hama.bsp.BSPPeer: java.lang.String[] getAllPeerNames()>");
-    /* invoke_org_apache_hama_bsp_BSPPeer_getAllPeerNames */
-    /*
-    __device__ int org_apache_hama_bsp_BSPPeer_getAllPeerNames( char * gc_info, int thisref, int * exception){
-      return 0;
-    }
-    */
-
     
   }
   
