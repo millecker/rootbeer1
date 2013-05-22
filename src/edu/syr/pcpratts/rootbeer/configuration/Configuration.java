@@ -7,10 +7,13 @@
 
 package edu.syr.pcpratts.rootbeer.configuration;
 
+import edu.syr.pcpratts.rootbeer.entry.DontDfsMethods;
 import edu.syr.pcpratts.rootbeer.util.ResourceReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import soot.rbclassload.ListClassTester;
 
 public class Configuration {
 
@@ -47,6 +50,8 @@ public class Configuration {
   private boolean m_doubles;
   private boolean m_recursion;
   private Set<String> m_loadClasses;
+  private ListClassTester m_ignores;
+  private DontDfsMethods m_dont_dfs_methods;
   
   static {
     m_printMem = false;
@@ -60,6 +65,8 @@ public class Configuration {
     m_doubles = true;
     m_recursion = true;
     m_loadClasses = new HashSet<String>();
+    m_ignores = getIgnorePackages();    
+    m_dont_dfs_methods = new DontDfsMethods();
   }
 
   private Configuration(boolean load) {
@@ -71,6 +78,39 @@ public class Configuration {
     } catch(Exception ex){
       m_mode = MODE_GPU;
     }
+  }
+  
+  private ListClassTester getIgnorePackages(){
+    ListClassTester ignore_packages = new ListClassTester();
+    ignore_packages.addPackage("edu.syr.pcpratts.compressor.");
+    ignore_packages.addPackage("edu.syr.pcpratts.deadmethods.");
+    ignore_packages.addPackage("edu.syr.pcpratts.jpp.");
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.compiler.");
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.configuration.");
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.entry.");
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.generate.");
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.test.");
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.util.");
+    ignore_packages.addPackage("pack.");
+    ignore_packages.addPackage("jasmin.");
+    ignore_packages.addPackage("soot.");
+    ignore_packages.addPackage("beaver.");
+    ignore_packages.addPackage("polyglot.");
+    ignore_packages.addPackage("org.antlr.");
+    ignore_packages.addPackage("java_cup.");
+    ignore_packages.addPackage("ppg.");
+    ignore_packages.addPackage("antlr.");
+    ignore_packages.addPackage("jas.");
+    ignore_packages.addPackage("scm.");
+    ignore_packages.addPackage("org.xmlpull.v1.");
+    ignore_packages.addPackage("android.util.");
+    ignore_packages.addPackage("android.content.res.");
+    ignore_packages.addPackage("org.apache.commons.codec.");
+    // Hadoop library
+    ignore_packages.addPackage("org.apache.hadoop.mapred.gpu.");
+    // Hama library
+    ignore_packages.addPackage("org.apache.hama.bsp.gpu.");
+    return ignore_packages;
   }
   
   public void setMode(int mode) {
@@ -148,5 +188,25 @@ public class Configuration {
 
   public boolean addLoadClasses(String className){
     return m_loadClasses.add(className);
+  }
+  
+  public void addIgnorePackage(String packageName){
+    m_ignores.addPackage(packageName);
+  }
+  
+  public boolean removeIgnorePackage(String packageName){
+    return m_ignores.removePackage(packageName);
+  }
+  
+  public ListClassTester getIgnoreTester(){
+    return m_ignores;
+  }
+  
+  public boolean addDontDfsMethod(String methodSignature){
+    return m_dont_dfs_methods.add(methodSignature);
+  }
+  
+  public DontDfsMethods getDontDfsMethods(){
+    return m_dont_dfs_methods;
   }
 }

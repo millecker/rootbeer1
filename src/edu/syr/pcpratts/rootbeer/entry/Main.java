@@ -70,6 +70,18 @@ public class Main {
         String class_name = safeGet(args, i+1, "-loadclass");
         Configuration.compilerInstance().addLoadClasses(class_name);
         ++i;
+      } else if(arg.equals("-ignorepackage")){
+        String package_name = safeGet(args, i+1, "-ignorepackage");
+        Configuration.compilerInstance().addIgnorePackage(package_name);
+        ++i;
+      } else if(arg.equals("-dontignorepackage")){
+        String package_name = safeGet(args, i+1, "-dontignorepackage");
+        Configuration.compilerInstance().removeIgnorePackage(package_name);
+        ++i;
+      } else if(arg.equals("-dontdfsmethod")){
+        String class_name = safeGet(args, i+1, "-dontdfsmethod");
+        Configuration.compilerInstance().addDontDfsMethod(class_name);
+        ++i;
       } else if(arg.equals("-runtests")){
         m_runTests = true;
         m_testCase = null;

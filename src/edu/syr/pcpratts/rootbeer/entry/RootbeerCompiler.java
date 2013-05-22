@@ -120,34 +120,11 @@ public class RootbeerCompiler {
     
     RootbeerClassLoader.v().addEntryMethodTester(m_entryDetector);
     
-    ListClassTester ignore_packages = new ListClassTester();
-    ignore_packages.addPackage("edu.syr.pcpratts.compressor.");
-    ignore_packages.addPackage("edu.syr.pcpratts.deadmethods.");
-    ignore_packages.addPackage("edu.syr.pcpratts.jpp.");
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.compiler.");
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.configuration.");
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.entry.");
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.generate.");
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.test.");
+    // Setup Ignore Packages and Classes for DontFollowClassTester
     if(!runtests){
-      ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.testcases.");
+      Configuration.compilerInstance().addIgnorePackage("edu.syr.pcpratts.rootbeer.testcases.");
     }
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.util.");
-    ignore_packages.addPackage("pack.");
-    ignore_packages.addPackage("jasmin.");
-    ignore_packages.addPackage("soot.");
-    ignore_packages.addPackage("beaver.");
-    ignore_packages.addPackage("polyglot.");
-    ignore_packages.addPackage("org.antlr.");
-    ignore_packages.addPackage("java_cup.");
-    ignore_packages.addPackage("ppg.");
-    ignore_packages.addPackage("antlr.");
-    ignore_packages.addPackage("jas.");
-    ignore_packages.addPackage("scm.");
-    ignore_packages.addPackage("org.xmlpull.v1.");
-    ignore_packages.addPackage("android.util.");
-    ignore_packages.addPackage("android.content.res.");
-    ignore_packages.addPackage("org.apache.commons.codec.");
+    ListClassTester ignore_packages = Configuration.compilerInstance().getIgnoreTester();
     RootbeerClassLoader.v().addDontFollowClassTester(ignore_packages);
     
     ListClassTester keep_packages = new ListClassTester();
@@ -174,7 +151,8 @@ public class RootbeerCompiler {
     
     RootbeerClassLoader.v().addConditionalCudaEntry(new StringConstantCudaEntry());
     
-    DontDfsMethods dont_dfs_methods = new DontDfsMethods();
+    // Setup DontDfsMethods for DontFollowMethodTester
+    DontDfsMethods dont_dfs_methods = Configuration.compilerInstance().getDontDfsMethods();
     ListMethodTester dont_dfs_tester = new ListMethodTester();
     Set<String> dont_dfs_set = dont_dfs_methods.get();
     for(String dont_dfs : dont_dfs_set){
