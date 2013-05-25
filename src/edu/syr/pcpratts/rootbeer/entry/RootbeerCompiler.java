@@ -7,23 +7,6 @@
 
 package edu.syr.pcpratts.rootbeer.entry;
 
-import edu.syr.pcpratts.rootbeer.configuration.RootbeerPaths;
-import edu.syr.pcpratts.rootbeer.configuration.Configuration;
-import edu.syr.pcpratts.rootbeer.compiler.*;
-import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.CudaTweaks;
-import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.NativeCpuTweaks;
-import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.Tweaks;
-import edu.syr.pcpratts.rootbeer.runtime.CompiledKernel;
-import edu.syr.pcpratts.rootbeer.runtime.Kernel;
-import edu.syr.pcpratts.rootbeer.runtime.PartiallyCompletedParallelJob;
-import edu.syr.pcpratts.rootbeer.runtime.Serializer;
-import edu.syr.pcpratts.rootbeer.runtime.memory.Memory;
-import edu.syr.pcpratts.rootbeer.runtime2.cuda.CpuRunner;
-import edu.syr.pcpratts.rootbeer.runtime2.cuda.Handles;
-import edu.syr.pcpratts.rootbeer.runtime2.cuda.ToSpaceReader;
-import edu.syr.pcpratts.rootbeer.runtime2.cuda.ToSpaceWriter;
-import edu.syr.pcpratts.rootbeer.test.TestSerialization;
-import edu.syr.pcpratts.rootbeer.util.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,18 +15,39 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
 import pack.Pack;
-import soot.*;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
 import soot.options.Options;
+import soot.rbclassload.HierarchySootClass;
 import soot.rbclassload.ListClassTester;
 import soot.rbclassload.ListMethodTester;
 import soot.rbclassload.MethodTester;
 import soot.rbclassload.RootbeerClassLoader;
 import soot.util.JasminOutputStream;
+import edu.syr.pcpratts.rootbeer.compiler.Transform2;
+import edu.syr.pcpratts.rootbeer.configuration.Configuration;
+import edu.syr.pcpratts.rootbeer.configuration.RootbeerPaths;
+import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.CudaTweaks;
+import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.NativeCpuTweaks;
+import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.Tweaks;
+import edu.syr.pcpratts.rootbeer.util.CurrJarName;
+import edu.syr.pcpratts.rootbeer.util.DeleteFolder;
+import edu.syr.pcpratts.rootbeer.util.JarEntryHelp;
+import edu.syr.pcpratts.rootbeer.util.JarToFolder;
+import edu.syr.pcpratts.rootbeer.util.JimpleWriter;
 
 public class RootbeerCompiler {
 
@@ -116,34 +120,11 @@ public class RootbeerCompiler {
     
     RootbeerClassLoader.v().addEntryMethodTester(m_entryDetector);
     
-    ListClassTester ignore_packages = new ListClassTester();
-    ignore_packages.addPackage("edu.syr.pcpratts.compressor.");
-    ignore_packages.addPackage("edu.syr.pcpratts.deadmethods.");
-    ignore_packages.addPackage("edu.syr.pcpratts.jpp.");
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.compiler.");
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.configuration.");
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.entry.");
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.generate.");
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.test.");
+    // Setup Ignore Packages and Classes for DontFollowClassTester
     if(!runtests){
-      ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.testcases.");
+      Configuration.compilerInstance().addIgnorePackage("edu.syr.pcpratts.rootbeer.testcases.");
     }
-    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.util.");
-    ignore_packages.addPackage("pack.");
-    ignore_packages.addPackage("jasmin.");
-    ignore_packages.addPackage("soot.");
-    ignore_packages.addPackage("beaver.");
-    ignore_packages.addPackage("polyglot.");
-    ignore_packages.addPackage("org.antlr.");
-    ignore_packages.addPackage("java_cup.");
-    ignore_packages.addPackage("ppg.");
-    ignore_packages.addPackage("antlr.");
-    ignore_packages.addPackage("jas.");
-    ignore_packages.addPackage("scm.");
-    ignore_packages.addPackage("org.xmlpull.v1.");
-    ignore_packages.addPackage("android.util.");
-    ignore_packages.addPackage("android.content.res.");
-    ignore_packages.addPackage("org.apache.commons.codec.");
+    ListClassTester ignore_packages = Configuration.compilerInstance().getIgnoreTester();
     RootbeerClassLoader.v().addDontFollowClassTester(ignore_packages);
     
     ListClassTester keep_packages = new ListClassTester();
@@ -170,7 +151,8 @@ public class RootbeerCompiler {
     
     RootbeerClassLoader.v().addConditionalCudaEntry(new StringConstantCudaEntry());
     
-    DontDfsMethods dont_dfs_methods = new DontDfsMethods();
+    // Setup DontDfsMethods for DontFollowMethodTester
+    DontDfsMethods dont_dfs_methods = Configuration.compilerInstance().getDontDfsMethods();
     ListMethodTester dont_dfs_tester = new ListMethodTester();
     Set<String> dont_dfs_set = dont_dfs_methods.get();
     for(String dont_dfs : dont_dfs_set){
@@ -179,6 +161,33 @@ public class RootbeerCompiler {
     RootbeerClassLoader.v().addDontFollowMethodTester(dont_dfs_tester);
     
     RootbeerClassLoader.v().loadField("<java.lang.Class: java.lang.String name>");
+    
+    Set<String> loadClasses = Configuration.compilerInstance().getLoadClasses();
+    // Add MainClass of jar manifest to loading classes
+    try {
+      JarFile jf = new JarFile(new File(jar_filename));
+      Attributes attrs = jf.getManifest().getMainAttributes();
+      Attributes.Name mainClassAttr = new Attributes.Name("Main-Class");
+      if(attrs.containsKey(mainClassAttr)) {
+        String main_class = attrs.getValue(mainClassAttr);
+        loadClasses.add(main_class); 
+      }
+    } catch(IOException e){
+      e.printStackTrace();
+    }
+    
+    // Add loadClasses to NewInvoke and toSignaturesClasses
+    // to include into loadScene 
+    if(loadClasses.isEmpty() == false){
+      for(String loadClass : loadClasses){
+        if(ignore_packages.test(loadClass) == false){
+          RootbeerClassLoader.v().addNewInvoke(loadClass);
+          RootbeerClassLoader.v().addSignaturesClass(loadClass);
+          RootbeerClassLoader.v().addLoadClasses(loadClass); 
+          System.out.println("loadClass: "+loadClass);
+        }
+      }
+    }
     
     RootbeerClassLoader.v().loadNecessaryClasses();
   }

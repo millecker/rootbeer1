@@ -153,7 +153,7 @@ public class OpenCLArrayType {
     if(Configuration.compilerInstance().getArrayChecks()){
       ret.append("length = edu_syr_pcpratts_getint(thisref_deref, 12);\n");
       ret.append("if(parameter0 >= length){\n");
-      ret.append("  printf(\"array_out_of_bounds: param0: %d len: %d\\n\", parameter0, length);\n");
+      //ret.append("  printf(\"array_out_of_bounds: param0: %d len: %d\\n\", parameter0, length);\n");
       ret.append("  *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, parameter0, thisref, length, exception);");
       ret.append("  return 0;\n");
       ret.append("}\n");

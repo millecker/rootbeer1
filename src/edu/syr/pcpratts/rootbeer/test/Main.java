@@ -7,20 +7,18 @@
 
 package edu.syr.pcpratts.rootbeer.test;
 
-import edu.syr.pcpratts.rootbeer.runtime.Rootbeer;
 import edu.syr.pcpratts.rootbeer.test.TestSerialization;
 import edu.syr.pcpratts.rootbeer.test.TestSerializationFactory;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.SuperClass;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.arraysum.ArraySumTest;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.exception.NullPointer4Test;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.GpuMethodTest;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.gpurequired.*;
-import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.kerneltemplate.FastMatrixTest;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.remaptest.RemapTest;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.*;
+import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.hadoop.HadoopTest;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.hama.HamaTest;
 
 public class Main implements TestSerializationFactory {
@@ -95,6 +93,7 @@ public class Main implements TestSerializationFactory {
     ret.add(new GpuMethodTest());
     ret.add(new RegularExpressionTest());
     ret.add(new HamaTest());
+    ret.add(new HadoopTest());
             
     if(m_hardTests){
       ret.add(new SimpleSynchronizedTest());

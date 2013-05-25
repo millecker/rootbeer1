@@ -77,7 +77,11 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.Object: java.lang.Class getClass()>");
     m_methods.add("<java.lang.StringValue: char[] 'from'(char[])>");
     m_methods.add("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int)>");
-    m_methods.add("<java.io.PrintStream: void println(java.lang.String str)>");
+    m_methods.add("<java.io.PrintStream: void println(java.lang.String)>");
+  }
+  
+  public boolean add(String methodSignature){
+    return m_methods.add(methodSignature);
   }
   
   public Set<String> get(){

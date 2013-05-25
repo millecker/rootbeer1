@@ -692,3 +692,11 @@ java_util_Arrays_copyOf(char * gc_info, int object_array, int new_size, int * ex
   }
   return ret; 
 }
+
+/***** Apache Hama Native Implementation *****/
+
+$$__device__$$ int
+invoke_org_apache_hama_bsp_BSPPeer_getAllPeerNames(char * gc_info, int thisref, int * exception){
+  //cuPrintf("getAllPeerNames...\n");
+  return 0;
+}

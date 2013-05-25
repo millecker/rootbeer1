@@ -247,6 +247,9 @@ public class VisitorGen extends AbstractVisitorGen {
         System.exit(-1);
       }
     } else {
+      if(!m_sentinalCtorsCreated.contains(parent_class.getName())){
+        generateSentinalCtor(parent_class.getType());
+      } 
       bcl.pushMethod(parent_name, "<init>", VoidType.v(), RefType.v("edu.syr.pcpratts.rootbeer.runtime.Sentinal"));
       bcl.invokeMethodNoRet(thisref, NullConstant.v());
     }

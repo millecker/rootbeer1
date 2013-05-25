@@ -1,0 +1,13 @@
+#!/bin/sh
+
+java -Xmx2G -jar Rootbeer.jar -runtest HadoopTest -nodoubles -norecursion \
+     -dontignorepackage org.apache.hadoop.mapred.gpu. \
+     -loadclass edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.hadoop.TestGpuMapper \
+     -loadclass edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.hadoop.TestGpuReducer
+#     -dontdfsmethod "<org.apache.hama.bsp.BSPPeer: java.lang.String[] getAllPeerNames()>"
+
+# Logging
+#java -Xmx2G -jar Rootbeer.jar -runtest HadoopTest &> HadoopTest.log
+
+# Debugging
+#java -Xmx2G -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005 -jar Rootbeer.jar -runtest HadoopTest

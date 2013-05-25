@@ -27,7 +27,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -35,10 +34,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+
 import soot.*;
 import soot.rbclassload.FieldSignatureUtil;
 import soot.rbclassload.NumberedType;
 import soot.rbclassload.RootbeerClassLoader;
+import soot.rbclassload.Pair;
 
 public class OpenCLScene {
   private static OpenCLScene m_instance;
@@ -189,12 +191,13 @@ public class OpenCLScene {
     List<NumberedType> types = RootbeerClassLoader.v().getDfsInfo().getNumberedTypes();
     writeTypesToFile(types);
     
-    Set<String> methods = RootbeerClassLoader.v().getDfsInfo().getMethods();  
+    Set<String> methods = RootbeerClassLoader.v().getDfsInfo().getMethods(); 
     MethodSignatureUtil util = new MethodSignatureUtil();
     for(String method_sig : methods){
       util.parse(method_sig);
       SootMethod method = util.getSootMethod();
       addMethod(method);
+      //System.out.println("OpenCLScene add Method: "+method.getSignature());
     }
     List<String> extra_methods = new ArrayList<String>();
     extra_methods.add("<edu.syr.pcpratts.rootbeer.runtimegpu.GpuException: edu.syr.pcpratts.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
@@ -208,6 +211,7 @@ public class OpenCLScene {
     Set<SootField> fields = RootbeerClassLoader.v().getDfsInfo().getFields();
     for(SootField field : fields){
       addField(field);
+      //System.out.println("OpenCLScene add Field: "+field.getSignature());
     }
     FieldSignatureUtil futil = new FieldSignatureUtil();
     List<String> extra_fields = new ArrayList<String>();
@@ -384,9 +388,29 @@ public class OpenCLScene {
     ObjectCloneGenerate clone_generate = new ObjectCloneGenerate();
     bodies.add(clone_generate.get(m_arrayTypes, m_classes));
     
+    Map<String, Pair<String,String>> overwrittenRefs = RootbeerClassLoader.v().getDfsInfo().getOverwrittenRefs();
     List<OpenCLMethod> methods = m_methodHierarchies.getMethods();
     for(OpenCLMethod method : methods){ 
-      bodies.add(method.getMethodBody());
+      String body = method.getMethodBody();
+      
+      // Check if method contains references which were overwritten before
+      if(overwrittenRefs.containsKey(method.getSignature())){
+        //System.out.println(method.getSignature()+" has overwritten references...");   
+        Pair<String,String> methodRef = overwrittenRefs.get(method.getSignature());
+        
+        // Replace full signature reference      
+        body = body.replaceAll(Pattern.quote(methodRef.getKey()),methodRef.getValue()); 
+        
+        // Replace ClassName_MethodName
+        MethodSignatureUtil mutil = new MethodSignatureUtil();
+        mutil.parse(methodRef.getKey());
+        String key = mutil.getClassName().replaceAll("\\.", "_")+"_"+mutil.getMethodName();       
+        mutil.parse(methodRef.getValue());
+        String value = mutil.getClassName().replaceAll("\\.", "_")+"_"+mutil.getMethodName();
+        body = body.replaceAll(Pattern.quote(key),value);
+      }
+      //System.out.println("OpenCLScene method: "+method.getSignature()+" body: "+body);
+      bodies.add(body);
     }
     List<OpenCLPolymorphicMethod> poly_methods = m_methodHierarchies.getPolyMorphicMethods();
     for(OpenCLPolymorphicMethod poly_method : poly_methods){

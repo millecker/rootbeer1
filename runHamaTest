@@ -1,5 +1,12 @@
 #!/bin/sh
 
-#java -Xmx2G -jar Rootbeer.jar -runtest HamaTest
+java -Xmx2G -jar Rootbeer.jar -runtest HamaTest -nodoubles -norecursion \
+     -dontignorepackage org.apache.hama.bsp.gpu. \
+     -loadclass edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.hama.TestGpuBSP \
+     -dontdfsmethod "<org.apache.hama.bsp.BSPPeer: java.lang.String[] getAllPeerNames()>"
+
+# Logging
 #java -Xmx2G -jar Rootbeer.jar -runtest HamaTest &> HamaTest.log
-java -Xmx2G -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005 -jar Rootbeer.jar -runtest HamaTest
+
+# Debugging
+#java -Xmx2G -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005 -jar Rootbeer.jar -runtest HamaTest
