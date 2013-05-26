@@ -30,18 +30,24 @@ import edu.syr.pcpratts.rootbeer.runtime.Kernel;
 import edu.syr.pcpratts.rootbeer.runtime.Rootbeer;
 import edu.syr.pcpratts.rootbeer.runtime.StatsRow;
 
-public abstract class GpuBSP<K1, V1, K2, V2, M extends Writable> extends
+public class GpuBSP<K1, V1, K2, V2, M extends Writable> extends
 		BSP<K1, V1, K2, V2, M> implements GpuBSPInterface<K1, V1, K2, V2, M> {
 
-	private Rootbeer rootbeer = new Rootbeer();
-
-	private long setupKernelCount = 1;
-	private long bspKernelCount = 1;
-	private long cleanupKernelCount = 1;
+	private Rootbeer m_rootbeer;
+	private long m_setupKernelCount;
+	private long m_bspKernelCount;
+	private long m_cleanupKernelCount;
+	
+	public GpuBSP(){
+	  this.m_rootbeer = new Rootbeer();
+	  this.m_setupKernelCount = 1;
+	  this.m_bspKernelCount = 1;
+	  this.m_cleanupKernelCount = 1;
+	}
 	
 	@Override
 	public void setBspKernelCount(long bspKernelCount) {
-		this.bspKernelCount = bspKernelCount;
+		this.m_bspKernelCount = bspKernelCount;
 	}
 
 	@Override
@@ -54,9 +60,10 @@ public abstract class GpuBSP<K1, V1, K2, V2, M extends Writable> extends
         System.out.println("GpuBSP setup started...");
         
 		List<Kernel> jobs = new ArrayList<Kernel>();
-		for (int i = 0; i < setupKernelCount; i++)
+		for (int i = 0; i < m_setupKernelCount; i++)
 			jobs.add(new SetupKernel(peer));
-		rootbeer.runAll(jobs);
+		
+		m_rootbeer.runAll(jobs);
 		
 		/*
 		for (StatsRow stats : rootbeer.getStats()){
@@ -80,10 +87,10 @@ public abstract class GpuBSP<K1, V1, K2, V2, M extends Writable> extends
         
 		List<Kernel> jobs = new ArrayList<Kernel>();
 
-		for (int i = 0; i < bspKernelCount; i++)
+		for (int i = 0; i < m_bspKernelCount; i++)
 			jobs.add(new BspKernel(peer));
 
-		rootbeer.runAll(jobs);
+		m_rootbeer.runAll(jobs);
 		
 		/*
 		for (StatsRow stats : rootbeer.getStats()){
@@ -105,9 +112,10 @@ public abstract class GpuBSP<K1, V1, K2, V2, M extends Writable> extends
 		System.out.println("GpuBSP cleanup started...");
         
 		List<Kernel> jobs = new ArrayList<Kernel>();
-		for (int i = 0; i < cleanupKernelCount; i++)
+		for (int i = 0; i < m_cleanupKernelCount; i++)
 			jobs.add(new CleanupKernel(peer));
-		rootbeer.runAll(jobs);
+		
+		m_rootbeer.runAll(jobs);
 		
 		/*
 		for (StatsRow stats : rootbeer.getStats()){
@@ -130,7 +138,9 @@ public abstract class GpuBSP<K1, V1, K2, V2, M extends Writable> extends
 	}
 
 	@Override
-	public abstract void bspGPU(BSPPeer<K1, V1, K2, V2, M> peer);
+	public void bspGPU(BSPPeer<K1, V1, K2, V2, M> peer) {
+	  
+	}
 
 	// Use rootbeer object for
 	// RootbeerGpu.getThreadIdxx() and RootbeerGpu.getBlockIdxx()
