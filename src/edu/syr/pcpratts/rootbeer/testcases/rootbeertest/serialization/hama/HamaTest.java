@@ -19,9 +19,13 @@ public class HamaTest implements TestSerialization {
   public List<Kernel> create(){
     TestGpuBSP testBSP = new TestGpuBSP();
     List<Kernel> ret = new ArrayList<Kernel>();
-    ret.add(testBSP.new SetupKernel(null));
+    /* All Kernels must have the same type
+    --> The compiler uses the first element in
+    the list to inspect for code generation. */
+    
+    // ret.add(testBSP.new SetupKernel(null));
     ret.add(testBSP.new BspKernel(null));
-    ret.add(testBSP.new CleanupKernel(null));
+    // ret.add(testBSP.new CleanupKernel(null));
     return ret;
   }
 
