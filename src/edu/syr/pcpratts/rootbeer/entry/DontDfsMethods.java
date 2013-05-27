@@ -79,7 +79,6 @@ public class DontDfsMethods {
     m_methods.add("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int)>");
     m_methods.add("<java.io.PrintStream: void println(java.lang.String)>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.Rootbeer: void <init>()>");
-    m_methods.add("<org.apache.hama.bsp.BSP: void <init>()>");
   }
   
   public boolean add(String methodSignature){

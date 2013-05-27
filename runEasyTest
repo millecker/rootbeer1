@@ -1,0 +1,3 @@
+#!/bin/sh
+
+java -Xmx4G -jar Rootbeer.jar -runeasytests -nodoubles -norecursion &> EasyTests.log
