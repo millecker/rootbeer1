@@ -92,6 +92,11 @@ public class Main implements TestSerializationFactory {
     ret.add(new LinkedHashMapTest());
     ret.add(new CovarientTest());
     ret.add(new GpuMethodTest());
+    //ret.add(new RegularExpressionTest());
+    ret.add(new StringBuilderTest1());
+    ret.add(new StringBuilderTest2());
+    ret.add(new DoubleToStringTest());
+    ret.add(new FloatToStringTest());
             
     if(m_hardTests){
       ret.add(new SimpleSynchronizedTest());

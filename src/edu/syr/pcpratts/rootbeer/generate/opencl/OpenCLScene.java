@@ -7,7 +7,9 @@
 
 package edu.syr.pcpratts.rootbeer.generate.opencl;
 
+import edu.syr.pcpratts.rootbeer.configuration.Configuration;
 import edu.syr.pcpratts.rootbeer.configuration.RootbeerPaths;
+import edu.syr.pcpratts.rootbeer.entry.ExtraFields;
 import edu.syr.pcpratts.rootbeer.generate.opencl.fields.OpenCLField;
 import edu.syr.pcpratts.rootbeer.generate.bytecode.ReadOnlyTypes;
 import edu.syr.pcpratts.rootbeer.generate.codesegment.CodeSegment;
@@ -53,6 +55,7 @@ public class OpenCLScene {
   private ReadOnlyTypes m_readOnlyTypes;
   private Set<OpenCLInstanceof> m_instanceOfs;
   private List<CompositeField> m_compositeFields;
+  private List<SootMethod> m_methods;
   
   static {
     m_curentIdent = 0;
@@ -64,6 +67,8 @@ public class OpenCLScene {
     m_arrayTypes = new LinkedHashSet<OpenCLArrayType>();
     m_methodHierarchies = new MethodHierarchies();
     m_instanceOfs = new HashSet<OpenCLInstanceof>();
+    m_methods = new ArrayList<SootMethod>();
+    loadTypes();
   }
 
   public static OpenCLScene v(){
@@ -103,6 +108,11 @@ public class OpenCLScene {
 
     //add the method 
     m_methodHierarchies.addMethod(soot_method);
+    m_methods.add(soot_method);
+  }
+  
+  public List<SootMethod> getMethods(){
+    return m_methods;
   }
 
   public void addArrayType(OpenCLArrayType array_type){
@@ -183,12 +193,7 @@ public class OpenCLScene {
     return ret;
   }
   
-  private String[] makeSourceCode() throws Exception {
-    m_usesGarbageCollector = false;
-    
-    List<NumberedType> types = RootbeerClassLoader.v().getDfsInfo().getNumberedTypes();
-    writeTypesToFile(types);
-    
+  private void loadTypes(){
     Set<String> methods = RootbeerClassLoader.v().getDfsInfo().getMethods();  
     MethodSignatureUtil util = new MethodSignatureUtil();
     for(String method_sig : methods){
@@ -200,6 +205,13 @@ public class OpenCLScene {
     extra_methods.add("<edu.syr.pcpratts.rootbeer.runtimegpu.GpuException: edu.syr.pcpratts.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
     extra_methods.add("<edu.syr.pcpratts.rootbeer.runtimegpu.GpuException: void <init>()>");
     extra_methods.add("<java.lang.String: void <init>(char[])>");
+    extra_methods.add("<java.lang.Object: int hashCode()>");
+    extra_methods.add("<java.lang.Boolean: java.lang.String toString(boolean)>");
+    extra_methods.add("<java.lang.Character: java.lang.String toString(char)>");
+    extra_methods.add("<java.lang.Double: java.lang.String toString(double)>");
+    extra_methods.add("<java.lang.Float: java.lang.String toString(float)>");
+    extra_methods.add("<java.lang.Integer: java.lang.String toString(int)>");
+    extra_methods.add("<java.lang.Long: java.lang.String toString(long)>");
     for(String extra_method : extra_methods){
       util.parse(extra_method);
       addMethod(util.getSootMethod());
@@ -210,12 +222,8 @@ public class OpenCLScene {
       addField(field);
     }
     FieldSignatureUtil futil = new FieldSignatureUtil();
-    List<String> extra_fields = new ArrayList<String>();
-    extra_fields.add("<edu.syr.pcpratts.rootbeer.runtimegpu.GpuException: int m_arrayLength>");
-    extra_fields.add("<edu.syr.pcpratts.rootbeer.runtimegpu.GpuException: int m_arrayIndex>");
-    extra_fields.add("<edu.syr.pcpratts.rootbeer.runtimegpu.GpuException: int m_array>");
-    extra_fields.add("<java.lang.Class: java.lang.String name>");
-    for(String extra_field : extra_fields){
+    ExtraFields extra_fields = new ExtraFields();
+    for(String extra_field : extra_fields.get()){
       futil.parse(extra_field);
       addField(futil.getSootField());
     }
@@ -225,14 +233,23 @@ public class OpenCLScene {
       OpenCLArrayType ocl_array_type = new OpenCLArrayType(array_type);
       addArrayType(ocl_array_type);
     }
+    OpenCLArrayType char_array = new OpenCLArrayType(ArrayType.v(CharType.v(), 1));
+    addArrayType(char_array);
     
     Set<Type> instanceofs = RootbeerClassLoader.v().getDfsInfo().getInstanceOfs();
     for(Type type : instanceofs){
       addInstanceof(type);
     }
     
-    buildCompositeFields();
+    buildCompositeFields();  
+  }
+  
+  private String[] makeSourceCode() throws Exception {
+    m_usesGarbageCollector = false;
     
+    List<NumberedType> types = RootbeerClassLoader.v().getDfsInfo().getNumberedTypes();
+    writeTypesToFile(types);
+        
     StringBuilder unix_code = new StringBuilder();
     StringBuilder windows_code = new StringBuilder();
     
@@ -282,6 +299,19 @@ public class OpenCLScene {
     //class names can have $ in them, make them regex safe
     replacement = replacement.replace("$", "\\$");
     cuda_code = cuda_code.replaceAll("%%invoke_run%%", replacement);  
+    
+    int string_builder_number = RootbeerClassLoader.v().getClassNumber("java.lang.StringBuilder");
+    String sbn_str = "" + string_builder_number;
+    cuda_code = cuda_code.replaceAll("%%java_lang_StringBuilder_TypeNumber%%", sbn_str);
+    
+    int null_pointer_number = RootbeerClassLoader.v().getClassNumber("java.lang.NullPointerException");
+    String np_str = "" + null_pointer_number;
+    cuda_code = cuda_code.replaceAll("%%java_lang_NullPointerException_TypeNumber%%", np_str);
+    
+    int size = Configuration.compilerInstance().getSharedMemSize();
+    String size_str = ""+size;
+    cuda_code = cuda_code.replaceAll("%%shared_mem_size%%", size_str);
+    
     return cuda_code;
   }
   
@@ -310,7 +340,14 @@ public class OpenCLScene {
       both_header = ResourceReader.getResource(both_path);
     }
     String specific_header = ResourceReader.getResource(specific_path);
-    return specific_header + "\n" + both_header;
+    
+    String barrier_path = Tweaks.v().getBarrierPath();
+    String barrier_code = "";
+    if(barrier_path != null){
+      barrier_code = ResourceReader.getResource(barrier_path);
+    }
+    
+    return specific_header + "\n" + both_header + "\n" + barrier_code;
   }
   
   private String kernelString(boolean unix) throws IOException {
@@ -336,7 +373,7 @@ public class OpenCLScene {
     ret = ret.replace("$$__global$$", Tweaks.v().getGlobalAddressSpaceQualifier());
     return ret;
   }
-
+  
   private String methodPrototypesString(){
     //using a set so duplicates get filtered out.
     Set<String> protos = new HashSet<String>();

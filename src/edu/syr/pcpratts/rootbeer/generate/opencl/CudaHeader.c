@@ -8,8 +8,10 @@
 #define INFINITY CUDART_INF
 #endif
 
+#include <stdio.h>
+
 __shared__ size_t m_Local[3];
-__shared__ char m_shared[40*1024];
+__shared__ char m_shared[%%shared_mem_size%%];
 
 __device__
 int getThreadId(){
@@ -32,8 +34,23 @@ int getBlockDimx(){
 }
 
 __device__
+int getGridDimx(){
+  return blockDim.x;
+}
+
+__device__
 void edu_syr_pcpratts_syncthreads(){
   __syncthreads();
+}
+
+__device__
+void edu_syr_pcpratts_threadfence(){
+  __threadfence();
+}
+
+__device__
+void edu_syr_pcpratts_threadfence_block(){
+  __threadfence_block();
 }
 
 __device__ clock_t global_now;

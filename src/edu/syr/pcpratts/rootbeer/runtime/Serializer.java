@@ -85,14 +85,21 @@ public abstract class Serializer {
   }
   
   private static synchronized WriteCacheResult checkWriteCache(Object o, int size, boolean read_only, Memory mem){
-    if(mWriteToGpuCache.containsKey(o)){
-      long ref = mWriteToGpuCache.get(o);
-      return new WriteCacheResult(ref, false);
+    //strings are cached in Java 1.6, we need to make strings individual units
+    //for rootbeer so concurrent modifications change different objects
+    if(o instanceof String){
+      long ref = mem.mallocWithSize(size);
+      return new WriteCacheResult(ref, true);
+    } else {
+      if(mWriteToGpuCache.containsKey(o)){
+        long ref = mWriteToGpuCache.get(o);
+        return new WriteCacheResult(ref, false);
+      }
+      long ref = mem.mallocWithSize(size);
+      mWriteToGpuCache.put(o, ref);
+      mReverseWriteToGpuCache.put(ref, o);
+      return new WriteCacheResult(ref, true);
     }
-    long ref = mem.mallocWithSize(size);
-    mWriteToGpuCache.put(o, ref);
-    mReverseWriteToGpuCache.put(ref, o);
-    return new WriteCacheResult(ref, true);
   }
   
   public Object writeCacheFetch(long ref){
@@ -111,8 +118,10 @@ public abstract class Serializer {
     boolean read_only = false;
     WriteCacheResult result;
     result = checkWriteCache(o, size, read_only, mMem);
-    if(result.m_NeedToWrite == false)
+    
+    if(result.m_NeedToWrite == false){
       return result.m_Ref;
+    }
     //if(o == null){
     //  System.out.println("writeToHeap: null at addr: "+result.m_Ref);
     //} else {

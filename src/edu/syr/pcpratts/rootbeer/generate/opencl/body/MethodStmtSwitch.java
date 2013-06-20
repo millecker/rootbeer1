@@ -7,6 +7,7 @@
 
 package edu.syr.pcpratts.rootbeer.generate.opencl.body;
 
+import edu.syr.pcpratts.rootbeer.configuration.Configuration;
 import edu.syr.pcpratts.rootbeer.generate.opencl.OpenCLClass;
 import edu.syr.pcpratts.rootbeer.generate.opencl.OpenCLMethod;
 import edu.syr.pcpratts.rootbeer.generate.opencl.OpenCLScene;
@@ -122,21 +123,6 @@ public class MethodStmtSwitch implements StmtSwitch {
       }
       m_valueSwitch.clearLhsRhs();
     }
-    //if the left op is a ref type we use gc_assign
-    else if(ocl_left_op_type.isRefType()){
-      m_valueSwitch.setLhs();
-      m_valueSwitch.resetNewCalled();
-      m_output.append("edu_syr_pcpratts_gc_assign(gc_info, &");
-      arg0.getLeftOp().apply(m_valueSwitch);
-      m_output.append(", ");
-      m_valueSwitch.setRhs();
-      arg0.getRightOp().apply(m_valueSwitch);
-      m_output.append(");\n");
-      if(m_valueSwitch.getCheckException()){
-        checkException();
-      }
-      m_valueSwitch.clearLhsRhs();
-    }
     //otherwise just use normal assignment
     else {
       m_valueSwitch.setLhs();
@@ -178,7 +164,7 @@ public class MethodStmtSwitch implements StmtSwitch {
     m_output.append("char * "+synch+" = edu_syr_pcpratts_gc_deref(gc_info, ");
     arg0.getOp().apply(m_valueSwitch);
     m_output.append(");\n");
-    m_output.append(mem+" += 12;\n");
+    m_output.append(mem+" += 16;\n");
     m_output.append("int "+count+" = 0;\n");
     m_output.append("int "+old+";\n");
     m_output.append("while("+count+" < 100){\n");
@@ -189,9 +175,10 @@ public class MethodStmtSwitch implements StmtSwitch {
     m_output.append("      "+count+" = 0;\n");
     m_output.append("    }\n");
     m_output.append("  } else {\n");
+    m_output.append("    printf(\"thread_id entered: %d\\n\", getThreadId());\n");
     
     //the first write gets messed up in synch test cases
-    m_output.append("  * ( ( int * ) & "+synch+" [ 16 ] ) = 20 ;\n");
+    m_output.append("  * ( ( int * ) & "+synch+" [ 20 ] ) = 20 ;\n");
   }
 
   public void caseExitMonitorStmt(ExitMonitorStmt arg0) {
@@ -331,6 +318,10 @@ public class MethodStmtSwitch implements StmtSwitch {
   }
 
   private void checkException() {    
+    //if exceptions are turned off, do not check them
+    if(Configuration.compilerInstance().getExceptions() == false){
+      return;
+    }
     String prefix = Options.v().rbcl_remap_prefix();
     if(Options.v().rbcl_remap_all() == false){
       prefix = "";
