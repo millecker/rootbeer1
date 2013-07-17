@@ -1010,7 +1010,11 @@ JNIEXPORT jint JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   free(infoSpace);
       
   cuCtxPopCurrent(&cuContext);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
   return 0;
 }
 

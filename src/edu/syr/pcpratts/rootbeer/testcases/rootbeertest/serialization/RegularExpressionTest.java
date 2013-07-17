@@ -11,7 +11,11 @@ import edu.syr.pcpratts.rootbeer.runtime.Kernel;
 import edu.syr.pcpratts.rootbeer.test.TestSerialization;
 import java.util.ArrayList;
 import java.util.List;
+<<<<<<< HEAD
 
+=======
+/*
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
 public class RegularExpressionTest implements TestSerialization {
 
   public List<Kernel> create() {
@@ -29,3 +33,7 @@ public class RegularExpressionTest implements TestSerialization {
   }
   
 }
+<<<<<<< HEAD
+=======
+*/ 
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7

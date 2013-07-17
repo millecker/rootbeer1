@@ -257,8 +257,13 @@ public class CudaRuntime2 implements ParallelRuntime {
 
     if(thread_config != null) {
       m_BlockShape = thread_config.getBlockShapeX();
+<<<<<<< HEAD
       m_GridShape = thread_config.getGridShapeX();
       m_NumThreads = m_BlockShape * m_GridShape;
+=======
+      m_GridShape = thread_config.getGridShapeX(); 
+      m_NumThreads = thread_config.getNumThreads();
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
     }
     writeSingleBlock(job_template);
 
@@ -272,9 +277,16 @@ public class CudaRuntime2 implements ParallelRuntime {
     if(filename.endsWith(".error")) {
       return;
     }
+<<<<<<< HEAD
     if(thread_config == null) {
       calculateShape();
     }
+=======
+    
+    if(thread_config == null){
+      throw new NullPointerException();
+    } 
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
     compileCode();
 
     Object gpu_thrown = null;
@@ -334,8 +346,13 @@ public class CudaRuntime2 implements ParallelRuntime {
       calculateShape();
     } else {
       m_BlockShape = thread_config.getBlockShapeX();
+<<<<<<< HEAD
       m_GridShape = thread_config.getGridShapeX();
       m_NumThreads = m_BlockShape * m_GridShape;
+=======
+      m_GridShape = thread_config.getGridShapeX(); 
+      m_NumThreads = thread_config.getNumThreads();
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
     }
     compileCode();
 
@@ -385,6 +402,7 @@ public class CudaRuntime2 implements ParallelRuntime {
     m_writeBlocksStopwatch.start();
     for(Memory mem : m_ToSpace) {
       mem.setAddress(0);
+      mem.clearHeapEndPtr();
     }
     m_Handles.resetPointer();
     m_JobsToWrite.clear();
@@ -433,6 +451,7 @@ public class CudaRuntime2 implements ParallelRuntime {
     m_writeBlocksStopwatch.start();
     for(Memory mem : m_ToSpace) {
       mem.setAddress(0);
+      mem.clearHeapEndPtr();
     }
     m_Handles.resetPointer();
     m_JobsToWrite.clear();
@@ -528,9 +547,19 @@ public class CudaRuntime2 implements ParallelRuntime {
       for(byte[] sub_buffer : buffer) {
         total_len += sub_buffer.length;
       }
+<<<<<<< HEAD
       loadFunction(getHeapEndPtr(), buffer, buffer.size(), total_len,
           m_NumThreads);
     } catch(Exception ex) {
+=======
+      long ptr = getHeapEndPtr();
+      //align ptr on 4 bit boundry
+      if(ptr % 16 != 0){
+        ptr += (16 - (ptr % 16));
+      }
+      loadFunction(ptr, buffer, buffer.size(), total_len, m_NumThreads);
+    } catch(Exception ex){
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
       ex.printStackTrace();
     }
   }
@@ -680,9 +709,15 @@ public class CudaRuntime2 implements ParallelRuntime {
 
   private long getHeapEndPtr(){
     long max = Long.MIN_VALUE;
+<<<<<<< HEAD
     for(Memory mem : m_ToSpace) {
       if(mem.getHeapEndPtr() > max)
+=======
+    for(Memory mem : m_ToSpace){
+      if(mem.getHeapEndPtr() > max){
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
         max = mem.getHeapEndPtr();
+      }
     }
     return max;
   }

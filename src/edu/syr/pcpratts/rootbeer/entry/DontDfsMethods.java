@@ -48,13 +48,23 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.Throwable: java.lang.StackTraceElement getStackTraceElement(int)>");
     m_methods.add("<java.lang.Object: java.lang.Object clone()>");
     m_methods.add("<java.lang.Object: int hashCode()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.GpuStopwatch: void start()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.GpuStopwatch: void stop()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: boolean isOnGpu()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: int getThreadId()>"); 
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: int getThreadIdxx()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: int getBlockIdxx()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: int getBlockDimx()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: int getGridDimx()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: long getRef(java.lang.Object)>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: void syncthreads()>");
+<<<<<<< HEAD
+=======
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: void threadfence()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: void threadfenceBlock()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: java.lang.Object getSharedObject(int)>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: void setSharedObject(int,java.lang.Object)>");
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: byte getSharedByte(int)>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: void setSharedByte(int,byte)>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: char getSharedChar(int)>");
@@ -77,12 +87,16 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.Object: java.lang.Class getClass()>");
     m_methods.add("<java.lang.StringValue: char[] 'from'(char[])>");
     m_methods.add("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int)>");
+<<<<<<< HEAD
     m_methods.add("<java.io.PrintStream: void println(java.lang.String)>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.Rootbeer: void <init>()>");
   }
   
   public boolean add(String methodSignature){
     return m_methods.add(methodSignature);
+=======
+    m_methods.add("<java.lang.String: void <init>(char[])>");
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
   }
   
   public Set<String> get(){

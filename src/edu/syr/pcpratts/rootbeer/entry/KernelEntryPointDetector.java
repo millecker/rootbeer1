@@ -12,6 +12,10 @@ import java.util.Iterator;
 import java.util.List;
 import soot.SootClass;
 import soot.SootMethod;
+<<<<<<< HEAD
+=======
+import soot.rbclassload.HierarchySignature;
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
 import soot.rbclassload.HierarchySootClass;
 import soot.rbclassload.HierarchySootMethod;
 import soot.rbclassload.MethodTester;

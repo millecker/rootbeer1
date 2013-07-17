@@ -9,8 +9,6 @@ package edu.syr.pcpratts.rootbeer.runtime;
 
 import edu.syr.pcpratts.rootbeer.runtime.memory.BufferPrinter;
 import edu.syr.pcpratts.rootbeer.runtime.memory.Memory;
-import edu.syr.pcpratts.rootbeer.runtime.util.Stopwatch;
-import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -85,14 +83,21 @@ public abstract class Serializer {
   }
   
   private static synchronized WriteCacheResult checkWriteCache(Object o, int size, boolean read_only, Memory mem){
-    if(mWriteToGpuCache.containsKey(o)){
-      long ref = mWriteToGpuCache.get(o);
-      return new WriteCacheResult(ref, false);
+    //strings are cached in Java 1.6, we need to make strings individual units
+    //for rootbeer so concurrent modifications change different objects
+    if(o instanceof String){
+      long ref = mem.mallocWithSize(size);
+      return new WriteCacheResult(ref, true);
+    } else {
+      if(mWriteToGpuCache.containsKey(o)){
+        long ref = mWriteToGpuCache.get(o);
+        return new WriteCacheResult(ref, false);
+      }
+      long ref = mem.mallocWithSize(size);
+      mWriteToGpuCache.put(o, ref);
+      mReverseWriteToGpuCache.put(ref, o);
+      return new WriteCacheResult(ref, true);
     }
-    long ref = mem.mallocWithSize(size);
-    mWriteToGpuCache.put(o, ref);
-    mReverseWriteToGpuCache.put(ref, o);
-    return new WriteCacheResult(ref, true);
   }
   
   public Object writeCacheFetch(long ref){
@@ -111,14 +116,21 @@ public abstract class Serializer {
     boolean read_only = false;
     WriteCacheResult result;
     result = checkWriteCache(o, size, read_only, mMem);
-    if(result.m_NeedToWrite == false)
+    
+    if(result.m_NeedToWrite == false){
       return result.m_Ref;
+<<<<<<< HEAD
+=======
+    }
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
     //if(o == null){
     //  System.out.println("writeToHeap: null at addr: "+result.m_Ref);
     //} else {
     //  System.out.println("writeToHeap: "+o.toString()+" at addr: "+result.m_Ref);
     //}
     doWriteToHeap(o, write_data, result.m_Ref, read_only);
+    //BufferPrinter printer = new BufferPrinter();
+    //printer.print(mMem, result.m_Ref, 128);
     return result.m_Ref;
   }
   
@@ -151,9 +163,13 @@ public abstract class Serializer {
     //}
     //BufferPrinter printer = new BufferPrinter();
     //printer.print(mMem, address, 128);
+<<<<<<< HEAD
     
     Object ret = doReadFromHeap(o, read_data, address);
     return checkCache(address, ret);
+=======
+    return doReadFromHeap(o, read_data, address);
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
   }
 
   public void readStaticsFromHeap(){

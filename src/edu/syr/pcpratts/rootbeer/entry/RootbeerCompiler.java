@@ -24,6 +24,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import pack.Pack;
@@ -31,7 +32,12 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.options.Options;
+<<<<<<< HEAD
 import soot.rbclassload.HierarchySootClass;
+=======
+import soot.rbclassload.DfsInfo;
+import soot.rbclassload.HierarchySignature;
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
 import soot.rbclassload.ListClassTester;
 import soot.rbclassload.ListMethodTester;
 import soot.rbclassload.MethodTester;
@@ -98,10 +104,10 @@ public class RootbeerCompiler {
     
   private void setupSoot(String jar_filename, String rootbeer_jar, boolean runtests){
     RootbeerClassLoader.v().setUserJar(jar_filename);
-    extractJar(jar_filename);
+    //extractJar(jar_filename);
     
     List<String> proc_dir = new ArrayList<String>();
-    proc_dir.add(RootbeerPaths.v().getJarContentsFolder());
+    proc_dir.add(jar_filename);
     
     Options.v().set_allow_phantom_refs(true);
     Options.v().set_rbclassload(true);
@@ -120,16 +126,74 @@ public class RootbeerCompiler {
     
     RootbeerClassLoader.v().addEntryMethodTester(m_entryDetector);
     
+<<<<<<< HEAD
     // Setup Ignore Packages and Classes for DontFollowClassTester
     if(!runtests){
       Configuration.compilerInstance().addIgnorePackage("edu.syr.pcpratts.rootbeer.testcases.");
     }
     ListClassTester ignore_packages = Configuration.compilerInstance().getIgnoreTester();
+=======
+    ListClassTester ignore_packages = new ListClassTester();
+    ignore_packages.addPackage("edu.syr.pcpratts.compressor.");
+    ignore_packages.addPackage("edu.syr.pcpratts.deadmethods.");
+    ignore_packages.addPackage("edu.syr.pcpratts.jpp.");
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.compiler.");
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.configuration.");
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.entry.");
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.generate.");
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.test.");
+    if(!runtests){
+      ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.testcases.");
+    }
+    ignore_packages.addPackage("edu.syr.pcpratts.rootbeer.util.");
+    ignore_packages.addPackage("pack.");
+    ignore_packages.addPackage("jasmin.");
+    ignore_packages.addPackage("soot.");
+    ignore_packages.addPackage("beaver.");
+    ignore_packages.addPackage("polyglot.");
+    ignore_packages.addPackage("org.antlr.");
+    ignore_packages.addPackage("java_cup.");
+    ignore_packages.addPackage("ppg.");
+    ignore_packages.addPackage("antlr.");
+    ignore_packages.addPackage("jas.");
+    ignore_packages.addPackage("scm.");
+    ignore_packages.addPackage("org.xmlpull.v1.");
+    ignore_packages.addPackage("android.util.");
+    ignore_packages.addPackage("android.content.res.");
+    ignore_packages.addPackage("org.apache.commons.codec.");
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
     RootbeerClassLoader.v().addDontFollowClassTester(ignore_packages);
     
     ListClassTester keep_packages = new ListClassTester();
     for(String runtime_class : m_runtimePackages){
       keep_packages.addPackage(runtime_class);
+<<<<<<< HEAD
+=======
+    }
+    RootbeerClassLoader.v().addToSignaturesClassTester(keep_packages);
+    
+    RootbeerClassLoader.v().addNewInvoke("java.lang.StringBuilder");
+    
+    ListMethodTester follow_tester = new ListMethodTester();
+    follow_tester.addSignature("<java.lang.String: void <init>()>");
+    follow_tester.addSignature("<java.lang.String: void <init>(char[])>");
+    follow_tester.addSignature("<java.lang.StringBuilder: void <init>()>");
+    follow_tester.addSignature("<java.lang.Boolean: java.lang.String toString(boolean)>");
+    follow_tester.addSignature("<java.lang.Character: java.lang.String toString(char)>");
+    follow_tester.addSignature("<java.lang.Double: java.lang.String toString(double)>");
+    follow_tester.addSignature("<java.lang.Float: java.lang.String toString(float)>");
+    follow_tester.addSignature("<java.lang.Integer: java.lang.String toString(int)>");
+    follow_tester.addSignature("<java.lang.Long: java.lang.String toString(long)>");
+    follow_tester.addSignature("<edu.syr.pcpratts.rootbeer.runtime.Sentinal: void <init>()>");
+    follow_tester.addSignature("<edu.syr.pcpratts.rootbeer.runtimegpu.GpuException: void <init>()>");
+    follow_tester.addSignature("<edu.syr.pcpratts.rootbeer.runtimegpu.GpuException: edu.syr.pcpratts.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
+    follow_tester.addSignature("<edu.syr.pcpratts.rootbeer.runtime.Serializer: void <init>(edu.syr.pcpratts.rootbeer.runtime.memory.Memory,edu.syr.pcpratts.rootbeer.runtime.memory.Memory)>");
+    follow_tester.addSignature("<edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.CovarientTest: void <init>()>");
+    RootbeerClassLoader.v().addFollowMethodTester(follow_tester);
+    
+    if(runtests){
+      RootbeerClassLoader.v().addFollowClassTester(new TestCaseFollowTester());
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
     }
     RootbeerClassLoader.v().addToSignaturesClassTester(keep_packages);
     
@@ -147,17 +211,27 @@ public class RootbeerCompiler {
     follow_tester.addSignature("<edu.syr.pcpratts.rootbeer.testcases.rootbeertest.serialization.CovarientTest: void <init>()>");
     RootbeerClassLoader.v().addFollowMethodTester(follow_tester);
     
+<<<<<<< HEAD
     RootbeerClassLoader.v().addFollowClassTester(new TestCaseFollowTester());
     
     RootbeerClassLoader.v().addConditionalCudaEntry(new StringConstantCudaEntry());
     
     // Setup DontDfsMethods for DontFollowMethodTester
     DontDfsMethods dont_dfs_methods = Configuration.compilerInstance().getDontDfsMethods();
+=======
+    if(Configuration.compilerInstance().getKeepMains()){
+      MainTester main_tester = new MainTester();
+      RootbeerClassLoader.v().addFollowMethodTester(main_tester);
+    }    
+    
+    DontDfsMethods dont_dfs_methods = new DontDfsMethods();
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
     ListMethodTester dont_dfs_tester = new ListMethodTester();
     Set<String> dont_dfs_set = dont_dfs_methods.get();
     for(String dont_dfs : dont_dfs_set){
       dont_dfs_tester.addSignature(dont_dfs);
     }
+<<<<<<< HEAD
     RootbeerClassLoader.v().addDontFollowMethodTester(dont_dfs_tester);
     
     RootbeerClassLoader.v().loadField("<java.lang.Class: java.lang.String name>");
@@ -188,6 +262,38 @@ public class RootbeerCompiler {
         }
       }
     }
+=======
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println()>");
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(java.lang.String)>");
+    
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(boolean)>");   
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(byte)>");   
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(char)>");    
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(short)>");   
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(int)>");     
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(long)>");   
+    
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(float)>");
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(double)>");
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void print(java.lang.String)>");
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void print(double)>");
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void print(float)>");
+    dont_dfs_tester.addSignature("<java.lang.Double: java.lang.String toString(double)>");
+    dont_dfs_tester.addSignature("<java.lang.Float: java.lang.String toString(float)>");
+    RootbeerClassLoader.v().addDontFollowMethodTester(dont_dfs_tester);
+    
+    ExtraFields extra_fields = new ExtraFields();
+    for(String field_sig : extra_fields.get()){
+      RootbeerClassLoader.v().loadField(field_sig);
+    }
+    
+    ListMethodTester to_sig_methods = new ListMethodTester();
+    to_sig_methods.addSignature("<java.lang.Object: int hashCode()>");
+    to_sig_methods.addSignature("<java.io.PrintStream: void println(java.lang.String)>");
+    to_sig_methods.addSignature("<java.io.PrintStream: void println(int)>");
+    to_sig_methods.addSignature("<java.io.PrintStream: void println(long)>");
+    RootbeerClassLoader.v().addToSignaturesMethodTester(to_sig_methods);
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
     
     RootbeerClassLoader.v().loadNecessaryClasses();
   }
@@ -200,7 +306,7 @@ public class RootbeerCompiler {
     m_provider = detector.getProvider();
         
     List<SootMethod> kernel_methods = RootbeerClassLoader.v().getEntryPoints();
-    compileForKernels(outname, kernel_methods);
+    compileForKernels(outname, kernel_methods, jar_filename);
   }
   
   public void compile(String jar_filename, String outname) throws Exception {
@@ -213,10 +319,10 @@ public class RootbeerCompiler {
     setupSoot(jar_filename, jar_name.get(), run_tests);
     
     List<SootMethod> kernel_methods = RootbeerClassLoader.v().getEntryPoints();
-    compileForKernels(outname, kernel_methods);
+    compileForKernels(outname, kernel_methods, jar_filename);
   }
   
-  private void compileForKernels(String outname, List<SootMethod> kernel_methods) throws Exception {
+  private void compileForKernels(String outname, List<SootMethod> kernel_methods, String jar_filename) throws Exception {
     
     if(kernel_methods.isEmpty()){
       System.out.println("There are no kernel classes. Please implement the following interface to use rootbeer:");
@@ -226,8 +332,17 @@ public class RootbeerCompiler {
        
     Transform2 transform2 = new Transform2();
     for(SootMethod kernel_method : kernel_methods){   
+      
       System.out.println("running transform2 on: "+kernel_method.getSignature()+"...");
       RootbeerClassLoader.v().loadDfsInfo(kernel_method);
+      DfsInfo dfs_info = RootbeerClassLoader.v().getDfsInfo();
+      
+      RootbeerDfs rootbeer_dfs = new RootbeerDfs();
+      rootbeer_dfs.run(dfs_info);
+      
+      dfs_info.expandArrayTypes();
+      dfs_info.finalizeTypes();
+
       SootClass soot_class = kernel_method.getDeclaringClass();
       transform2.run(soot_class.getName());
     }
@@ -261,7 +376,7 @@ public class RootbeerCompiler {
       }
     }
     
-    makeOutJar();
+    makeOutJar(jar_filename);
     pack(outname);
   }
   
@@ -274,25 +389,30 @@ public class RootbeerCompiler {
     p.run(main_jar, lib_jars, outjar_name);
   }
 
-  public void makeOutJar() throws Exception {
+  public void makeOutJar(String jar_filename) throws Exception {
     JarEntryHelp.mkdir(RootbeerPaths.v().getOutputJarFolder() + File.separator);
     String outfile = RootbeerPaths.v().getOutputJarFolder() + File.separator + "partial-ret.jar";
 
     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(outfile));
-    addJarInputManifestFiles(zos);
+    addJarInputManifestFiles(zos, jar_filename);
     addOutputClassFiles(zos);
     addConfigurationFile(zos);
     zos.flush();
     zos.close();
   }
   
-  private void addJarInputManifestFiles(ZipOutputStream zos) throws Exception {
-    List<File> jar_input_files = getFiles(RootbeerPaths.v().getJarContentsFolder());
-    for(File f : jar_input_files){
-      if(f.getPath().contains("META-INF")){
-        writeFileToOutput(f, zos, RootbeerPaths.v().getJarContentsFolder());
+  private void addJarInputManifestFiles(ZipOutputStream zos, String jar_filename) throws Exception {
+    ZipInputStream jin = new ZipInputStream(new FileInputStream(jar_filename));
+    while(true){
+      ZipEntry jar_entry = jin.getNextEntry();
+      if(jar_entry == null){
+        break;
+      }
+      if(jar_entry.getName().contains("META-INF")){
+        writeFileToOutput(jin, jar_entry, zos);
       }
     }
+    jin.close();
   }
 
   private void addOutputClassFiles(ZipOutputStream zos) throws Exception {
@@ -361,6 +481,40 @@ public class RootbeerCompiler {
     fout.write(contents);
     fout.flush();
     fout.close();
+  }
+  
+  private void writeFileToOutput(ZipInputStream jin, ZipEntry jar_entry, ZipOutputStream zos) throws Exception {
+    if(jar_entry.isDirectory() == false){
+      
+      List<byte[]> buffered = new ArrayList<byte[]>();
+      int total_size = 0;
+      while(true){
+        byte[] buffer = new byte[4096];
+        int len = jin.read(buffer);
+        if(len == -1){
+          break;
+        }
+        total_size += len;
+        byte[] truncated = new byte[len];
+        for(int i = 0; i < len; ++i){
+          truncated[i] = buffer[i];
+        }
+        buffered.add(truncated);
+      }
+
+      ZipEntry entry = new ZipEntry(jar_entry.getName());
+      entry.setSize(total_size);
+      entry.setCrc(jar_entry.getCrc());
+      zos.putNextEntry(entry);
+
+      for(byte[] buffer : buffered){
+        zos.write(buffer);
+      }
+      
+      zos.flush();
+    } else {
+      zos.putNextEntry(jar_entry);
+    }
   }
   
   private void writeFileToOutput(File f, ZipOutputStream zos, String folder) throws Exception {
@@ -518,16 +672,5 @@ public class RootbeerCompiler {
 
   public String getProvider() {
     return m_provider;
-  }
-
-  private void extractJar(String jar_filename) {
-    JarToFolder extractor = new JarToFolder();
-    try {
-      System.out.println("extracting jar "+jar_filename+"...");
-      extractor.writeJar(jar_filename, RootbeerPaths.v().getJarContentsFolder());
-    } catch(Exception ex){
-      ex.printStackTrace();
-      System.exit(0);
-    }
   }
 }

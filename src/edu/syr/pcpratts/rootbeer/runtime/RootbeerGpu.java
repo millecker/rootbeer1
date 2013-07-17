@@ -60,13 +60,33 @@ public class RootbeerGpu {
     return 0;
   }
   
+<<<<<<< HEAD
+=======
+  public static int getGridDimx(){
+    return 0;
+  }
+  
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
   public static void syncthreads(){ 
   }
 
+  public static void threadfence(){ 
+  }
+  
+  public static void threadfenceBlock(){ 
+  }
+  
   public static long getRef(Object obj) {
     return 0;
   }
 
+  public static Object getSharedObject(int index){
+    return null;
+  }
+  
+  public static void setSharedObject(int index, Object value){
+  }
+  
   public static byte getSharedByte(int index){
     return m_sharedMem[index];
   }

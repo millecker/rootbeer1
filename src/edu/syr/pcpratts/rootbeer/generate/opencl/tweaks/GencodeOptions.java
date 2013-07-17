@@ -36,6 +36,7 @@ public class GencodeOptions {
       sm_21 = "--generate-code arch=compute_20,code=\"sm_21\" ";
       sm_20 = "--generate-code arch=compute_20,code=\"sm_20\" ";  
       sm_12 = "--generate-code arch=compute_12,code=\"sm_12\" "; 
+<<<<<<< HEAD
     }
     
     //sm_12 doesn't support recursion
@@ -49,6 +50,23 @@ public class GencodeOptions {
     }
     
     if(version.equals("Cuda compilation tools, release 5.0, V0.2.1221")){
+=======
+    }
+    
+    //sm_12 doesn't support recursion
+    if(Configuration.compilerInstance().getRecursion()){
+      sm_12 = "";
+    }
+    
+    //sm_12 doesn't support doubles
+    if(Configuration.compilerInstance().getDoubles()){
+      sm_12 = "";
+    }
+    
+    if(version.equals("Cuda compilation tools, release 5.5, V5.5.0")){
+      return sm_35 + sm_30 + sm_21 + sm_20 + sm_12;
+    } else if(version.equals("Cuda compilation tools, release 5.0, V0.2.1221")){
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
       return sm_35 + sm_30 + sm_21 + sm_20 + sm_12;
     } else if(version.equals("Cuda compilation tools, release 4.2, V0.2.1221")){
       return sm_30 + sm_21 + sm_20 + sm_12;

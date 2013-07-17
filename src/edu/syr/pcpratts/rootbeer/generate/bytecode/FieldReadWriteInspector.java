@@ -7,6 +7,8 @@
 
 package edu.syr.pcpratts.rootbeer.generate.bytecode;
 
+import edu.syr.pcpratts.rootbeer.entry.ExtraFields;
+import edu.syr.pcpratts.rootbeer.generate.opencl.OpenCLScene;
 import edu.syr.pcpratts.rootbeer.generate.opencl.fields.OpenCLField;
 import edu.syr.pcpratts.rootbeer.generate.opencl.OpenCLType;
 import java.util.*;
@@ -18,6 +20,7 @@ import soot.rbclassload.HierarchyGraph;
 import soot.rbclassload.MethodSignatureUtil;
 import soot.rbclassload.NumberedType;
 import soot.rbclassload.RootbeerClassLoader;
+import soot.rbclassload.StringNumbers;
 import soot.util.Chain;
 
 public class FieldReadWriteInspector {
@@ -116,9 +119,14 @@ public class FieldReadWriteInspector {
 
     ClassHierarchy class_hierarchy = RootbeerClassLoader.v().getClassHierarchy();
     HierarchyGraph hgraph = class_hierarchy.getHierarchyGraph(soot_class);
+<<<<<<< HEAD
     Set<String> classes = hgraph.getAllClasses();
+=======
+    Set<Integer> classes = hgraph.getAllClasses();
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
     
-    for(String class_name : classes){
+    for(Integer class_num : classes){
+      String class_name = StringNumbers.v().getString(class_num);
       SootClass curr_class = Scene.v().getSootClass(class_name);
       Chain<SootField> fields = curr_class.getFields();
       for(SootField field : fields){
@@ -171,11 +179,9 @@ public class FieldReadWriteInspector {
   private void inspectMethod(SootMethod root) {
     if (mMethodsInspected.contains(root))
       return;
-    // work list to reduce recursion
-    ArrayDeque<SootMethod> worklist = new ArrayDeque<SootMethod>(1);
-    worklist.add(root);
-    while (!worklist.isEmpty()) {
-      SootMethod method = worklist.pop();
+    
+    List<SootMethod> methods = OpenCLScene.v().getMethods();
+    for(SootMethod method : methods){
       Body body;
       try {
         body = method.retrieveActiveBody();
@@ -221,6 +227,7 @@ public class FieldReadWriteInspector {
           }
         }
       }
+<<<<<<< HEAD
       
       for(ValueBox use_box : use_boxes){
         Value use = use_box.getValue();
@@ -242,6 +249,8 @@ public class FieldReadWriteInspector {
           }
         }
       }
+=======
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
     }
   }
 

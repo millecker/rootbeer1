@@ -7,6 +7,7 @@
 
 package edu.syr.pcpratts.rootbeer.generate.opencl;
 
+import edu.syr.pcpratts.rootbeer.configuration.Configuration;
 import edu.syr.pcpratts.rootbeer.entry.DontDfsMethods;
 import edu.syr.pcpratts.rootbeer.generate.bytecode.StaticOffsets;
 import edu.syr.pcpratts.rootbeer.generate.opencl.body.MethodJimpleValueSwitch;
@@ -14,9 +15,7 @@ import edu.syr.pcpratts.rootbeer.generate.opencl.body.OpenCLBody;
 import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.Tweaks;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import soot.*;
@@ -24,7 +23,6 @@ import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.options.Options;
-import soot.rbclassload.ClassHierarchy;
 import soot.rbclassload.MethodSignatureUtil;
 import soot.rbclassload.RootbeerClassLoader;
 
@@ -36,6 +34,7 @@ public class OpenCLMethod {
   private final SootMethod m_sootMethod;
   private SootClass m_sootClass;
   private Set<String> m_dontMangleMethods;
+  private Set<String> m_dontEmitMethods;
   private Set<String> m_emitUnmangled;
   private MethodSignatureUtil m_util;
   
@@ -154,15 +153,17 @@ public class OpenCLMethod {
     ret += "int old;\n";
     ret += "char * thisref_synch_deref;\n";
     if(m_sootMethod.isStatic() == false){
-      ret += "if(thisref == -1){\n";
-      SootClass null_ptr = Scene.v().getSootClass(prefix+"java.lang.NullPointerException");
-      ret += "  *exception = "+RootbeerClassLoader.v().getClassNumber(null_ptr)+";\n";
-      if(returnsAValue()){
-        ret += "  return 0;\n";
-      } else {
-        ret += "  return;\n";
+      if(Configuration.compilerInstance().getExceptions()){
+        ret += "if(thisref == -1){\n";
+        SootClass null_ptr = Scene.v().getSootClass(prefix+"java.lang.NullPointerException");
+        ret += "  *exception = "+RootbeerClassLoader.v().getClassNumber(null_ptr)+";\n";
+        if(returnsAValue()){
+          ret += "  return 0;\n";
+        } else {
+          ret += "  return;\n";
+        }
+        ret += "}\n";
       }
-      ret += "}\n";
     }
     ret += "id = getThreadId();\n";
     StaticOffsets static_offsets = new StaticOffsets();
@@ -178,7 +179,7 @@ public class OpenCLMethod {
       ret += "mem = edu_syr_pcpratts_gc_deref(gc_info, thisref);\n";
       ret += "trash = edu_syr_pcpratts_gc_deref(gc_info, 0) + "+junk_index+";\n";
       ret += "mystery = trash - 8;\n";
-      ret += "mem += 12;\n";
+      ret += "mem += 16;\n";
     }
     ret += "count = 0;\n";
     ret += "while(count < 100){\n";
@@ -198,18 +199,20 @@ public class OpenCLMethod {
     //adding this in makes the WhileTrueTest pass.
     //for some reason the first write to memory doesn't work well inside a sync block.
     if(m_sootMethod.isStatic() == false){
-      ret += "  if ( thisref ==-1 ) { \n";
-      ret += "    * exception = 11;\n";
-      ret += "  }\n";
+      if(Configuration.compilerInstance().getExceptions()){
+        ret += "  if ( thisref ==-1 ) { \n";
+        ret += "    * exception = 11;\n";
+        ret += "  }\n";
 
-      ret += "  if ( * exception != 0 ) {\n";
-      ret += "    edu_syr_pcpratts_exitMonitorMem ( gc_info , mem , old ) ;\n";
-      if(returnsAValue()){
-        ret += "    return 0;\n";
-      } else {
-        ret += "    return;\n";
+        ret += "  if ( * exception != 0 ) {\n";
+        ret += "    edu_syr_pcpratts_exitMonitorMem ( gc_info , mem , old ) ;\n";
+        if(returnsAValue()){
+          ret += "    return 0;\n";
+        } else {
+          ret += "    return;\n";
+        }
+        ret += "  }\n";
       }
-      ret += "  }\n";
 
       ret += "  thisref_synch_deref = edu_syr_pcpratts_gc_deref ( gc_info , thisref );\n";
       ret += "  * ( ( int * ) & thisref_synch_deref [ 20 ] ) = 20 ;\n";
@@ -249,9 +252,6 @@ public class OpenCLMethod {
               ret.append("}\n");
             }
           }
-          if(returnsAValue()){
-            ret.append("return 0;");
-          }
         }
       } catch(RuntimeException ex){
         System.out.println("error creating method body: "+m_sootMethod.getSignature());
@@ -260,6 +260,9 @@ public class OpenCLMethod {
           ret.append("return 0;\n");
         else
           ret.append("\n");
+      }
+      if(returnsAValue()){
+        ret.append("  return 0;\n");
       }
       ret.append("}\n");
       if(isConstructor()){
@@ -438,6 +441,9 @@ public class OpenCLMethod {
     if(m_dontMangleMethods.contains(signature)){
       return false;
     }
+    if(m_dontEmitMethods.contains(signature)){
+      return false;
+    }
     return true;
   }
   
@@ -469,6 +475,7 @@ public class OpenCLMethod {
   
   private void createDontMangleMethods() {
     m_dontMangleMethods = new HashSet<String>();
+    m_dontEmitMethods = new HashSet<String>();
     m_emitUnmangled = new HashSet<String>();
     
     DontDfsMethods dont_dfs_methods = new DontDfsMethods();
@@ -479,7 +486,18 @@ public class OpenCLMethod {
     m_dontMangleMethods.add("<java.lang.String: void <init>(char[])>");
     m_dontMangleMethods.add("<edu.syr.pcpratts.rootbeer.runtimegpu.GpuException: edu.syr.pcpratts.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
   
-    m_emitUnmangled.add("<java.lang.String: void <init>(char[])>");
+    m_dontEmitMethods.add("<java.lang.StringBuilder: void <init>()>");
+    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(boolean)>");
+    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(char)>");
+    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(double)>");
+    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(float)>");
+    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(int)>");
+    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(long)>");
+    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>");
+    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.String toString()>");
+    m_dontEmitMethods.add("<java.lang.Double: java.lang.String toString(double)>");
+    m_dontEmitMethods.add("<java.lang.Float: java.lang.String toString(float)>");
+    
     m_emitUnmangled.add("<edu.syr.pcpratts.rootbeer.runtimegpu.GpuException: edu.syr.pcpratts.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
   }
 

@@ -340,7 +340,7 @@ public class MethodJimpleValueSwitch implements JimpleValueSwitch {
 
   public void caseNegExpr(NegExpr arg0) {
     Value op = arg0.getOp();
-    m_output.append("! ");
+    m_output.append("-");
     op.apply(this);
   }
 
@@ -390,7 +390,7 @@ public class MethodJimpleValueSwitch implements JimpleValueSwitch {
   public void caseClassConstant(ClassConstant arg0) {
     String value = arg0.getValue();
     Type type = m_classConstantReader.stringToType(value);
-    int num = RootbeerClassLoader.v().getClassNumber(type.toString());
+    int num = OpenCLScene.v().getClassConstantNumbers().get(type);
     m_output.append("edu_syr_pcpratts_classConstant("+num+")");
   }
  

@@ -34,9 +34,15 @@ public class Rootbeer implements IRootbeer {
       // ignore
     }
   }
+<<<<<<< HEAD
 
   public void setThreadConfig(int block_shape_x, int grid_shape_x){
     m_threadConfig = new ThreadConfig(block_shape_x, grid_shape_x);
+=======
+  
+  public void setThreadConfig(int block_shape_x, int grid_shape_x, int numThreads){
+    m_threadConfig = new ThreadConfig(block_shape_x, grid_shape_x, numThreads);
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
   }
 
   public void runAll(Kernel job_template){

@@ -49,9 +49,15 @@ public class Configuration {
   private boolean m_arrayChecks;
   private boolean m_doubles;
   private boolean m_recursion;
+<<<<<<< HEAD
   private Set<String> m_loadClasses;
   private ListClassTester m_ignores;
   private DontDfsMethods m_dont_dfs_methods;
+=======
+  private boolean m_exceptions;
+  private boolean m_keepMains;
+  private int m_sharedMemSize;
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
   
   static {
     m_printMem = false;
@@ -64,9 +70,15 @@ public class Configuration {
     m_arrayChecks = true;
     m_doubles = true;
     m_recursion = true;
+<<<<<<< HEAD
     m_loadClasses = new HashSet<String>();
     m_ignores = getIgnorePackages();    
     m_dont_dfs_methods = new DontDfsMethods();
+=======
+    m_exceptions = true;
+    m_keepMains = false;
+    m_sharedMemSize = 40*1024;
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
   }
 
   private Configuration(boolean load) {
@@ -182,6 +194,7 @@ public class Configuration {
     return m_recursion;
   }
 
+<<<<<<< HEAD
   public Set<String> getLoadClasses(){
     return m_loadClasses;
   }
@@ -208,5 +221,29 @@ public class Configuration {
   
   public DontDfsMethods getDontDfsMethods(){
     return m_dont_dfs_methods;
+=======
+  public void setExceptions(boolean value) {
+    m_exceptions = value;
+  }
+  
+  public boolean getExceptions(){
+    return m_exceptions;
+  }
+
+  public boolean getKeepMains() {
+    return m_keepMains;
+  }
+  
+  public void setKeepMains(boolean value){
+    m_keepMains = value;
+  }
+
+  public void setSharedMemSize(int size) {
+    m_sharedMemSize = size;
+  }
+  
+  public int getSharedMemSize(){
+    return m_sharedMemSize;
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
   }
 }

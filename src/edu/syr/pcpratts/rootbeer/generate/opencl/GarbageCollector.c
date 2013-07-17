@@ -11,8 +11,8 @@
 $$__device__$$ void edu_syr_pcpratts_gc_collect($$__global$$ char * gc_info);
 $$__device__$$ void edu_syr_pcpratts_gc_assign($$__global$$ char * gc_info, int * lhs, int rhs);
 $$__device__$$ $$__global$$ char * edu_syr_pcpratts_gc_deref($$__global$$ char * gc_info, int handle);
-$$__device__$$ int edu_syr_pcpratts_gc_malloc($$__global$$ char * gc_info, long long size);
-$$__device__$$ long long edu_syr_pcpratts_gc_malloc_no_fail($$__global$$ char * gc_info, long long size);
+$$__device__$$ int edu_syr_pcpratts_gc_malloc($$__global$$ char * gc_info, int size);
+$$__device__$$ unsigned long long edu_syr_pcpratts_gc_malloc_no_fail($$__global$$ char * gc_info, int size);
 $$__device__$$ int edu_syr_pcpratts_classConstant(int type_num);
 $$__device__$$ long long java_lang_System_nanoTime($$__global$$ char * gc_info, int * exception);
 
@@ -22,14 +22,13 @@ $$__device__$$ long long java_lang_System_nanoTime($$__global$$ char * gc_info, 
 
 #define TO_SPACE_OFFSET               0
 #define TO_SPACE_FREE_POINTER_OFFSET  8
-#define SPACE_SIZE_OFFSET             16
 
 $$__device__$$
 void edu_syr_pcpratts_exitMonitorRef($$__global$$ char * gc_info, int thisref, int old){
   char * mem = edu_syr_pcpratts_gc_deref(gc_info, thisref); 
-  mem += 12;
+  mem += 16;
   if(old == -1){    
-    __threadfence();  
+    edu_syr_pcpratts_threadfence();  
     atomicExch((int *) mem, -1); 
   }
 }
@@ -37,7 +36,7 @@ void edu_syr_pcpratts_exitMonitorRef($$__global$$ char * gc_info, int thisref, i
 $$__device__$$
 void edu_syr_pcpratts_exitMonitorMem($$__global$$ char * gc_info, char * mem, int old){
   if(old == -1){   
-    __threadfence(); 
+    edu_syr_pcpratts_threadfence(); 
     atomicExch((int *) mem, -1);
   }
 }
@@ -152,6 +151,22 @@ $$__device__$$ double java_lang_StrictMath_tanh( char * gc_info , double paramet
 } 
 
 $$__device__$$ 
+void edu_syr_pcpratts_rootbeer_runtime_GpuStopwatch_start($$__global$$ char * gc_info, int thisref, int * exception){
+  long long int time;
+  
+  time = clock64();
+  instance_setter_edu_syr_pcpratts_rootbeer_runtime_GpuStopwatch_m_start(gc_info, thisref, time, exception);
+}
+
+$$__device__$$ 
+void edu_syr_pcpratts_rootbeer_runtime_GpuStopwatch_stop($$__global$$ char * gc_info, int thisref, int * exception){
+  long long int time;
+  
+  time = clock64();
+  instance_setter_edu_syr_pcpratts_rootbeer_runtime_GpuStopwatch_m_stop(gc_info, thisref, time, exception);
+}
+
+$$__device__$$ 
 char edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_isOnGpu($$__global$$ char * gc_info, int * exception){
   return 1;
 }
@@ -177,42 +192,97 @@ int edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getBlockDimx($$__global$$ char
 }
 
 $$__device__$$ 
+int edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getGridDimx($$__global$$ char * gc_info, int * exception){
+  return getGridDimx();
+}
+
+
+$$__device__$$ 
 long long edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getRef($$__global$$ char * gc_info, int ref, int * exception){
   return ref;
 }
 
 $$__device__$$
 char edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedByte($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return 0;
+  }
+#endif
   return m_shared[index]; 
 }
 
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedByte($$__global$$ char * gc_info, int index, char value, int * exception){
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return;
+  }
+#endif
   m_shared[index] = value;
 }
   
 $$__device__$$
 char edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedChar($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return 0;
+  }
+#endif
   return m_shared[index]; 
 }
 
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedChar($$__global$$ char * gc_info, int index, char value, int * exception){
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return;
+  }
+#endif
   m_shared[index] = value;
 }
   
 $$__device__$$
 char edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedBoolean($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return 0;
+  }
+#endif
   return m_shared[index]; 
 }
 
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedBoolean($$__global$$ char * gc_info, int index, char value, int * exception){
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return;
+  }
+#endif
   m_shared[index] = value;
 }
   
 $$__device__$$
 short edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedShort($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index + 2 >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return 0;
+  }  
+#endif
   short ret = 0;
   ret |= m_shared[index] & 0xff;
   ret |= (m_shared[index + 1] << 8) & 0xff00;
@@ -221,21 +291,42 @@ short edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedShort($$__global$$ 
 
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedShort($$__global$$ char * gc_info, int index, short value, int * exception){
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index + 2 >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return;
+  }
+#endif
   m_shared[index] = (char) (value & 0xff);
   m_shared[index + 1] = (char) ((value >> 8) & 0xff);
 }
 
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedInteger($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index + 4 >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return 0;
+  }
+#endif
   int ret = m_shared[index] & 0x000000ff;
   ret |= (m_shared[index + 1] << 8)  & 0x0000ff00;
   ret |= (m_shared[index + 2] << 16) & 0x00ff0000;
-  ret |= (m_shared[index + 3] << 24) & 0xff000000;
+  ret |= (m_shared[index + 3] << 24) & 0xff000000; 
   return ret;
 }
 
 $$__device__$$
-void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedInteger($$__global$$ char * gc_info, int index, int value, int * exception){
+void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedInteger($$__global$$ char * gc_info, int index, int value, int * exception){  
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index + 4 >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return;
+  }
+#endif
   m_shared[index] = (char) (value & 0xff);
   m_shared[index + 1] = (char) ((value >> 8)  & 0xff);
   m_shared[index + 2] = (char) ((value >> 16) & 0xff);
@@ -244,8 +335,15 @@ void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedInteger($$__global$$
 
 $$__device__$$
 long long edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedLong($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index + 8 >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return 0;
+  }
+#endif
   long long ret = 0;
-  ret |=  (long long) m_shared[index] & 0x00000000000000ffL;
+  ret |=  ((long long) m_shared[index]) & 0x00000000000000ffL;
   ret |= ((long long) m_shared[index + 1] << 8)  & 0x000000000000ff00L;
   ret |= ((long long) m_shared[index + 2] << 16) & 0x0000000000ff0000L;
   ret |= ((long long) m_shared[index + 3] << 24) & 0x00000000ff000000L;
@@ -258,14 +356,21 @@ long long edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedLong($$__global
 
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedLong($$__global$$ char * gc_info, int index, long long value, int * exception){
-  m_shared[index] = (char) (value & 0xff);
-  m_shared[index + 1] = (char) ((value >> 8)  & 0xff);
-  m_shared[index + 2] = (char) ((value >> 16) & 0xff);
-  m_shared[index + 3] = (char) ((value >> 24) & 0xff);
-  m_shared[index + 4] = (char) ((value >> 32) & 0xff);
-  m_shared[index + 5] = (char) ((value >> 40) & 0xff);
-  m_shared[index + 6] = (char) ((value >> 48) & 0xff);
-  m_shared[index + 7] = (char) ((value >> 56) & 0xff);
+#ifdef ARRAY_CHECKS
+  if(index < 0 || index + 8 >= %%shared_mem_size%%){
+    *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
+      index, 0, %%shared_mem_size%%, exception);
+    return;
+  }
+#endif
+  m_shared[index] = (char) (value & 0x00000000000000ffL);
+  m_shared[index + 1] = (char) ((value >> 8)  & 0x00000000000000ffL);
+  m_shared[index + 2] = (char) ((value >> 16) & 0x00000000000000ffL);
+  m_shared[index + 3] = (char) ((value >> 24) & 0x00000000000000ffL);
+  m_shared[index + 4] = (char) ((value >> 32) & 0x00000000000000ffL);
+  m_shared[index + 5] = (char) ((value >> 40) & 0x00000000000000ffL);
+  m_shared[index + 6] = (char) ((value >> 48) & 0x00000000000000ffL);
+  m_shared[index + 7] = (char) ((value >> 56) & 0x00000000000000ffL);
 }
   
 $$__device__$$
@@ -293,16 +398,149 @@ void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedDouble($$__global$$ 
 }
 
 $$__device__$$
+<<<<<<< HEAD
 void java_io_PrintStream_println($$__global$$ char * gc_info, int thisref, int str_ret, int * exception){
   //1. take characters from str_ret
   //2. print using printf
+=======
+int edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedObject($$__global$$ char * gc_info, int index, int * exception){
+  return edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedInteger(gc_info, index, exception);
+}
+
+$$__device__$$
+void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedObject($$__global$$ char * gc_info, int index, int value, int * exception){
+  edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedInteger(gc_info, index, value, exception);
+}
+  
+$$__device__$$
+void java_io_PrintStream_println0_9_($$__global$$ char * gc_info, int thisref, int str_ret, int * exception){
+  int valueref;
+  int count;
+  int offset;
+  int i;
+  int curr_offset;
+
+  char * valueref_deref;
+
+  valueref = instance_getter_java_lang_String_value(gc_info, str_ret, exception);  
+  if(*exception != 0){
+    return; 
+  } 
+  count = instance_getter_java_lang_String_count(gc_info, str_ret, exception);
+  if(*exception != 0){
+    return; 
+  } 
+  offset = instance_getter_java_lang_String_offset(gc_info, str_ret, exception);
+  if(*exception != 0){
+    return; 
+  } 
+  valueref_deref = (char *) edu_syr_pcpratts_gc_deref(gc_info, valueref);
+  for(i = offset; i < count; ++i){
+    curr_offset = 32 + (i * 4);
+    printf("%c", valueref_deref[curr_offset]);
+  }
+  printf("\n");
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_($$__global$$ char * gc_info, int thisref, int * exception){
+  printf("\n");
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_1_($$__global$$ char * gc_info, int thisref, int value, int * exception){
+  printf("%d\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_2_($$__global$$ char * gc_info, int thisref, char value, int * exception){
+  printf("%d\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_3_($$__global$$ char * gc_info, int thisref, char value, int * exception){
+  printf("%c\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_4_($$__global$$ char * gc_info, int thisref, short value, int * exception){
+  printf("%d\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_5_($$__global$$ char * gc_info, int thisref, int value, int * exception){
+  printf("%d\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_6_($$__global$$ char * gc_info, int thisref, long long value, int * exception){
+  printf("%lld\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_7_($$__global$$ char * gc_info, int thisref, float value, int * exception){
+  printf("%e\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_8_($$__global$$ char * gc_info, int thisref, double value, int * exception){
+  printf("%e\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_print0_9_($$__global$$ char * gc_info, int thisref, int str_ret, int * exception){
+  int valueref;
+  int count;
+  int offset;
+  int i;
+  int curr_offset;
+
+  char * valueref_deref;
+
+  valueref = instance_getter_java_lang_String_value(gc_info, str_ret, exception);  
+  if(*exception != 0){
+    return; 
+  } 
+  count = instance_getter_java_lang_String_count(gc_info, str_ret, exception);
+  if(*exception != 0){
+    return; 
+  } 
+  offset = instance_getter_java_lang_String_offset(gc_info, str_ret, exception);
+  if(*exception != 0){
+    return; 
+  } 
+  valueref_deref = (char *) edu_syr_pcpratts_gc_deref(gc_info, valueref);
+  for(i = offset; i < count; ++i){
+    curr_offset = 32 + (i * 4);
+    printf("%c", valueref_deref[curr_offset]);
+  }
+}
+
+$$__device__$$
+void java_io_PrintStream_print0_7_($$__global$$ char * gc_info, int thisref, float value, int * exception){
+  printf("%e", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_print0_8_($$__global$$ char * gc_info, int thisref, double value, int * exception){
+  printf("%e", value);
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
 }
 
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_RootbeerAtomicInt_atomicAdd($$__global$$ char * gc_info, int thisref, int value, int * exception){
+<<<<<<< HEAD
   char * thisref_deref = edu_syr_pcpratts_gc_deref ( gc_info , thisref ) ;
   thisref_deref += 32;
   int * array = (int *) thisref_deref;
+=======
+  char * thisref_deref;
+  int * array;
+
+  thisref_deref = edu_syr_pcpratts_gc_deref ( gc_info , thisref ) ;
+  thisref_deref += 32;
+  array = (int *) thisref_deref;
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
   return atomicAdd(array, value);
 }
 
@@ -314,6 +552,19 @@ double edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_sin($$__global$$ char * gc_
 $$__device__$$ 
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_syncthreads($$__global$$ char * gc_info, int * exception){
   edu_syr_pcpratts_syncthreads();
+<<<<<<< HEAD
+=======
+}
+
+$$__device__$$ 
+void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_threadfence($$__global$$ char * gc_info, int * exception){
+  edu_syr_pcpratts_threadfence();
+}
+
+$$__device__$$ 
+void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_threadfenceBlock($$__global$$ char * gc_info, int * exception){
+  edu_syr_pcpratts_threadfence_block();
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
 }
 
 $$__device__$$ char
@@ -510,30 +761,12 @@ $$__device__$$ int
 edu_syr_pcpratts_strlen(char * str_constant){
   int ret = 0;
   while(1){
-    if(str_constant[ret] != '\0')
+    if(str_constant[ret] != '\0'){
       ret++;
-    else
+    } else {
       return ret;
+    }
   }
-}
-
-
-$$__device__$$ int 
-char__array_new($$__global$$ char * gc_info, int size, int * exception);
-
-$$__device__$$ void 
-char__array_set($$__global$$ char * gc_info, int thisref, int parameter0, char parameter1, int * exception);
-
-$$__device__$$ int
-edu_syr_pcpratts_string_constant($$__global$$ char * gc_info, char * str_constant, int * exception){
-  int i;
-  int len = edu_syr_pcpratts_strlen(str_constant);
-  int characters = char__array_new(gc_info, len, exception);
-  for(i = 0; i < len; ++i){
-    char__array_set(gc_info, characters, i, str_constant[i], exception);
-  }
-  
-  return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
 }
 
 $$__device__$$ int
@@ -549,6 +782,106 @@ edu_syr_pcpratts_array_length($$__global$$ char * gc_info, int thisref){
   //}
 }
 
+$$__device__$$
+int java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a660_(char * gc_info, int * exception){ 
+  int thisref;
+  char * thisref_deref;
+  int chars;
+
+  thisref = edu_syr_pcpratts_gc_malloc(gc_info , 48);
+  if(thisref == -1){
+    *exception = %%java_lang_NullPointerException_TypeNumber%%; 
+    return -1; 
+  }
+
+  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
+  edu_syr_pcpratts_gc_set_count(thisref_deref, 1); 
+  edu_syr_pcpratts_gc_set_color(thisref_deref, COLOR_GREY); 
+  edu_syr_pcpratts_gc_set_type(thisref_deref, %%java_lang_String_TypeNumber%%); 
+  edu_syr_pcpratts_gc_set_ctor_used(thisref_deref, 1); 
+  edu_syr_pcpratts_gc_set_size(thisref_deref, 48); 
+  edu_syr_pcpratts_gc_init_monitor(thisref_deref); 
+
+  chars = char__array_new(gc_info, 0, exception);
+  instance_setter_java_lang_AbstractStringBuilder_value(gc_info, thisref, chars, exception); 
+  instance_setter_java_lang_AbstractStringBuilder_count(gc_info, thisref, 0, exception);
+  return thisref; 
+}
+
+$$__device__$$
+int java_lang_String_initab850b60f96d11de8a390800200c9a66(char * gc_info, int parameter0, int * exception) { 
+  int r0 = -1; 
+  int r1 = -1; 
+  int i0; 
+  int $r2 = -1; 
+  int thisref; 
+  char * thisref_deref; 
+  int i;
+  int len;
+  int characters_copy;
+  char ch;
+  
+  thisref = -1; 
+  edu_syr_pcpratts_gc_assign(gc_info, &thisref, edu_syr_pcpratts_gc_malloc(gc_info, 48)); 
+  if(thisref == -1) { 
+    *exception = %%java_lang_NullPointerException_TypeNumber%%; 
+    return -1; 
+  } 
+  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref); 
+  edu_syr_pcpratts_gc_set_count(thisref_deref, 1); 
+  edu_syr_pcpratts_gc_set_color(thisref_deref, COLOR_GREY); 
+  edu_syr_pcpratts_gc_set_type(thisref_deref, %%java_lang_String_TypeNumber%%); 
+  edu_syr_pcpratts_gc_set_ctor_used(thisref_deref, 1); 
+  edu_syr_pcpratts_gc_set_size(thisref_deref, 48); 
+  edu_syr_pcpratts_gc_init_monitor(thisref_deref); 
+
+  len = edu_syr_pcpratts_array_length(gc_info, parameter0);
+  characters_copy = char__array_new(gc_info, len, exception);
+  for(i = 0; i < len; ++i){
+    ch = char__array_get(gc_info, parameter0, i, exception);
+    char__array_set(gc_info, characters_copy, i, ch, exception);
+  }
+  instance_setter_java_lang_String_value(gc_info, thisref, characters_copy, exception); 
+  instance_setter_java_lang_String_count(gc_info, thisref, len, exception); 
+  instance_setter_java_lang_String_offset(gc_info, thisref, 0, exception); 
+  return thisref; 
+} 
+
+$$__device__$$ int 
+char__array_new($$__global$$ char * gc_info, int size, int * exception);
+
+$$__device__$$ void 
+char__array_set($$__global$$ char * gc_info, int thisref, int parameter0, char parameter1, int * exception);
+
+$$__device__$$ int
+edu_syr_pcpratts_string_constant($$__global$$ char * gc_info, char * str_constant, int * exception){
+  int i;
+  int len = edu_syr_pcpratts_strlen(str_constant);
+  int characters = char__array_new(gc_info, len, exception);
+  unsigned long long * addr = (unsigned long long *) (gc_info + TO_SPACE_FREE_POINTER_OFFSET);
+  for(i = 0; i < len; ++i){
+    char__array_set(gc_info, characters, i, str_constant[i], exception);
+  }
+  
+  return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
+}
+
+<<<<<<< HEAD
+$$__device__$$ int
+edu_syr_pcpratts_array_length($$__global$$ char * gc_info, int thisref){
+  //if(thisref & 0x1000000000000000L){
+  //  thisref &= 0x0fffffffffffffffL;
+  //  thisref += 8;
+  //  return edu_syr_pcpratts_cache_get_int(thisref);
+  //} else {
+    $$__global$$ char * thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
+    int ret = edu_syr_pcpratts_getint(thisref_deref, 12);
+    return ret;
+  //}
+}
+
+=======
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
 $$__device__$$ void
 edu_syr_pcpratts_gc_assign($$__global$$ char * gc_info, int * lhs_ptr, int rhs){
   *lhs_ptr = rhs;
@@ -594,27 +927,28 @@ $$__device__$$ void instance_setter_java_lang_Throwable_stackDepth($$__global$$ 
 $$__device__$$ void java_lang_VirtualMachineError_initab850b60f96d11de8a390800200c9a66_body0_($$__global$$ char * gc_info, int thisref, int * exception);
 
 $$__device__$$ int java_lang_OutOfMemoryError_initab850b60f96d11de8a390800200c9a66($$__global$$ char * gc_info, int * exception){
+  int r0 = -1;
+  int thisref = edu_syr_pcpratts_gc_malloc(gc_info, 40);
+  char * thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
 
-int r0 = -1;
-int thisref = edu_syr_pcpratts_gc_malloc(gc_info, 40);
-char * thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
+  //class info
+  edu_syr_pcpratts_gc_set_count(thisref_deref, 0);
+  edu_syr_pcpratts_gc_set_color(thisref_deref, COLOR_GREY);
+  edu_syr_pcpratts_gc_set_type(thisref_deref, 9);
+  edu_syr_pcpratts_gc_set_ctor_used(thisref_deref, 1);
+  edu_syr_pcpratts_gc_set_size(thisref_deref, 40);
 
-//class info
-edu_syr_pcpratts_gc_set_count(thisref_deref, 0);
-edu_syr_pcpratts_gc_set_color(thisref_deref, COLOR_GREY);
-edu_syr_pcpratts_gc_set_type(thisref_deref, 9);
-edu_syr_pcpratts_gc_set_ctor_used(thisref_deref, 1);
-edu_syr_pcpratts_gc_set_size(thisref_deref, 40);
-instance_setter_java_lang_Throwable_cause(gc_info, thisref, -1, exception);
-instance_setter_java_lang_Throwable_detailMessage(gc_info, thisref, -1, exception);
-instance_setter_java_lang_Throwable_stackTrace(gc_info, thisref, -1, exception);
-//r0 := @this: java.lang.OutOfMemoryError
-edu_syr_pcpratts_gc_assign(gc_info, & r0 ,  thisref );
-//specialinvoke r0.<java.lang.VirtualMachineError: void <init>()>()
-java_lang_VirtualMachineError_initab850b60f96d11de8a390800200c9a66_body0_(gc_info,
- thisref, exception);
-//return
-return thisref;
+  instance_setter_java_lang_Throwable_cause(gc_info, thisref, -1, exception);
+  instance_setter_java_lang_Throwable_detailMessage(gc_info, thisref, -1, exception);
+  instance_setter_java_lang_Throwable_stackTrace(gc_info, thisref, -1, exception);
+
+  //r0 := @this: java.lang.OutOfMemoryError
+  edu_syr_pcpratts_gc_assign(gc_info, & r0 ,  thisref );
+
+  //specialinvoke r0.<java.lang.VirtualMachineError: void <init>()>()
+  java_lang_VirtualMachineError_initab850b60f96d11de8a390800200c9a66_body0_(gc_info,
+   thisref, exception);
+  return thisref;
 }
 
 
@@ -665,34 +999,44 @@ java_util_Arrays_copyOf(char * gc_info, int object_array, int new_size, int * ex
   int length;
   int i;
   
-  ret = edu_syr_pcpratts_gc_malloc(gc_info, 16 + (4 * new_size));
+  ret = edu_syr_pcpratts_gc_malloc(gc_info, 32 + (4 * new_size));
   ret_deref = edu_syr_pcpratts_gc_deref(gc_info, ret);
   object_array_deref = edu_syr_pcpratts_gc_deref(gc_info, object_array);
     
-  for(i = 0; i < 16; ++i){
+  for(i = 0; i < 32; ++i){
     ret_deref[i] = object_array_deref[i];
   }
+<<<<<<< HEAD
   
   length = edu_syr_pcpratts_getint(object_array_deref, 12);
   
   edu_syr_pcpratts_setint(ret_deref, 8, new_size);
   
+=======
+
+  length = edu_syr_pcpratts_getint(object_array_deref, 12);
+  edu_syr_pcpratts_setint(ret_deref, 8, 32 + (4 * new_size));
+  edu_syr_pcpratts_setint(ret_deref, 12, new_size);
+
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7
   if(length < new_size){
     for(i = 0; i < length * 4; ++i){
-      ret_deref[16+i], object_array_deref[16+i];
+      ret_deref[32+i], object_array_deref[32+i];
     }
     int diff = new_size - length;
     for(i = 0; i < diff; ++i){
-      * ((int *) ret_deref[16 + (length * 4) + (i * 4)]) = -1;
+      * ((int *) &ret_deref[32 + (length * 4) + (i * 4)]) = -1;
     }
   } else {
     for(i = 0; i < new_size * 4; ++i){
-      ret_deref[16+i], object_array_deref[16+i];
+      ret_deref[32+i], object_array_deref[32+i];
     }
   }
+
   return ret; 
 }
 
+<<<<<<< HEAD
 /***** Apache Hama Native Implementation *****/
 
 $$__device__$$ int
@@ -700,3 +1044,206 @@ invoke_org_apache_hama_bsp_BSPPeer_getAllPeerNames(char * gc_info, int thisref, 
   //cuPrintf("getAllPeerNames...\n");
   return 0;
 }
+=======
+$$__device__$$ 
+int java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a6610_9_(char * gc_info, 
+  int str ,int * exception){
+ 
+  int r0 = -1; 
+  int thisref; 
+  int str_value;
+  int str_count;  
+
+  char * thisref_deref; 
+  thisref = -1;
+  edu_syr_pcpratts_gc_assign ( gc_info , & thisref , edu_syr_pcpratts_gc_malloc ( gc_info , 48 ) ) ; 
+  if ( thisref ==-1 ) { 
+    * exception = %%java_lang_NullPointerException_TypeNumber%%; 
+    return-1 ; 
+  } 
+  thisref_deref = edu_syr_pcpratts_gc_deref ( gc_info , thisref ) ; 
+  edu_syr_pcpratts_gc_set_count ( thisref_deref , 0 ) ; 
+  edu_syr_pcpratts_gc_set_color ( thisref_deref , COLOR_GREY ) ; 
+  edu_syr_pcpratts_gc_set_type ( thisref_deref , %%java_lang_StringBuilder_TypeNumber%% ) ; 
+  edu_syr_pcpratts_gc_set_ctor_used ( thisref_deref , 1 ) ; 
+  edu_syr_pcpratts_gc_set_size ( thisref_deref , 44 ) ; 
+  edu_syr_pcpratts_gc_init_monitor ( thisref_deref ) ; 
+
+  str_value = instance_getter_java_lang_String_value(gc_info, str, exception);
+  str_count = instance_getter_java_lang_String_count(gc_info, str, exception);
+
+  instance_setter_java_lang_AbstractStringBuilder_value(gc_info, thisref, str_value, exception); 
+  instance_setter_java_lang_AbstractStringBuilder_count(gc_info, thisref, str_count, exception); 
+  return thisref; 
+} 
+
+//<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>
+$$__device__$$ 
+int java_lang_StringBuilder_append10_9_(char * gc_info, int thisref,
+  int parameter0, int * exception){
+
+  int sb_value;
+  int sb_count;
+  int str_value;
+  int str_count;
+  int new_count;
+  int new_sb_value;
+  int i;
+  char ch;
+  int new_str;
+
+  //get string builder value and count
+  sb_value = instance_getter_java_lang_AbstractStringBuilder_value(gc_info, thisref,
+    exception);
+
+  sb_count = instance_getter_java_lang_AbstractStringBuilder_count(gc_info, thisref,
+    exception);
+
+  //get string value and count
+  str_value = instance_getter_java_lang_String_value(gc_info, parameter0,
+    exception);
+
+  str_count = instance_getter_java_lang_String_count(gc_info, parameter0,
+    exception);
+
+  new_count = sb_count + str_count;
+  new_sb_value = char__array_new(gc_info, new_count, exception);
+  for(i = 0; i < sb_count; ++i){
+    ch = char__array_get(gc_info, sb_value, i, exception);
+    char__array_set(gc_info, new_sb_value, i, ch, exception);
+  }
+  for(i = 0; i < str_count; ++i){
+    ch = char__array_get(gc_info, str_value, i, exception);
+    char__array_set(gc_info, new_sb_value, sb_count + i, ch, exception);
+  }
+
+  //make new String
+  new_str = java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, 
+    new_sb_value, exception);
+
+  //return new StringBuilder from String
+  return java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a6610_9_(gc_info,
+    new_str, exception);
+}
+
+//<java.lang.StringBuilder: java.lang.StringBuilder append(boolean)>
+$$__device__$$ 
+int java_lang_StringBuilder_append10_1_(char * gc_info, int thisref,
+  bool parameter0, int * exception){
+  
+  int str = java_lang_Boolean_toString9_1_(gc_info, parameter0, exception);
+  return java_lang_StringBuilder_append10_9_(gc_info, thisref, str, exception);
+}
+
+//<java.lang.StringBuilder: java.lang.StringBuilder append(char)>
+$$__device__$$ 
+int java_lang_StringBuilder_append10_3_(char * gc_info, int thisref,
+  int parameter0, int * exception){
+  
+  int str = java_lang_Character_toString9_3_(gc_info, parameter0, exception);
+  return java_lang_StringBuilder_append10_9_(gc_info, thisref, str, exception);
+}
+
+//<java.lang.StringBuilder: java.lang.StringBuilder append(double)>
+$$__device__$$ 
+int java_lang_StringBuilder_append10_8_(char * gc_info, int thisref,
+  double parameter0, int * exception){
+  
+  int str = java_lang_Double_toString9_8_(gc_info, parameter0, exception);
+  return java_lang_StringBuilder_append10_9_(gc_info, thisref, str, exception);
+}
+
+//<java.lang.StringBuilder: java.lang.StringBuilder append(float)>
+$$__device__$$ 
+int java_lang_StringBuilder_append10_7_(char * gc_info, int thisref,
+  float parameter0, int * exception){
+  
+  int str = java_lang_Float_toString9_7_(gc_info, parameter0, exception);
+  return java_lang_StringBuilder_append10_9_(gc_info, thisref, str, exception);
+}
+
+//<java.lang.StringBuilder: java.lang.StringBuilder append(int)>
+$$__device__$$ 
+int java_lang_StringBuilder_append10_5_(char * gc_info, int thisref,
+  int parameter0, int * exception){
+
+  int str = java_lang_Integer_toString9_5_(gc_info, parameter0, exception);
+  return java_lang_StringBuilder_append10_9_(gc_info, thisref, str, exception);
+}
+
+//<java.lang.StringBuilder: java.lang.StringBuilder append(long)>
+$$__device__$$ 
+int java_lang_StringBuilder_append10_6_(char * gc_info, int thisref,
+  long long parameter0, int * exception){
+
+  int str = java_lang_Long_toString9_6_(gc_info, parameter0, exception);
+  return java_lang_StringBuilder_append10_9_(gc_info, thisref, str, exception);
+}
+
+//<java.lang.StringBuilder: java.lang.String toString()>
+$$__device__$$ 
+int java_lang_StringBuilder_toString9_(char * gc_info, int thisref,
+  int * exception){
+ 
+  int value = instance_getter_java_lang_AbstractStringBuilder_value(gc_info, thisref,
+    exception);
+  return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, value, 
+    exception);
+}
+
+//<java.lang.Double: java.lang.String toString(double)>
+$$__device__$$ 
+int java_lang_Double_toString9_8_(char * gc_info, double parameter0, int * exception){
+
+  long long long_value;
+  long long fraction;
+  int part1;
+  int part2;
+  int part3;
+  int string_builder;
+
+  long_value = (long) parameter0;
+  long_value *= 10000000;
+  fraction = (long) (parameter0 * 10000000);
+  fraction -= long_value;
+    
+  part1 = java_lang_Long_toString9_6_(gc_info, long_value, exception);
+  part2 = edu_syr_pcpratts_string_constant(gc_info, ".", exception);
+  part3 = java_lang_Long_toString9_6_(gc_info, fraction, exception);
+
+  string_builder = java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a6610_9_(gc_info,
+    part1, exception);
+  java_lang_StringBuilder_append10_9_(gc_info, string_builder, part2, exception);
+  java_lang_StringBuilder_append10_9_(gc_info, string_builder, part3, exception);
+
+  return java_lang_StringBuilder_toString9_(gc_info, string_builder, exception);
+}
+
+//<java.lang.Float: java.lang.String toString(float)>
+$$__device__$$ 
+int java_lang_Float_toString9_7_(char * gc_info, float parameter0, int * exception){
+
+  long long long_value;
+  long long fraction;
+  int part1;
+  int part2;
+  int part3;
+  int string_builder;
+
+  long_value = (long) parameter0;
+  long_value *= 10000000;
+  fraction = (long) (parameter0 * 10000000);
+  fraction -= long_value;
+    
+  part1 = java_lang_Long_toString9_6_(gc_info, long_value, exception);
+  part2 = edu_syr_pcpratts_string_constant(gc_info, ".", exception);
+  part3 = java_lang_Long_toString9_6_(gc_info, fraction, exception);
+
+  string_builder = java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a6610_9_(gc_info,
+    part1, exception);
+  java_lang_StringBuilder_append10_9_(gc_info, string_builder, part2, exception);
+  java_lang_StringBuilder_append10_9_(gc_info, string_builder, part3, exception);
+
+  return java_lang_StringBuilder_toString9_(gc_info, string_builder, exception);
+}
+>>>>>>> 56f1a04b81d80e4356d3decc3e22ef176f2fd6c7

@@ -43,7 +43,7 @@ public class BytecodeLanguage {
 
     SootClass object_soot_class = Scene.v().getSootClass("java.lang.Object");
     ret.setSuperclass(object_soot_class);
-    Scene.v().addGeneratedClass(ret);
+    Scene.v().addClass(ret);
     ret.setApplicationClass();
 
     mCurrClass = ret;
@@ -57,7 +57,7 @@ public class BytecodeLanguage {
     SootClass parent_class = Scene.v().getSootClass(parent);
     ret.setSuperclass(parent_class);
 
-    Scene.v().addGeneratedClass(ret);
+    Scene.v().addClass(ret);
     ret.setApplicationClass();
 
     mCurrClass = ret;
@@ -532,6 +532,13 @@ public class BytecodeLanguage {
     Type system = RefType.v("java.lang.System");
     Local out = refStaticField(system, "out");
     pushMethod(out, "println", VoidType.v(), IntType.v());
+    invokeMethodNoRet(out, number);
+  }
+  
+  void printlnLong(Local number) {
+    Type system = RefType.v("java.lang.System");
+    Local out = refStaticField(system, "out");
+    pushMethod(out, "println", VoidType.v(), LongType.v());
     invokeMethodNoRet(out, number);
   }
 

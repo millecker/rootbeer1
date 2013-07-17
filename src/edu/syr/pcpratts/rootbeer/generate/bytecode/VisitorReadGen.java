@@ -165,8 +165,8 @@ public class VisitorReadGen extends AbstractVisitorGen {
     bcl_mem.incrementAddress(8);
     
     Local size = bcl_mem.readInt();
-    //m_Bcl.top().println("reading size: ");
-    //m_Bcl.top().println(size);
+    //bcl.println("reading size: ");
+    //bcl.println(size);
     Local ret = bcl.local(type);
 
     //pad for 16 bytes
@@ -178,6 +178,7 @@ public class VisitorReadGen extends AbstractVisitorGen {
     String label_after_new_float = getNextLabel();
     
     bcl.ifStmt(ctor_used, "==", IntConstant.v(1), label_new_float);
+    bcl.ifStmt(size, "!=", previous_size, label_new_float);
     
     bcl.assign(ret, object_to_read_from);
     bcl.gotoLabel(label_after_new_float);
@@ -208,34 +209,31 @@ public class VisitorReadGen extends AbstractVisitorGen {
       return ret;
     }
 
-    if(type.baseType == IntType.v() && type.numDimensions == 1){
-      bcl_mem.readIntArray(ret, size);
+    Local i = bcl.local(IntType.v());
+    bcl.assign(i, IntConstant.v(0));
+
+    String end_for_label = getNextLabel();
+    String before_if_label = getNextLabel();
+    bcl.label(before_if_label);
+    bcl.ifStmt(i, "==", size, end_for_label);
+
+    Local new_curr;
+
+    if(type.numDimensions != 1){
+      new_curr = readFromHeapArray(object_to_read_from, i, previous_size);
+    } else if(type.baseType instanceof RefType){
+      Local temp = readFromHeapArray(object_to_read_from, i, previous_size);
+      new_curr = bcl.cast(type.baseType, temp);
     } else {
-      Local i = bcl.local(IntType.v());
-      bcl.assign(i, IntConstant.v(0));
-
-      String end_for_label = getNextLabel();
-      String before_if_label = getNextLabel();
-      bcl.label(before_if_label);
-      bcl.ifStmt(i, "==", size, end_for_label);
-
-      Local new_curr;
-
-      if(type.numDimensions != 1){
-        new_curr = readFromHeapArray(object_to_read_from, i, previous_size);
-      } else if(type.baseType instanceof RefType){
-        Local temp = readFromHeapArray(object_to_read_from, i, previous_size);
-        new_curr = bcl.cast(type.baseType, temp);
-      } else {
-        new_curr = bcl_mem.readVar(type.baseType);
-      }
-
-      bcl.assignElementToArray(ret, new_curr, i);
-      
-      bcl.plus(i, 1);
-      bcl.gotoLabel(before_if_label);
-      bcl.label(end_for_label);
+      new_curr = bcl_mem.readVar(type.baseType);
     }
+    
+    bcl.assignElementToArray(ret, new_curr, i);
+
+    bcl.plus(i, 1);
+    bcl.gotoLabel(before_if_label);
+    bcl.label(end_for_label);
+    
     bcl_mem.finishReading();
 
     return ret;
@@ -311,10 +309,11 @@ public class VisitorReadGen extends AbstractVisitorGen {
     curr = bcl.indexArray(object_to_read_from, i);
     bcl.gotoLabel(before_read_int);
     bcl.label(after_read);
-    if(object_to_read_from.getType() instanceof RefLikeType)
+    if(object_to_read_from.getType() instanceof RefLikeType){
       bcl.assign(curr, NullConstant.v());
-    else
+    } else {
       bcl.assign(curr, IntConstant.v(0));
+    }
     bcl.label(before_read_int);
     Local curr_phi = bcl.local(object_to_read_from.getType());
     bcl.assign(curr_phi, curr);
@@ -337,8 +336,8 @@ public class VisitorReadGen extends AbstractVisitorGen {
     Local type_id = bcl_mem.readInt();
     bcl_mem.setAddress(start);
     
-    //m_Bcl.top().println("searching null creators for:");
-    //m_Bcl.top().println(type_id);
+    //m_bcl.top().println("searching null creators for:");
+    //m_bcl.top().println(type_id);
         
     for(Type type : m_OrderedHistory){
       makeReadForNullForType(type, type_id);
@@ -379,7 +378,7 @@ public class VisitorReadGen extends AbstractVisitorGen {
       
       BclMemory bcl_mem = new BclMemory(bcl, m_currMem.top());   
       Local start = bcl_mem.getPointer();
-      bcl_mem.incrementAddress(8);
+      bcl_mem.incrementAddress(12);
       Local size = bcl_mem.readInt();
       bcl_mem.setAddress(start);
     
