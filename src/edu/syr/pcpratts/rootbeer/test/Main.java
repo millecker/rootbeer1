@@ -83,7 +83,7 @@ public class Main implements TestSerializationFactory {
     ret.add(new ByteByteValueTest());
     ret.add(new StringArrayTest1());
     ret.add(new CmplInfTest());
-    ret.add(new LinkedListTest());
+    //ret.add(new LinkedListTest());
     ret.add(new HashSetTest());
     ret.add(new TreeSetTest());
     ret.add(new LinkedHashSetTest());
@@ -97,6 +97,7 @@ public class Main implements TestSerializationFactory {
     ret.add(new StringBuilderTest2());
     ret.add(new DoubleToStringTest());
     ret.add(new FloatToStringTest());
+    ret.add(new ZeroLengthArrayTest());
             
     if(m_hardTests){
       ret.add(new SimpleSynchronizedTest());

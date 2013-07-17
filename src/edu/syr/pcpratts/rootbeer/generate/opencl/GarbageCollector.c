@@ -151,6 +151,22 @@ $$__device__$$ double java_lang_StrictMath_tanh( char * gc_info , double paramet
 } 
 
 $$__device__$$ 
+void edu_syr_pcpratts_rootbeer_runtime_GpuStopwatch_start($$__global$$ char * gc_info, int thisref, int * exception){
+  long long int time;
+  
+  time = clock64();
+  instance_setter_edu_syr_pcpratts_rootbeer_runtime_GpuStopwatch_m_start(gc_info, thisref, time, exception);
+}
+
+$$__device__$$ 
+void edu_syr_pcpratts_rootbeer_runtime_GpuStopwatch_stop($$__global$$ char * gc_info, int thisref, int * exception){
+  long long int time;
+  
+  time = clock64();
+  instance_setter_edu_syr_pcpratts_rootbeer_runtime_GpuStopwatch_m_stop(gc_info, thisref, time, exception);
+}
+
+$$__device__$$ 
 char edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_isOnGpu($$__global$$ char * gc_info, int * exception){
   return 1;
 }
@@ -188,71 +204,85 @@ long long edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getRef($$__global$$ char
 
 $$__device__$$
 char edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedByte($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
   if(index < 0 || index >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return 0;
   }
+#endif
   return m_shared[index]; 
 }
 
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedByte($$__global$$ char * gc_info, int index, char value, int * exception){
+#ifdef ARRAY_CHECKS
   if(index < 0 || index >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return;
   }
+#endif
   m_shared[index] = value;
 }
   
 $$__device__$$
 char edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedChar($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
   if(index < 0 || index >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return 0;
   }
+#endif
   return m_shared[index]; 
 }
 
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedChar($$__global$$ char * gc_info, int index, char value, int * exception){
+#ifdef ARRAY_CHECKS
   if(index < 0 || index >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return;
   }
+#endif
   m_shared[index] = value;
 }
   
 $$__device__$$
 char edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedBoolean($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
   if(index < 0 || index >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return 0;
   }
+#endif
   return m_shared[index]; 
 }
 
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedBoolean($$__global$$ char * gc_info, int index, char value, int * exception){
+#ifdef ARRAY_CHECKS
   if(index < 0 || index >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return;
   }
+#endif
   m_shared[index] = value;
 }
   
 $$__device__$$
 short edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedShort($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
   if(index < 0 || index + 2 >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return 0;
   }  
+#endif
   short ret = 0;
   ret |= m_shared[index] & 0xff;
   ret |= (m_shared[index + 1] << 8) & 0xff00;
@@ -261,22 +291,26 @@ short edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedShort($$__global$$ 
 
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedShort($$__global$$ char * gc_info, int index, short value, int * exception){
+#ifdef ARRAY_CHECKS
   if(index < 0 || index + 2 >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return;
   }
+#endif
   m_shared[index] = (char) (value & 0xff);
   m_shared[index + 1] = (char) ((value >> 8) & 0xff);
 }
 
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedInteger($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
   if(index < 0 || index + 4 >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return 0;
   }
+#endif
   int ret = m_shared[index] & 0x000000ff;
   ret |= (m_shared[index + 1] << 8)  & 0x0000ff00;
   ret |= (m_shared[index + 2] << 16) & 0x00ff0000;
@@ -286,11 +320,13 @@ int edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedInteger($$__global$$ 
 
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedInteger($$__global$$ char * gc_info, int index, int value, int * exception){  
+#ifdef ARRAY_CHECKS
   if(index < 0 || index + 4 >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return;
   }
+#endif
   m_shared[index] = (char) (value & 0xff);
   m_shared[index + 1] = (char) ((value >> 8)  & 0xff);
   m_shared[index + 2] = (char) ((value >> 16) & 0xff);
@@ -299,11 +335,13 @@ void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedInteger($$__global$$
 
 $$__device__$$
 long long edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedLong($$__global$$ char * gc_info, int index, int * exception){
+#ifdef ARRAY_CHECKS
   if(index < 0 || index + 8 >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return 0;
   }
+#endif
   long long ret = 0;
   ret |=  ((long long) m_shared[index]) & 0x00000000000000ffL;
   ret |= ((long long) m_shared[index + 1] << 8)  & 0x000000000000ff00L;
@@ -318,11 +356,13 @@ long long edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_getSharedLong($$__global
 
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_setSharedLong($$__global$$ char * gc_info, int index, long long value, int * exception){
+#ifdef ARRAY_CHECKS
   if(index < 0 || index + 8 >= %%shared_mem_size%%){
     *exception = edu_syr_pcpratts_rootbeer_runtimegpu_GpuException_arrayOutOfBounds(gc_info, 
       index, 0, %%shared_mem_size%%, exception);
     return;
   }
+#endif
   m_shared[index] = (char) (value & 0x00000000000000ffL);
   m_shared[index + 1] = (char) ((value >> 8)  & 0x00000000000000ffL);
   m_shared[index + 2] = (char) ((value >> 16) & 0x00000000000000ffL);
@@ -400,6 +440,36 @@ void java_io_PrintStream_println0_9_($$__global$$ char * gc_info, int thisref, i
 $$__device__$$
 void java_io_PrintStream_println0_($$__global$$ char * gc_info, int thisref, int * exception){
   printf("\n");
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_1_($$__global$$ char * gc_info, int thisref, int value, int * exception){
+  printf("%d\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_2_($$__global$$ char * gc_info, int thisref, char value, int * exception){
+  printf("%d\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_3_($$__global$$ char * gc_info, int thisref, char value, int * exception){
+  printf("%c\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_4_($$__global$$ char * gc_info, int thisref, short value, int * exception){
+  printf("%d\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_5_($$__global$$ char * gc_info, int thisref, int value, int * exception){
+  printf("%d\n", value);
+}
+
+$$__device__$$
+void java_io_PrintStream_println0_6_($$__global$$ char * gc_info, int thisref, long long value, int * exception){
+  printf("%lld\n", value);
 }
 
 $$__device__$$
@@ -676,10 +746,11 @@ $$__device__$$ int
 edu_syr_pcpratts_strlen(char * str_constant){
   int ret = 0;
   while(1){
-    if(str_constant[ret] != '\0')
+    if(str_constant[ret] != '\0'){
       ret++;
-    else
+    } else {
       return ret;
+    }
   }
 }
 
@@ -697,31 +768,57 @@ edu_syr_pcpratts_array_length($$__global$$ char * gc_info, int thisref){
 }
 
 $$__device__$$
-int java_lang_String_initab850b60f96d11de8a390800200c9a66 ( char * gc_info , int parameter0 , int * exception ) { 
-  int r0 =-1 ; 
-  int r1 =-1 ; 
-  int i0 ; 
-  int $r2 =-1 ; 
-  int thisref ; 
-  char * thisref_deref ; 
+int java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a660_(char * gc_info, int * exception){ 
+  int thisref;
+  char * thisref_deref;
+  int chars;
+
+  thisref = edu_syr_pcpratts_gc_malloc(gc_info , 48);
+  if(thisref == -1){
+    *exception = %%java_lang_NullPointerException_TypeNumber%%; 
+    return -1; 
+  }
+
+  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
+  edu_syr_pcpratts_gc_set_count(thisref_deref, 1); 
+  edu_syr_pcpratts_gc_set_color(thisref_deref, COLOR_GREY); 
+  edu_syr_pcpratts_gc_set_type(thisref_deref, %%java_lang_String_TypeNumber%%); 
+  edu_syr_pcpratts_gc_set_ctor_used(thisref_deref, 1); 
+  edu_syr_pcpratts_gc_set_size(thisref_deref, 48); 
+  edu_syr_pcpratts_gc_init_monitor(thisref_deref); 
+
+  chars = char__array_new(gc_info, 0, exception);
+  instance_setter_java_lang_AbstractStringBuilder_value(gc_info, thisref, chars, exception); 
+  instance_setter_java_lang_AbstractStringBuilder_count(gc_info, thisref, 0, exception);
+  return thisref; 
+}
+
+$$__device__$$
+int java_lang_String_initab850b60f96d11de8a390800200c9a66(char * gc_info, int parameter0, int * exception) { 
+  int r0 = -1; 
+  int r1 = -1; 
+  int i0; 
+  int $r2 = -1; 
+  int thisref; 
+  char * thisref_deref; 
   int i;
   int len;
   int characters_copy;
   char ch;
   
-  thisref =-1 ; 
-  edu_syr_pcpratts_gc_assign ( gc_info , & thisref , edu_syr_pcpratts_gc_malloc ( gc_info , 48 ) ) ; 
-  if ( thisref ==-1 ) { 
-    * exception = 21164 ; 
-    return-1 ; 
+  thisref = -1; 
+  edu_syr_pcpratts_gc_assign(gc_info, &thisref, edu_syr_pcpratts_gc_malloc(gc_info, 48)); 
+  if(thisref == -1) { 
+    *exception = %%java_lang_NullPointerException_TypeNumber%%; 
+    return -1; 
   } 
-  thisref_deref = edu_syr_pcpratts_gc_deref ( gc_info , thisref ) ; 
-  edu_syr_pcpratts_gc_set_count ( thisref_deref , 1 ) ; 
-  edu_syr_pcpratts_gc_set_color ( thisref_deref , COLOR_GREY ) ; 
-  edu_syr_pcpratts_gc_set_type ( thisref_deref , 5201 ) ; 
-  edu_syr_pcpratts_gc_set_ctor_used ( thisref_deref , 1 ) ; 
-  edu_syr_pcpratts_gc_set_size ( thisref_deref , 48 ) ; 
-  edu_syr_pcpratts_gc_init_monitor ( thisref_deref ) ; 
+  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref); 
+  edu_syr_pcpratts_gc_set_count(thisref_deref, 1); 
+  edu_syr_pcpratts_gc_set_color(thisref_deref, COLOR_GREY); 
+  edu_syr_pcpratts_gc_set_type(thisref_deref, %%java_lang_String_TypeNumber%%); 
+  edu_syr_pcpratts_gc_set_ctor_used(thisref_deref, 1); 
+  edu_syr_pcpratts_gc_set_size(thisref_deref, 48); 
+  edu_syr_pcpratts_gc_init_monitor(thisref_deref); 
 
   len = edu_syr_pcpratts_array_length(gc_info, parameter0);
   characters_copy = char__array_new(gc_info, len, exception);
@@ -729,10 +826,10 @@ int java_lang_String_initab850b60f96d11de8a390800200c9a66 ( char * gc_info , int
     ch = char__array_get(gc_info, parameter0, i, exception);
     char__array_set(gc_info, characters_copy, i, ch, exception);
   }
-  instance_setter_java_lang_String_value ( gc_info , thisref , characters_copy , exception ) ; 
-  instance_setter_java_lang_String_count ( gc_info , thisref , len, exception) ; 
-  instance_setter_java_lang_String_offset ( gc_info , thisref , 0 , exception ) ; 
-  return thisref ; 
+  instance_setter_java_lang_String_value(gc_info, thisref, characters_copy, exception); 
+  instance_setter_java_lang_String_count(gc_info, thisref, len, exception); 
+  instance_setter_java_lang_String_offset(gc_info, thisref, 0, exception); 
+  return thisref; 
 } 
 
 $$__device__$$ int 
@@ -882,7 +979,7 @@ java_util_Arrays_copyOf(char * gc_info, int object_array, int new_size, int * ex
   length = edu_syr_pcpratts_getint(object_array_deref, 12);
   edu_syr_pcpratts_setint(ret_deref, 8, 32 + (4 * new_size));
   edu_syr_pcpratts_setint(ret_deref, 12, new_size);
-      
+
   if(length < new_size){
     for(i = 0; i < length * 4; ++i){
       ret_deref[32+i], object_array_deref[32+i];
@@ -896,6 +993,7 @@ java_util_Arrays_copyOf(char * gc_info, int object_array, int new_size, int * ex
       ret_deref[32+i], object_array_deref[32+i];
     }
   }
+
   return ret; 
 }
 
@@ -961,7 +1059,6 @@ int java_lang_StringBuilder_append10_9_(char * gc_info, int thisref,
     exception);
 
   new_count = sb_count + str_count;
-
   new_sb_value = char__array_new(gc_info, new_count, exception);
   for(i = 0; i < sb_count; ++i){
     ch = char__array_get(gc_info, sb_value, i, exception);

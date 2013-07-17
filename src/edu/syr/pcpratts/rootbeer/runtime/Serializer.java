@@ -9,8 +9,6 @@ package edu.syr.pcpratts.rootbeer.runtime;
 
 import edu.syr.pcpratts.rootbeer.runtime.memory.BufferPrinter;
 import edu.syr.pcpratts.rootbeer.runtime.memory.Memory;
-import edu.syr.pcpratts.rootbeer.runtime.util.Stopwatch;
-import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -128,6 +126,8 @@ public abstract class Serializer {
     //  System.out.println("writeToHeap: "+o.toString()+" at addr: "+result.m_Ref);
     //}
     doWriteToHeap(o, write_data, result.m_Ref, read_only);
+    //BufferPrinter printer = new BufferPrinter();
+    //printer.print(mMem, result.m_Ref, 128);
     return result.m_Ref;
   }
   
@@ -160,9 +160,7 @@ public abstract class Serializer {
     //}
     //BufferPrinter printer = new BufferPrinter();
     //printer.print(mMem, address, 128);
-    
-    Object ret = doReadFromHeap(o, read_data, address);
-    return checkCache(address, ret);
+    return doReadFromHeap(o, read_data, address);
   }
 
   public void readStaticsFromHeap(){

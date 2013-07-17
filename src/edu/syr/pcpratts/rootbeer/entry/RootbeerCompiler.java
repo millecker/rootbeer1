@@ -22,8 +22,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -32,6 +30,7 @@ import pack.Pack;
 import soot.*;
 import soot.options.Options;
 import soot.rbclassload.DfsInfo;
+import soot.rbclassload.HierarchySignature;
 import soot.rbclassload.ListClassTester;
 import soot.rbclassload.ListMethodTester;
 import soot.rbclassload.MethodTester;
@@ -148,6 +147,7 @@ public class RootbeerCompiler {
     RootbeerClassLoader.v().addNewInvoke("java.lang.StringBuilder");
     
     ListMethodTester follow_tester = new ListMethodTester();
+    follow_tester.addSignature("<java.lang.String: void <init>()>");
     follow_tester.addSignature("<java.lang.String: void <init>(char[])>");
     follow_tester.addSignature("<java.lang.StringBuilder: void <init>()>");
     follow_tester.addSignature("<java.lang.Boolean: java.lang.String toString(boolean)>");
@@ -180,8 +180,16 @@ public class RootbeerCompiler {
     }
     dont_dfs_tester.addSignature("<java.io.PrintStream: void println()>");
     dont_dfs_tester.addSignature("<java.io.PrintStream: void println(java.lang.String)>");
-    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(double)>");
+    
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(boolean)>");   
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(byte)>");   
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(char)>");    
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(short)>");   
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(int)>");     
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(long)>");   
+    
     dont_dfs_tester.addSignature("<java.io.PrintStream: void println(float)>");
+    dont_dfs_tester.addSignature("<java.io.PrintStream: void println(double)>");
     dont_dfs_tester.addSignature("<java.io.PrintStream: void print(java.lang.String)>");
     dont_dfs_tester.addSignature("<java.io.PrintStream: void print(double)>");
     dont_dfs_tester.addSignature("<java.io.PrintStream: void print(float)>");
@@ -196,6 +204,9 @@ public class RootbeerCompiler {
     
     ListMethodTester to_sig_methods = new ListMethodTester();
     to_sig_methods.addSignature("<java.lang.Object: int hashCode()>");
+    to_sig_methods.addSignature("<java.io.PrintStream: void println(java.lang.String)>");
+    to_sig_methods.addSignature("<java.io.PrintStream: void println(int)>");
+    to_sig_methods.addSignature("<java.io.PrintStream: void println(long)>");
     RootbeerClassLoader.v().addToSignaturesMethodTester(to_sig_methods);
     
     RootbeerClassLoader.v().loadNecessaryClasses();
@@ -388,18 +399,32 @@ public class RootbeerCompiler {
   
   private void writeFileToOutput(ZipInputStream jin, ZipEntry jar_entry, ZipOutputStream zos) throws Exception {
     if(jar_entry.isDirectory() == false){
-      ZipEntry entry = new ZipEntry(jar_entry.getName());
-      entry.setSize(jar_entry.getSize());
-      entry.setCrc(jar_entry.getCrc());
-      zos.putNextEntry(entry);
-
+      
+      List<byte[]> buffered = new ArrayList<byte[]>();
+      int total_size = 0;
       while(true){
         byte[] buffer = new byte[4096];
         int len = jin.read(buffer);
-        if(len == -1)
+        if(len == -1){
           break;
-        zos.write(buffer, 0, len);
+        }
+        total_size += len;
+        byte[] truncated = new byte[len];
+        for(int i = 0; i < len; ++i){
+          truncated[i] = buffer[i];
+        }
+        buffered.add(truncated);
       }
+
+      ZipEntry entry = new ZipEntry(jar_entry.getName());
+      entry.setSize(total_size);
+      entry.setCrc(jar_entry.getCrc());
+      zos.putNextEntry(entry);
+
+      for(byte[] buffer : buffered){
+        zos.write(buffer);
+      }
+      
       zos.flush();
     } else {
       zos.putNextEntry(jar_entry);

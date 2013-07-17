@@ -21,6 +21,7 @@ import edu.syr.pcpratts.rootbeer.generate.opencl.fields.OffsetCalculator;
 import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.CompileResult;
 import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.CudaTweaks;
 import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.Tweaks;
+import edu.syr.pcpratts.rootbeer.util.ReadFile;
 import edu.syr.pcpratts.rootbeer.util.ResourceReader;
 import soot.rbclassload.MethodSignatureUtil;
 import java.io.BufferedReader;
@@ -56,19 +57,24 @@ public class OpenCLScene {
   private Set<OpenCLInstanceof> m_instanceOfs;
   private List<CompositeField> m_compositeFields;
   private List<SootMethod> m_methods;
+  private ClassConstantNumbers m_constantNumbers;
   
   static {
     m_curentIdent = 0;
   }
 
   public OpenCLScene(){
+  }
+  
+  public void init(){
     m_codeSegment = null;
     m_classes = new LinkedHashMap<String, OpenCLClass>();
     m_arrayTypes = new LinkedHashSet<OpenCLArrayType>();
     m_methodHierarchies = new MethodHierarchies();
     m_instanceOfs = new HashSet<OpenCLInstanceof>();
     m_methods = new ArrayList<SootMethod>();
-    loadTypes();
+    m_constantNumbers = new ClassConstantNumbers();
+    loadTypes(); 
   }
 
   public static OpenCLScene v(){
@@ -286,10 +292,24 @@ public class OpenCLScene {
     
     NameMangling.v().writeTypesToFile();
     
+    if(false){
+      cuda_unix = readCode(RootbeerPaths.v().getRootbeerHome()+"generated_debug.cu");
+    }
+    
     String[] ret = new String[2];
     ret[0] = cuda_unix;
     ret[1] = cuda_windows;
     return ret;
+  }
+  
+  private String readCode(String filename){
+    ReadFile reader = new ReadFile(filename);
+    try {
+      return reader.read();
+    } catch(Exception ex){
+      ex.printStackTrace(System.out);
+      throw new RuntimeException(ex);
+    }
   }
 
   private String setupEntryPoint(StringBuilder builder){
@@ -312,6 +332,10 @@ public class OpenCLScene {
     String size_str = ""+size;
     cuda_code = cuda_code.replaceAll("%%shared_mem_size%%", size_str);
     
+    int string_number = RootbeerClassLoader.v().getClassNumber("java.lang.String");
+    String string_str = "" + string_number;
+    cuda_code = cuda_code.replaceAll("%%java_lang_String_TypeNumber%%", string_str);
+    
     return cuda_code;
   }
   
@@ -326,6 +350,11 @@ public class OpenCLScene {
   }
 
   private String headerString(boolean unix) throws IOException {
+    String defines = "";
+    if(Configuration.compilerInstance().getArrayChecks()){
+      defines += "#define ARRAY_CHECKS\n"; 
+    }
+    
     String specific_path;
     if(unix){
       specific_path = Tweaks.v().getUnixHeaderPath();
@@ -347,7 +376,7 @@ public class OpenCLScene {
       barrier_code = ResourceReader.getResource(barrier_path);
     }
     
-    return specific_header + "\n" + both_header + "\n" + barrier_code;
+    return defines + "\n" + specific_header + "\n" + both_header + "\n" + barrier_code;
   }
   
   private String kernelString(boolean unix) throws IOException {
@@ -489,5 +518,9 @@ public class OpenCLScene {
     CompositeFieldFactory factory = new CompositeFieldFactory();
     factory.setup(m_classes);
     m_compositeFields = factory.getCompositeFields();
+  }
+  
+  public ClassConstantNumbers getClassConstantNumbers(){
+    return m_constantNumbers;
   }
 }
