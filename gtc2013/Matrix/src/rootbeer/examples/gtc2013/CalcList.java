@@ -19,7 +19,7 @@ public class CalcList {
 
     if(m_size == m_data.length){
       Calculation[] new_data = new Calculation[m_size * 2];
-      for(int i = 0; i < m_size - 1; ++i){
+      for(int i = 0; i < m_size; ++i){
         new_data[i] = m_data[i];
       }
       m_data = new_data;
@@ -28,7 +28,7 @@ public class CalcList {
 
   public List<Calculation> getList(){
     List<Calculation> ret = new ArrayList<Calculation>();
-    for(int i = 0; i < m_size - 1; ++i){
+    for(int i = 0; i < m_size; ++i){
       ret.add(m_data[i]);
     }
     return ret;
