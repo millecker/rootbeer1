@@ -27,6 +27,7 @@ public class CudaPath {
     m_windowsSearchPaths.add("C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\");
     m_windowsSearchPaths.add("C:\\Program Files (x86)\\NVIDIA GPU Computing Toolkit\\CUDA\\");
     m_unixSearchPaths.add("/usr/local/cuda/bin/");
+    m_unixSearchPaths.add("/usr/local/cuda-5.5/bin/");
     m_unixSearchPaths.add("/usr/lib/nvidia-cuda-toolkit/bin/");
   }
           
@@ -75,11 +76,13 @@ public class CudaPath {
       Process p = Runtime.getRuntime().exec("whereis nvcc");
       input = new BufferedReader(new InputStreamReader(p.getInputStream()));
       String output = input.readLine();
-      String[] sp = output.split(" ");
-      for(String s: sp) {
-        s = s.trim();
-        if(s.endsWith("nvcc")) {
-          return s.substring(0, s.lastIndexOf("nvcc"));
+      if(output != null){
+        String[] sp = output.split(" ");
+        for(String s: sp) {
+          s = s.trim();
+          if(s.endsWith("nvcc")) {
+            return s.substring(0, s.lastIndexOf("nvcc"));
+          }
         }
       }
     } catch (IOException e) {
