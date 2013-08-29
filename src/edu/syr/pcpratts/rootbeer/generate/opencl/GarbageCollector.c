@@ -1198,3 +1198,14 @@ int java_lang_Float_toString9_7_(char * gc_info, float parameter0, int * excepti
 
   return java_lang_StringBuilder_toString9_(gc_info, string_builder, exception);
 }
+
+// HamaPeer Implementation
+$$__host__$$ 
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_init($$__global$$ char * gc_info, int thisref, int port, int * exception){
+  long long int time;
+  
+  time = clock64();
+  instance_setter_edu_syr_pcpratts_rootbeer_runtime_HamaPeer_m_start(gc_info, thisref, time, exception);
+}
+
+

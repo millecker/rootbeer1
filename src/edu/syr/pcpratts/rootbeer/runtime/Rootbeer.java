@@ -7,13 +7,11 @@
 
 package edu.syr.pcpratts.rootbeer.runtime;
 
-import edu.syr.pcpratts.rootbeer.configuration.Configuration;
-import edu.syr.pcpratts.rootbeer.runtime2.cuda.CudaRuntime2;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class Rootbeer implements IRootbeer {
 
@@ -25,6 +23,12 @@ public class Rootbeer implements IRootbeer {
   public Rootbeer(){
     RootbeerFactory factory = new RootbeerFactory();
     m_Rootbeer = factory.create(this);
+  }
+  
+  public Rootbeer(Map<String, String> env){
+    this();
+    int port = Integer.parseInt(env.get("hama.pipes.command.port"));
+    HamaPeer.getInstance().init(port);
   }
   
   public static void init(){
