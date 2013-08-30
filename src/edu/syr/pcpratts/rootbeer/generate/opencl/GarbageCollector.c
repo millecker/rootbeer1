@@ -1199,13 +1199,226 @@ int java_lang_Float_toString9_7_(char * gc_info, float parameter0, int * excepti
   return java_lang_StringBuilder_toString9_(gc_info, string_builder, exception);
 }
 
-// HamaPeer Implementation
-$$__host__$$ 
+
+/**********************************************************************************/
+// My Implementation
+/**********************************************************************************/
+
+/* DON'T KNOW HOW TO INCLUDE FILES HERE */
+#include "socket/MessageType.hh"
+#include "socket/SocketClient.hh"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <signal.h>
+#include <pthread.h>
+#include <cuda_runtime.h>
+
+enum MESSAGE_TYPE {
+	UNDEFINED, GET_NUM_MESSAGES, DONE
+};
+
+/**********************************************************************************/
+// KernelWrapper Implementation
+/**********************************************************************************/
+class KernelWrapper {
+private:
+    SocketClient socketClient;
+	pthread_t t_monitor;
+	pthread_mutex_t mutex_process_command;
+    
+	volatile bool result_available;
+	volatile int result_int;
+    
+public:
+	volatile MESSAGE_TYPE command;
+	volatile bool has_task;
+	volatile int lock_thread_id;
+	volatile bool done;
+	volatile bool is_monitoring;
+    
+	KernelWrapper() {
+		init();
+	}
+	~KernelWrapper() {
+		pthread_mutex_destroy(&mutex_process_command);
+	}
+    
+	void init(int port) {
+        // connect SocketClient
+        socketClient.connectSocket(port);
+        
+		is_monitoring = false;
+		done = false;
+		has_task = false;
+        
+		result_available = false;
+		result_int = 0;
+        
+		lock_thread_id = -1;
+        
+		pthread_mutex_init(&mutex_process_command, NULL);
+        
+		reset();
+	}
+    
+	void reset() volatile {
+		command = UNDEFINED;
+		has_task = false;
+	}
+    
+	void start_monitoring() {
+		pthread_create(&t_monitor, NULL, &KernelWrapper::thread, this);
+	}
+    
+	static void *thread(void *context) {
+		volatile KernelWrapper *_this = ((KernelWrapper *) context);
+        
+		while (!_this->done) {
+			_this->is_monitoring = true;
+            
+			if ((_this->has_task) && (_this->lock_thread_id >= 0)
+                && (_this->command != UNDEFINED)) {
+                
+				pthread_mutex_t *lock =
+                (pthread_mutex_t *) &_this->mutex_process_command;
+                
+				pthread_mutex_lock(lock);
+                
+				_this->processCommand();
+				_this->reset();
+				
+                pthread_mutex_unlock(lock);
+            }
+		}
+		return NULL;
+	}
+    
+	void processCommand() volatile {
+        
+		switch (command) {
+                
+            case GET_NUM_MESSAGES: {
+                socket_client.sendCMD(GET_NUM_MESSAGES);
+                
+                while (!socket_client.isNewResultInt) {
+                    socket_client.nextEvent();
+                }
+                socket_client.isNewResultInt = false;
+                
+                result_int = socket_client.resultInt;
+                result_available = true;
+
+                // block until result was consumed
+                while (result_available) {
+                }
+                
+                break;
+            }
+            case DONE: {
+                socket_client.sendCMD(DONE);
+                result_available = true;
+                
+                // block until result was consumed
+                while (result_available) {
+                }
+                
+                break;
+            }
+                
+		}
+	}
+    
+	// Device Method
+	// lock_thread_id was already set
+	__device__ int getNumCurrentMessages() {
+        
+		// wait for possible old task to end
+		while (has_task) {
+		}
+        
+		command = GET_NUM_MESSAGES;
+		has_task = true;
+		__threadfence_system();
+		//__threadfence();
+        
+		// wait for socket communication to end
+		while (!result_available) {
+			__threadfence_system();
+		}
+        
+		result_available = false;
+		__threadfence_system();
+		//__threadfence();
+        
+		return result_int;
+	}
+    
+	__device__ __host__ void sendDone() {
+        
+		command = DONE;
+		has_task = true;
+		//__threadfence_system();
+        
+		// wait for socket communication to end
+		while (!result_available) {
+		}
+        
+		done = true;
+	}
+};
+
+/**********************************************************************************/
+// HamaPeer JNI Implementation
+/**********************************************************************************/
+
+// HamaPeer init method
+$$__host__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_init($$__global$$ char * gc_info, int thisref, int port, int * exception){
-  long long int time;
-  
-  time = clock64();
-  instance_setter_edu_syr_pcpratts_rootbeer_runtime_HamaPeer_m_start(gc_info, thisref, time, exception);
+
+  KernelWrapper *h_kernelWrapper;
+  KernelWrapper *d_kernelWrapper;
+    
+  // CUDA setup
+  // runtime must be placed into a state enabling to allocate zero-copy buffers.
+  cudaSetDeviceFlags(cudaDeviceMapHost);
+    
+  // allocate host_kernelWrapper as pinned memory
+  cudaHostAlloc((void**) &h_kernelWrapper, sizeof(KernelWrapper),
+        cudaHostAllocWriteCombined | cudaHostAllocMapped));
+    
+  // init host kernelWrapper
+  h_kernelWrapper->init(port);
+  h_kernelWrapper->start_monitoring();
+
+  cudaHostGetDevicePointer(&d_kernelWrapper, h_kernelWrapper, 0);
+
+  instance_setter_edu_syr_pcpratts_rootbeer_runtime_HamaPeer_m_hostKernelWrapper(gc_info, thisref, h_kernelWrapper, exception);
+  instance_setter_edu_syr_pcpratts_rootbeer_runtime_HamaPeer_m_deviceKernelWrapper(gc_info, thisref, d_kernelWrapper, exception);
+
+  //cudaFreeHost(h_kernelWrapper);
 }
 
+// HamaPeer static getNumCurrentMessages method
+$$__device__$$
+int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$$ char * gc_info, int * exception){
+  
+  // Pseudo Code ...
+  int thisref = edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getInstance();
+  KernelWrapper *d_kernelWrapper  = (KernelWrapper*)instance_getter_edu_syr_pcpratts_rootbeer_runtime_HamaPeer_m_deviceKernelWrapper(gc_info, thisref, exception);
+    
+  return d_kernelWrapper->getNumCurrentMessages();
+}
 
+// HamaPeer static done method
+$$__device__$$
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_done($$__global$$ char * gc_info, int * exception){
+    
+    // Pseudo Code ...
+    int thisref = edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getInstance();
+    KernelWrapper *d_kernelWrapper  = (KernelWrapper*)instance_getter_edu_syr_pcpratts_rootbeer_runtime_HamaPeer_m_deviceKernelWrapper(gc_info, thisref, exception);
+    
+    d_kernelWrapper->done();
+}
+/**********************************************************************************/

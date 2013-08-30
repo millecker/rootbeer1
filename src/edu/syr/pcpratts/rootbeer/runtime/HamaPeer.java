@@ -22,6 +22,9 @@ public class HamaPeer {
 
   private static HamaPeer m_instance = new HamaPeer();
 
+  public Object m_hostKernelWrapper;
+  public Object m_deviceKernelWrapper;
+
   private HamaPeer() {
   }
 
@@ -30,7 +33,16 @@ public class HamaPeer {
   }
 
   public void init(int port) {
+  }
 
+  /**
+   * @return The number of messages in the peer's received messages queue.
+   */
+  public static int getNumCurrentMessages() {
+    return 0;
+  }
+
+  public static void done() {
   }
 
   /**
@@ -41,23 +53,8 @@ public class HamaPeer {
    * @param peerName
    * @param msg
    */
-  public static void send(String peerName, String msg) {
-
-  }
-
-  /**
-   * @return A message from the peer's received messages queue (a FIFO).
-   */
-  public static String getCurrentMessage() {
-    return null;
-  }
-
-  /**
-   * @return The number of messages in the peer's received messages queue.
-   */
-  public static int getNumCurrentMessages() {
-    return 0;
-  }
+  // public static void send(String peerName, String msg) {
+  // }
 
   /**
    * Barrier Synchronization.
@@ -65,59 +62,64 @@ public class HamaPeer {
    * Sends all the messages in the outgoing message queues to the corresponding
    * remote peers.
    */
-  public static void sync() {
+  // public static void sync() {
+  // }
 
-  }
+  /**
+   * @return A message from the peer's received messages queue (a FIFO).
+   */
+  // public static String getCurrentMessage() {
+  // return null;
+  // }
 
   /**
    * @return the count of current super-step
    */
-  public static long getSuperstepCount() {
-    return 0;
-  }
+  // public static long getSuperstepCount() {
+  // return 0;
+  // }
 
   /**
    * @return the name of this peer in the format "hostname:port".
    */
-  public static String getPeerName() {
-    return null;
-  }
+  // public static String getPeerName() {
+  // return null;
+  // }
 
   /**
    * @return the name of n-th peer from sorted array by name.
    */
-  public static String getPeerName(int index) {
-    return null;
-  }
+  // public static String getPeerName(int index) {
+  // return null;
+  // }
 
   /**
    * @return the index of this peer from sorted array by name.
    */
-  public static int getPeerIndex() {
-    return 0;
-  }
+  // public static int getPeerIndex() {
+  // return 0;
+  // }
 
   /**
    * @return the names of all the peers executing tasks from the same job
    *         (including this peer).
    */
-  public static String[] getAllPeerNames() {
-    return null;
-  }
+  // public static String[] getAllPeerNames() {
+  // return null;
+  // }
 
   /**
    * @return the number of peers
    */
-  public static int getNumPeers() {
-    return 0;
-  }
+  // public static int getNumPeers() {
+  // return 0;
+  // }
 
   /**
    * Clears all queues entries.
    */
-  public static void clear() {
-
-  }
+  // public static void clear() {
+  // }
 
   /**
    * Writes a key/value pair to the output collector.
@@ -125,9 +127,8 @@ public class HamaPeer {
    * @param key your key object
    * @param value your value object
    */
-  public static void write(String key, String value) {
-
-  }
+  // public static void write(String key, String value) {
+  // }
 
   /**
    * Deserializes the next input key value into the given objects.
@@ -136,9 +137,9 @@ public class HamaPeer {
    * @param value
    * @return false if there are no records to read anymore
    */
-  public static boolean readNext(String key, String value) {
-    return false;
-  }
+  // public static boolean readNext(String key, String value) {
+  // return false;
+  // }
 
   /**
    * Reads the next key value pair and returns it as a pair. It may reuse a
@@ -154,9 +155,8 @@ public class HamaPeer {
    * Closes the input and opens it right away, so that the file pointer is at
    * the beginning again.
    */
-  public static void reopenInput() {
-
-  }
+  // public static void reopenInput() {
+  // }
 
   /**
    * @return the jobs configuration
