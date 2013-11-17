@@ -85,6 +85,8 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.StringValue: char[] 'from'(char[])>");
     m_methods.add("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int)>");
     m_methods.add("<java.lang.String: void <init>(char[])>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void init(int)>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getNumCurrentMessages()>");
   }
   
   public Set<String> get(){

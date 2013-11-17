@@ -20,19 +20,12 @@ package edu.syr.pcpratts.rootbeer.runtime;
 
 public class HamaPeer {
 
-  private static HamaPeer m_instance = new HamaPeer();
-
-  public Object m_hostKernelWrapper;
-  public Object m_deviceKernelWrapper;
-
-  private HamaPeer() {
-  }
-
-  public static HamaPeer getInstance() {
-    return m_instance;
-  }
-
-  public void init(int port) {
+  /**
+  * Init Socket connection to Hama Pipes
+  *    
+  * @param port of socket connection
+  */
+  public static void init(int port) {
   }
 
   /**

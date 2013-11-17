@@ -28,7 +28,8 @@ public class Rootbeer implements IRootbeer {
   public Rootbeer(Map<String, String> env){
     this();
     int port = Integer.parseInt(env.get("hama.pipes.command.port"));
-    HamaPeer.getInstance().init(port);
+    System.out.println("Starting Rootbeer using port: " + port);
+    //HamaPeer.init(port);
   }
   
   public static void init(){

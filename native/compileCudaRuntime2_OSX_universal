@@ -4,7 +4,6 @@ CFLAGS="-fno-common -Os -arch i386 -arch x86_64"
 LDFLAGS="-arch i386 -arch x86_64 -dynamiclib"
 
 rm -f *.o
-llvm-gcc $CFLAGS -g -c -I/System/Library/Frameworks/JavaVM.framework/Versions/A/Headers -I/usr/local/cuda/include/ KernelWrapper.cc -o KernelWrapper.o
 llvm-gcc $CFLAGS -g -c -I/System/Library/Frameworks/JavaVM.framework/Versions/A/Headers -I/usr/local/cuda/include/ CudaRuntime2.c -o CudaRuntime2.o
 llvm-gcc $CFLAGS -g -c -I/System/Library/Frameworks/JavaVM.framework/Versions/A/Headers -I/usr/local/cuda/include/ FastMemory.c -o FastMemory.o
 llvm-gcc $CFLAGS -g -c -I/System/Library/Frameworks/JavaVM.framework/Versions/A/Headers -I/usr/local/cuda/include/ Handles.c -o Handles.o
