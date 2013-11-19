@@ -59,14 +59,23 @@ __device__ clock_t global_now;
 
 /* before HostDeviceInterface
 nvcc generated.cu --ptxas-options=-v
-
 ptxas info    : 8 bytes gmem, 4 bytes cmem[14]
 ptxas info    : Compiling entry function '_Z5entryPcS_PiPxS1_S0_S0_i' for 'sm_10'
 ptxas info    : Used 5 registers, 104 bytes smem, 20 bytes cmem[1]
-*/
 
-/* after HostDeviceInterface
+after HostDeviceInterface
+
+nvcc generated.cu --ptxas-options=-v
+ptxas info    : 16 bytes gmem, 8 bytes cmem[14]
+ptxas info    : Compiling entry function '_Z5entryPcS_PiPxS1_S0_S0_iP19HostDeviceInterface' for 'sm_10'
+ptxas info    : Used 5 registers, 112 bytes smem, 20 bytes cmem[1]
+
 nvcc generated.cu --ptxas-options=-v -arch sm_20
+ptxas info    : 16 bytes gmem, 16 bytes cmem[14]
+ptxas info    : Compiling entry function '_Z5entryPcS_PiPxS1_S0_S0_iP19HostDeviceInterface' for 'sm_20'
+ptxas info    : Function properties for _Z5entryPcS_PiPxS1_S0_S0_iP19HostDeviceInterface
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 24 bytes smem, 104 bytes cmem[0]
 */
 
 #include <string>

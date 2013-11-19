@@ -694,7 +694,7 @@ public:
         (is_monitoring) ? "true" : "false");
     }
     printf("HostMonitor.start_monitoring is_monitoring: %s\n",
-        (host_monitor->is_monitoring) ? "true" : "false");
+        (is_monitoring) ? "true" : "false");
   }
 
   static void *thread(void *context) {
@@ -1355,7 +1355,7 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   CHECK_STATUS(env, "error in cuModuleLoad", status);
   free(fatcubin);
 
-  status = cuModuleGetFunction(&cuFunction, cuModule, "_Z5entryPcS_PiPxS1_S0_S0_i"); 
+  status = cuModuleGetFunction(&cuFunction, cuModule, "_Z5entryPcS_PiPxS1_S0_S0_iP19HostDeviceInterface"); 
   CHECK_STATUS(env,"error in cuModuleGetFunction",status)
 
   status = cuFuncSetCacheConfig(cuFunction, CU_FUNC_CACHE_PREFER_L1);
