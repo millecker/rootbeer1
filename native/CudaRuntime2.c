@@ -687,13 +687,31 @@ public:
   void start_monitoring() {
     printf("HostMonitor start monitor thread\n");
     pthread_create(&monitor_thread, NULL, &HostMonitor::thread, this);
+
+    // wait for monitoring
+    while (!is_monitoring) {
+      printf("HostMonitor.start_monitoring is_monitoring: %s\n",
+        (is_monitoring) ? "true" : "false");
+    }
+    printf("HostMonitor.start_monitoring is_monitoring: %s\n",
+        (host_monitor->is_monitoring) ? "true" : "false");
   }
 
   static void *thread(void *context) {
     volatile HostMonitor *_this = ((HostMonitor *) context);
+    printf("HostMonitor thread started... done: %s\n",
+            (_this->host_device_interface->done) ? "true" : "false");
 
     while (!_this->host_device_interface->done) {
       _this->is_monitoring = true;
+
+      //printf("HostMonitor thread is_monitoring: %s\n",
+      //      (_this->is_monitoring) ? "true" : "false");
+
+      //printf("HostMonitor thread running... has_task: %s lock_thread_id: %d command: %d\n",
+      //      (_this->host_device_interface->has_task) ? "true" : "false",
+      //       _this->host_device_interface->lock_thread_id,
+      //       _this->host_device_interface->command);
 
       if ((_this->host_device_interface->has_task) && 
           (_this->host_device_interface->lock_thread_id >= 0) && 
@@ -1474,13 +1492,6 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
 JNIEXPORT jboolean JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2_connect
   (JNIEnv *env, jobject this_ref, jint port) {
 
-  CUresult status;
-  jint result = 0;
-
-  // runtime must be placed into a state enabling to allocate zero-copy buffers.
-  checkCuda(cudaSetDeviceFlags(cudaDeviceMapHost),
-            "error in cudaSetDeviceFlags(cudaDeviceMapHost)");
-
   // allocate host_device_interface as pinned memory
   checkCuda(cudaHostAlloc((void**) &h_host_device_interface, 
             sizeof(HostDeviceInterface),
@@ -1495,8 +1506,8 @@ JNIEXPORT jboolean JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRunt
   host_monitor = new HostMonitor(h_host_device_interface, port);
   host_monitor->start_monitoring();
 
-  // wait for HostMonitor monitoring
-  while (!host_monitor->is_monitoring) {}
+  printf("CudaRuntime2.connect is_monitoring: %s\n",
+        (host_monitor->is_monitoring) ? "true" : "false");
 
-  return result;
+  return true;
 }

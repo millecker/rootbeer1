@@ -1199,63 +1199,10 @@ int java_lang_Float_toString9_7_(char * gc_info, float parameter0, int * excepti
   return java_lang_StringBuilder_toString9_(gc_info, string_builder, exception);
 }
 
-/**********************************************************************************/
-// HamaPeer JNI Implementation
-/**********************************************************************************/
-
-// HamaPeer init method
-$$__host__$$
-void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_init($$__global$$ char * gc_info, int port, int * exception){
-
-/*
-  KernelWrapper *h_kernelWrapper;
-  KernelWrapper *d_kernelWrapper;
-    
-  // CUDA setup
-  // runtime must be placed into a state enabling to allocate zero-copy buffers.
-  cudaSetDeviceFlags(cudaDeviceMapHost);
-    
-  // allocate host_kernelWrapper as pinned memory
-  cudaHostAlloc((void**) &h_kernelWrapper, sizeof(KernelWrapper),
-        cudaHostAllocWriteCombined | cudaHostAllocMapped));
-    
-  // init host kernelWrapper
-  h_kernelWrapper->init(port);
-  h_kernelWrapper->start_monitoring();
-
-  cudaHostGetDevicePointer(&d_kernelWrapper, h_kernelWrapper, 0);
-
-  instance_setter_edu_syr_pcpratts_rootbeer_runtime_HamaPeer_m_hostKernelWrapper(gc_info, thisref, h_kernelWrapper, exception);
-  instance_setter_edu_syr_pcpratts_rootbeer_runtime_HamaPeer_m_deviceKernelWrapper(gc_info, thisref, d_kernelWrapper, exception);
-
-  //cudaFreeHost(h_kernelWrapper);
-*/
-}
-
-// HamaPeer static getNumCurrentMessages method
+// HamaPeer getNumCurrentMessages
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$$ char * gc_info, int * exception){
-
-/*  
-  // Pseudo Code ...
-  int thisref = edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getInstance();
-  KernelWrapper *d_kernelWrapper  = (KernelWrapper*)instance_getter_edu_syr_pcpratts_rootbeer_runtime_HamaPeer_m_deviceKernelWrapper(gc_info, thisref, exception);
-    
-  return d_kernelWrapper->getNumCurrentMessages();
-*/
+  
+  // return d_kernelWrapper->getNumCurrentMessages();
   return 21;
 }
-
-// HamaPeer static done method
-$$__device__$$
-void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_done($$__global$$ char * gc_info, int * exception){
-  
-/*  
-  // Pseudo Code ...
-  int thisref = edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getInstance();
-  KernelWrapper *d_kernelWrapper  = (KernelWrapper*)instance_getter_edu_syr_pcpratts_rootbeer_runtime_HamaPeer_m_deviceKernelWrapper(gc_info, thisref, exception);
-    
-  d_kernelWrapper->done();
-*/
-}
-/**********************************************************************************/
