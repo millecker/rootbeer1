@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import edu.syr.pcpratts.rootbeer.runtime2.cuda.CudaRuntime2;
+
 public class Rootbeer implements IRootbeer {
 
   private IRootbeerInternal m_Rootbeer;
@@ -29,7 +31,7 @@ public class Rootbeer implements IRootbeer {
     this();
     int port = Integer.parseInt(env.get("hama.pipes.command.port"));
     System.out.println("Starting Rootbeer using port: " + port);
-    //HamaPeer.init(port);
+    CudaRuntime2.v().connect(port);
   }
   
   public static void init(){

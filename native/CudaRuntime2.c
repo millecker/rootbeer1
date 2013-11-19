@@ -50,6 +50,731 @@ static int numMultiProcessors;
 static int textureMemSize;
 static size_t gc_space_size;
 
+/*****************************************************************************/
+/*************************** HAMA_PIPES_CODE_START ***************************/
+/*****************************************************************************/
+
+#include <cuda_runtime.h>
+#include <errno.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <rpc/types.h>
+#include <rpc/xdr.h>
+#include <signal.h>
+#include <string>
+#include <sys/socket.h>
+
+#define stringify( name ) # name
+
+using std::string;
+
+// Convenience function for checking CUDA runtime API results
+// can be wrapped around any runtime API call. No-op in release builds.
+inline cudaError_t checkCuda(cudaError_t result, string message) {
+  if (result != cudaSuccess) {
+    fprintf(stderr, "%s - CUDA Runtime Error: %s\n", message.c_str(), 
+            cudaGetErrorString(result));
+    assert(result == cudaSuccess);
+  }
+  return result;
+}
+
+/*****************************************************************************/
+// HostDeviceInterface
+/*****************************************************************************/
+class HostDeviceInterface {
+public:
+  // Only one thread is able to use the
+  // HostDeviceInterface
+  volatile int lock_thread_id; 
+
+  // HostMonitor has_task
+  volatile bool has_task;
+
+  // HostMonitor is done (end of communication)
+  volatile bool done;
+
+  // Request for HostMonitor
+  enum MESSAGE_TYPE {
+	UNDEFINED, GET_NUM_MESSAGES, DONE
+  };
+  volatile MESSAGE_TYPE command;
+  volatile int param1;
+
+  // Response of HostMonitor
+  volatile bool is_result_available;
+  volatile int result_int;
+  volatile string result_string;
+
+  __device__ __host__ HostDeviceInterface() {
+    lock_thread_id = -1;
+    has_task = false;
+    done = false;
+
+    command = UNDEFINED;
+
+    is_result_available = false;
+    result_int = 0;
+  }
+
+  __device__ __host__ ~HostDeviceInterface() {}
+};
+
+/* Only needed for debugging output */
+const char* messageTypeNames[] = { stringify(UNDEFINED), stringify(GET_NUM_MESSAGES),
+  stringify(DONE) };
+
+/*****************************************************************************/
+// Hadoop Utils
+/*****************************************************************************/
+/**
+ * Check to make sure that the condition is true, and throw an exception
+ * if it is not. The exception will contain the message and a description
+ * of the source location.
+ */
+
+#define HADOOP_ASSERT(CONDITION, MESSAGE) \
+{ \
+if (!(CONDITION)) { \
+throw Error((MESSAGE), __FILE__, __LINE__, \
+__PRETTY_FUNCTION__); \
+} \
+}
+
+string toString(int32_t x) {
+  char str[100];
+  sprintf(str, "%d", x);
+  return str;
+}
+
+class Error {
+private:
+  string error;
+public:
+  Error(const string& msg): error(msg) {
+  }
+  
+  Error(const string& msg,
+        const string& file, int line,
+        const string& function) {
+    error = msg + " at " + file + ":" + toString(line) +
+    " in " + function;
+  }
+  
+  const string& getMessage() const {
+    return error;
+  }
+};
+
+int toInt(const string& val) {
+  int result;
+  char trash;
+  int num = sscanf(val.c_str(), "%d%c", &result, &trash);
+  HADOOP_ASSERT(num == 1,
+                "Problem converting " + val + " to integer.");
+  return result;
+}
+
+float toFloat(const string& val) {
+  float result;
+  char trash;
+  int num = sscanf(val.c_str(), "%f%c", &result, &trash);
+  HADOOP_ASSERT(num == 1,
+                "Problem converting " + val + " to float.");
+  return result;
+}
+
+double toDouble(const string& val) {
+  const char* begin = val.c_str();
+  char* end;
+  double result = strtod(begin, &end);
+  size_t s = end - begin;
+  if(s < val.size()) {
+    throw Error("Problem converting "+val+" to double. (result:"
+                +toString(result)+")");
+  }
+  return result;
+}
+
+bool toBool(const string& val) {
+  if (val == "true") {
+    return true;
+  } else if (val == "false") {
+    return false;
+  } else {
+    HADOOP_ASSERT(false,
+                  "Problem converting " + val + " to boolean.");
+  }
+}
+
+/*****************************************************************************/
+// FileInStream
+/*****************************************************************************/
+class FileInStream {
+private:
+  /**
+   * The file to write to.
+   */
+  FILE *mFile;
+  /**
+   * Does is this class responsible for closing the FILE*?
+   */
+  bool isOwned;
+  
+public:
+  FileInStream() {
+    mFile = NULL;
+    isOwned = false;
+  }
+  ~FileInStream() {
+    if (mFile != NULL) {
+      close();
+    }
+  }
+  
+  bool open(const std::string& name) {
+    mFile = fopen(name.c_str(), "rb");
+    isOwned = true;
+    return (mFile != NULL);
+  }
+  
+  bool open(FILE* file) {
+    mFile = file;
+    isOwned = false;
+    return (mFile != NULL);
+  }
+  
+  void read(void *buf, size_t len) {
+    size_t result = fread(buf, len, 1, mFile);
+    if (result == 0) {
+      if (feof(mFile)) {
+        HADOOP_ASSERT(false, "end of file");
+      } else {
+        HADOOP_ASSERT(false, string("read error on file: ") + strerror(errno));
+      }
+    }
+  }
+  
+  bool skip(size_t nbytes)
+  {
+    return (0==fseek(mFile, nbytes, SEEK_CUR));
+  }
+  
+  bool close()
+  {
+    int ret = 0;
+    if (mFile != NULL && isOwned) {
+      ret = fclose(mFile);
+    }
+    mFile = NULL;
+    return (ret==0);
+  }
+  
+};
+
+/*****************************************************************************/
+// FileOutStream
+/*****************************************************************************/
+class FileOutStream {
+private:
+  FILE *mFile;
+  bool isOwned;
+  
+public:
+  
+  FileOutStream() {
+    mFile = NULL;
+    isOwned = false;
+  }
+  
+  ~FileOutStream() {
+    if (mFile != NULL) {
+      close();
+    }
+  }
+  
+  bool open(const std::string& name, bool overwrite)
+  {
+    if (!overwrite) {
+      mFile = fopen(name.c_str(), "rb");
+      if (mFile != NULL) {
+        fclose(mFile);
+        return false;
+      }
+    }
+    mFile = fopen(name.c_str(), "wb");
+    isOwned = true;
+    return (mFile != NULL);
+  }
+  
+  bool open(FILE* file)
+  {
+    mFile = file;
+    isOwned = false;
+    return (mFile != NULL);
+  }
+  
+  void write(const void* buf, size_t len)
+  {
+    size_t result = fwrite(buf, len, 1, mFile);
+    HADOOP_ASSERT(result == 1,
+                  string("write error to file: ") + strerror(errno));
+  }
+  
+  bool advance(size_t nbytes)
+  {
+    return (0==fseek(mFile, nbytes, SEEK_CUR));
+  }
+  
+  bool close()
+  {
+    int ret = 0;
+    if (mFile != NULL && isOwned) {
+      ret = fclose(mFile);
+    }
+    mFile = NULL;
+    return (ret == 0);
+  }
+  
+  void flush()
+  {
+    fflush(mFile);
+  }
+  
+};
+
+/*****************************************************************************/
+// Serialization and Deserialization
+/*****************************************************************************/
+void serializeLong(int64_t t, FileOutStream& stream)
+{
+  if (t >= -112 && t <= 127) {
+    int8_t b = t;
+    stream.write(&b, 1);
+    return;
+  }
+  
+  int8_t len = -112;
+  if (t < 0) {
+    t ^= -1ll; // reset the sign bit
+    len = -120;
+  }
+  
+  uint64_t tmp = t;
+  while (tmp != 0) {
+    tmp = tmp >> 8;
+    len--;
+  }
+  
+  stream.write(&len, 1);
+  len = (len < -120) ? -(len + 120) : -(len + 112);
+  
+  for (uint32_t idx = len; idx != 0; idx--) {
+    uint32_t shiftbits = (idx - 1) * 8;
+    uint64_t mask = 0xFFll << shiftbits;
+    uint8_t b = (t & mask) >> shiftbits;
+    stream.write(&b, 1);
+  }
+}
+
+int64_t deserializeLong(FileInStream& stream)
+{
+  int8_t b;
+  stream.read(&b, 1);
+  if (b >= -112) {
+    return b;
+  }
+  bool negative;
+  int len;
+  if (b < -120) {
+    negative = true;
+    len = -120 - b;
+  } else {
+    negative = false;
+    len = -112 - b;
+  }
+  uint8_t barr[len];
+  stream.read(barr, len);
+  int64_t t = 0;
+  for (int idx = 0; idx < len; idx++) {
+    t = t << 8;
+    t |= (barr[idx] & 0xFF);
+  }
+  if (negative) {
+    t ^= -1ll;
+  }
+  return t;
+}
+
+void serializeInt(int32_t t, FileOutStream& stream) {
+  serializeLong(t, stream);
+}
+
+int32_t deserializeInt(FileInStream& stream) {
+  return deserializeLong(stream);
+}
+
+
+void serializeFloat(float t, FileOutStream& stream)
+{
+  char buf[sizeof(float)];
+  XDR xdrs;
+  xdrmem_create(&xdrs, buf, sizeof(float), XDR_ENCODE);
+  xdr_float(&xdrs, &t);
+  stream.write(buf, sizeof(float));
+}
+
+float deserializeFloat(FileInStream& stream)
+{
+  float t;
+  char buf[sizeof(float)];
+  stream.read(buf, sizeof(float));
+  XDR xdrs;
+  xdrmem_create(&xdrs, buf, sizeof(float), XDR_DECODE);
+  xdr_float(&xdrs, &t);
+  return t;
+}
+
+void serializeDouble(double t, FileOutStream& stream)
+{
+  char buf[sizeof(double)];
+  XDR xdrs;
+  xdrmem_create(&xdrs, buf, sizeof(double), XDR_ENCODE);
+  xdr_double(&xdrs, &t);
+  stream.write(buf, sizeof(double));
+}
+
+double deserializeDouble(FileInStream& stream)
+{
+  double t;
+  char buf[sizeof(double)];
+  stream.read(buf, sizeof(double));
+  XDR xdrs;
+  xdrmem_create(&xdrs, buf, sizeof(double), XDR_DECODE);
+  xdr_double(&xdrs, &t);
+  return t;
+}
+
+void serializeString(const string& t, FileOutStream& stream)
+{
+  serializeInt(t.length(), stream);
+  if (t.length() > 0) {
+    stream.write(t.data(), t.length());
+  }
+}
+
+string deserializeString(FileInStream& stream)
+{
+  string t;
+  int32_t len = deserializeInt(stream);
+  if (len > 0) {
+    // resize the string to the right length
+    t.resize(len);
+    // read into the string in 64k chunks
+    const int bufSize = 65536;
+    int offset = 0;
+    char buf[bufSize];
+    while (len > 0) {
+      int chunkLength = len > bufSize ? bufSize : len;
+      stream.read(buf, chunkLength);
+      t.replace(offset, chunkLength, buf, chunkLength);
+      offset += chunkLength;
+      len -= chunkLength;
+    }
+  } else {
+    t.clear();
+  }
+  return t;
+}
+
+/*****************************************************************************/
+// SocketClient Implementation
+/*****************************************************************************/
+class SocketClient {
+private:
+  int sock;
+  FILE* in_stream;
+  FILE* out_stream;
+  FileInStream* inStream;
+  FileOutStream* outStream;
+
+public:
+  volatile int32_t resultInt;
+  volatile bool isNewResultInt;
+  volatile int64_t resultLong;
+  volatile bool isNewResultLong;
+  volatile string resultString;
+  volatile bool isNewResultString;
+  //vector<string> resultVector;
+  //bool isNewResultVector;
+  //bool isNewKeyValuePair;
+  //string currentKey;
+  //string currentValue;
+  
+  SocketClient() {
+    sock = -1;
+    in_stream = NULL;
+    out_stream = NULL;
+    isNewResultInt = false;
+    isNewResultString = false;
+    //isNewResultVector = false;
+    //isNewKeyValuePair = false;
+  }
+  
+  ~SocketClient() {
+    if (in_stream != NULL) {
+      fflush(in_stream);
+    }
+    if (out_stream != NULL) {
+      fflush(out_stream);
+    }
+    fflush(stdout);
+    if (sock != -1) {
+      int result = shutdown(sock, SHUT_RDWR);
+      //if (result != 0) {
+      //	fprintf(stderr, "SocketClient: problem shutting down socket\n");
+      //}
+      result = shutdown(sock, 2);
+      if (result != 0) {
+        fprintf(stderr, "SocketClient: problem closing socket\n");
+      }
+    }
+  }
+  
+  void connectSocket(int port) {
+    printf("SocketClient started\n");
+    
+    if (port <= 0) {
+      printf("SocketClient: invalid port number!\n");
+      return; /* Failed */
+    }
+    
+    sock = socket(PF_INET, SOCK_STREAM, 0);
+    if (sock == -1) {
+      fprintf(stderr, "SocketClient: problem creating socket: %s\n",
+              strerror(errno));
+    }
+    
+    sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port);
+    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    
+    int res = connect(sock, (sockaddr*) &addr, sizeof(addr));
+    if (res != 0) {
+      fprintf(stderr, "SocketClient: problem connecting command socket: %s\n",
+              strerror(errno));
+    }
+    
+    in_stream = fdopen(sock, "r");
+    out_stream = fdopen(sock, "w");
+    
+    inStream = new FileInStream();
+    inStream->open(in_stream);
+    outStream = new FileOutStream();
+    outStream->open(out_stream);
+    
+    printf("SocketClient is connected to port %d ...\n", port);
+  }
+  
+  void sendCMD(int32_t cmd) volatile {
+    serializeInt(cmd, *outStream);
+    outStream->flush();
+    printf("SocketClient sent CMD %s\n", messageTypeNames[cmd]);
+  }
+  
+  void sendCMD(int32_t cmd, int32_t value) volatile {
+    serializeInt(cmd, *outStream);
+    serializeInt(value, *outStream);
+    outStream->flush();
+    printf("SocketClient sent CMD: %s with Value: %d\n", messageTypeNames[cmd],
+           value);
+  }
+  
+  void sendCMD(int32_t cmd, const string& value) volatile {
+    serializeInt(cmd, *outStream);
+    serializeString(value, *outStream);
+    outStream->flush();
+    printf("SocketClient sent CMD: %s with Value: %s\n", messageTypeNames[cmd],
+           value.c_str());
+  }
+  
+  void sendCMD(int32_t cmd, const string values[], int size) volatile {
+    serializeInt(cmd, *outStream);
+    for (int i = 0; i < size; i++) {
+      serializeString(values[i], *outStream);
+      printf("SocketClient sent CMD: %s with Param%d: %s\n",
+             messageTypeNames[cmd], i + 1, values[i].c_str());
+    }
+    outStream->flush();
+  }
+  
+  void sendCMD(int32_t cmd, int32_t value, const string values[],
+               int size) volatile {
+    serializeInt(cmd, *outStream);
+    serializeInt(value, *outStream);
+    for (int i = 0; i < size; i++) {
+      serializeString(values[i], *outStream);
+      printf("SocketClient sent CMD: %s with Param%d: %s\n",
+             messageTypeNames[cmd], i + 1, values[i].c_str());
+    }
+    outStream->flush();
+  }
+  
+  void nextEvent() volatile {
+    int32_t cmd = deserializeInt(*inStream);
+    
+    switch (cmd) {
+        
+      case HostDeviceInterface::GET_NUM_MESSAGES: {
+        resultInt = deserializeInt(*inStream);
+        printf("SocketClient - GET_NUM_MESSAGES IN=%d\n", resultInt);
+        isNewResultInt = true;
+        break;
+      }
+        
+      default:
+        fprintf(stderr, "SocketClient - Unknown binary command: %d\n", cmd);
+        break;
+        
+    }
+  }
+
+};
+
+/*****************************************************************************/
+// HostMonitor
+/*****************************************************************************/
+class HostMonitor {
+private:
+  pthread_t monitor_thread;
+  pthread_mutex_t mutex_process_command;
+  SocketClient *socket_client;
+
+public:
+  volatile bool is_monitoring;
+  volatile HostDeviceInterface *host_device_interface;
+
+  HostMonitor(HostDeviceInterface *h_d_interface, int port) {
+    host_device_interface = h_d_interface;
+    
+    socket_client = new SocketClient();
+    // connect SocketClient
+    socket_client->connectSocket(port);
+
+    printf("HostMonitor init\n");
+
+    is_monitoring = false;
+
+    pthread_mutex_init(&mutex_process_command, NULL);
+
+    reset();
+  }
+
+  ~HostMonitor() {
+    pthread_mutex_destroy(&mutex_process_command);
+  }
+
+  void reset() volatile {
+    host_device_interface->command = HostDeviceInterface::UNDEFINED;
+    host_device_interface->has_task = false;
+    printf("HostMonitor reset lock_thread_id: %d, has_task: %s, result_available: %s\n",
+           host_device_interface->lock_thread_id, 
+           (host_device_interface->has_task) ? "true" : "false",
+           (host_device_interface->is_result_available) ? "true" : "false");
+  }
+
+  void start_monitoring() {
+    printf("HostMonitor start monitor thread\n");
+    pthread_create(&monitor_thread, NULL, &HostMonitor::thread, this);
+  }
+
+  static void *thread(void *context) {
+    volatile HostMonitor *_this = ((HostMonitor *) context);
+
+    while (!_this->host_device_interface->done) {
+      _this->is_monitoring = true;
+
+      if ((_this->host_device_interface->has_task) && 
+          (_this->host_device_interface->lock_thread_id >= 0) && 
+          (_this->host_device_interface->command != HostDeviceInterface::UNDEFINED)) {
+
+        pthread_mutex_t *lock = (pthread_mutex_t *) &_this->mutex_process_command;
+	pthread_mutex_lock(lock);
+	
+        printf("HostMonitor thread: %p, LOCKED(mutex_process_command)\n", pthread_self());
+
+	_this->processCommand();
+        
+        _this->reset();
+
+	pthread_mutex_unlock(lock);
+	printf("HostMonitor thread: %p, UNLOCKED(mutex_process_command)\n", pthread_self());
+      }
+    }
+    return NULL;
+  }
+
+  void processCommand() volatile {
+
+    printf("HostMonitor processCommand: %d, lock_thread_id: %d, result_available: %s\n",
+           host_device_interface->command, 
+           host_device_interface->lock_thread_id, 
+           (host_device_interface->is_result_available) ? "true" : "false");
+
+    switch (host_device_interface->command) {
+      
+      case HostDeviceInterface::GET_NUM_MESSAGES: {
+        socket_client->sendCMD(HostDeviceInterface::GET_NUM_MESSAGES, host_device_interface->param1);
+        
+        while (!socket_client->isNewResultInt) {
+          socket_client->nextEvent();
+        }
+        
+        socket_client->isNewResultInt = false;
+        host_device_interface->result_int = socket_client->resultInt;
+
+        host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %d result_available: %s\n",
+               host_device_interface->result_int, 
+               (host_device_interface->is_result_available) ? "true" : "false");
+
+	// block until result was consumed
+	while (host_device_interface->is_result_available) {
+          printf("HostMonitor wait for consuming result! result_int: %d, result_available: %s\n",
+                 host_device_interface->result_int, 
+                 (host_device_interface->is_result_available) ? "true" : "false");
+	}
+	
+	printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
+
+        break;
+      }
+
+      case HostDeviceInterface::DONE: {
+        socket_client->sendCMD(HostDeviceInterface::DONE);
+        host_device_interface->is_result_available = true;
+        // block until result was consumed
+        while (host_device_interface->is_result_available) {}
+
+        break;
+      }
+    }
+  }
+
+};
+
+// Global HostDeviceInterface
+HostDeviceInterface *h_host_device_interface;
+HostDeviceInterface *d_host_device_interface;
+// Global HostMonitor
+HostMonitor *host_monitor;
+
+/*****************************************************************************/
+/**************************** HAMA_PIPES_CODE_END ****************************/
+/*****************************************************************************/
+
 /**
 * Throws a runtimeexception called CudaMemoryException
 * allocd - number of bytes tried to allocate
@@ -67,7 +792,7 @@ void throw_cuda_errror_exception(JNIEnv *env, const char *message, int error) {
     return;
   }
 
-  exp = (*env)->FindClass(env,"edu/syr/pcpratts/rootbeer/runtime2/cuda/CudaErrorException");
+  exp = env->FindClass("edu/syr/pcpratts/rootbeer/runtime2/cuda/CudaErrorException");
 
   // we truncate the message to 900 characters to stop any buffer overflow
   switch(error){
@@ -83,18 +808,18 @@ void throw_cuda_errror_exception(JNIEnv *env, const char *message, int error) {
       sprintf(msg, "ERROR STATUS:%i : %.900s", error, message);
   }
 
-  fid = (*env)->GetFieldID(env,exp, "cudaError_enum", "I");
-  (*env)->SetLongField(env,exp,fid, (jint)error);
+  fid = env->GetFieldID(exp, "cudaError_enum", "I");
+  env->SetLongField(exp,fid, (jint)error);
 
-  (*env)->ThrowNew(env,exp,msg);
+  env->ThrowNew(exp,msg);
   
   return;
 }
 
 void setLongField(JNIEnv *env, jobject obj, const char * name, jlong value){
 
-  jfieldID fid = (*env)->GetFieldID(env, thisRefClass, name, "J");
-  (*env)->SetLongField(env, obj, fid, value);
+  jfieldID fid = env->GetFieldID(thisRefClass, name, "J");
+  env->SetLongField(obj, fid, value);
   
   return;
 }
@@ -140,7 +865,7 @@ void getBestDevice(JNIEnv *env){
 }
 
 void savePointers(JNIEnv * env, jobject this_ref){
-  thisRefClass = (*env)->GetObjectClass(env, this_ref);
+  thisRefClass = env->GetObjectClass(this_ref);
   setLongField(env, this_ref, "m_ToSpaceAddr", (jlong) toSpace);
   setLongField(env, this_ref, "m_GpuToSpaceAddr", (jlong) gpuToSpace);
   setLongField(env, this_ref, "m_TextureAddr", (jlong) textureMemory);
@@ -558,19 +1283,19 @@ void * readCubinFileFromBuffers(JNIEnv *env, jobject buffers, jint size, jint to
   int i, j;
   int dest_offset = 0;
   int len;
-  char * data;
+  signed char * data;
   char * ret = (char *) malloc(total_size);
 
-  jclass cls = (*env)->GetObjectClass(env, buffers);
-  jmethodID mid = (*env)->GetMethodID(env, cls, "get", "(I)Ljava/lang/Object;");
+  jclass cls = env->GetObjectClass(buffers);
+  jmethodID mid = env->GetMethodID(cls, "get", "(I)Ljava/lang/Object;");
   for(i = 0; i < size; ++i){
-    jobject buffer = (*env)->CallObjectMethod(env, buffers, mid, i);
+    jobject buffer = env->CallObjectMethod(buffers, mid, i);
     jbyteArray * arr = (jbyteArray*) &buffer;
-    len = (*env)->GetArrayLength(env, *arr);
-    data = (*env)->GetByteArrayElements(env, *arr, NULL);
+    len = env->GetArrayLength(*arr);
+    data = env->GetByteArrayElements(*arr, NULL);
     memcpy((void *) (ret + dest_offset), (void *) data, len);
     dest_offset += len;
-    (*env)->ReleaseByteArrayElements(env, *arr, data, 0);
+    env->ReleaseByteArrayElements(*arr, data, 0);
   }
 
   return (void *) ret;
@@ -585,9 +1310,9 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   (JNIEnv *env, jobject this_ref, jintArray jarray)
 {
   int i;
-  jint * native_array = (*env)->GetIntArrayElements(env, jarray, 0);
+  jint * native_array = env->GetIntArrayElements(jarray, 0);
   cuMemcpyHtoD(gpuClassMemory, native_array, classMemSize);
-  (*env)->ReleaseIntArrayElements(env, jarray, native_array, 0);
+  env->ReleaseIntArrayElements(jarray, native_array, 0);
   
   return;
 }
@@ -595,7 +1320,7 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
 /*
  * Class:     edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
  * Method:    loadFunction
- * Signature: ()V
+ * Signature: (JLjava/lang/Object;III)V
  */
 JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2_loadFunction
   (JNIEnv *env, jobject this_obj, jlong heap_end_ptr, jobject buffers, jint size, jint total_size, jint num_blocks){
@@ -653,6 +1378,11 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   status = cuParamSeti(cuFunction, offset, num_blocks); 
   CHECK_STATUS(env,"error in cuParamSetv num_blocks",status)
   offset += sizeof(int);
+
+  status = cuParamSetv(cuFunction, offset, (void *) &d_host_device_interface, sizeof(HostDeviceInterface)); 
+  CHECK_STATUS(env,"error in cuParamSetv d_host_device_interface",status)
+  offset += sizeof(int);
+
   cuCtxPopCurrent(&cuContext);
   
   return;
@@ -734,4 +1464,39 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   cuFunction = (CUfunction) 0;  
  
   return;
+}
+
+/*
+ * Class:     edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
+ * Method:    connect
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2_connect
+  (JNIEnv *env, jobject this_ref, jint port) {
+
+  CUresult status;
+  jint result = 0;
+
+  // runtime must be placed into a state enabling to allocate zero-copy buffers.
+  checkCuda(cudaSetDeviceFlags(cudaDeviceMapHost),
+            "error in cudaSetDeviceFlags(cudaDeviceMapHost)");
+
+  // allocate host_device_interface as pinned memory
+  checkCuda(cudaHostAlloc((void**) &h_host_device_interface, 
+            sizeof(HostDeviceInterface),
+            cudaHostAllocWriteCombined | cudaHostAllocMapped),
+            "error in cudaHostAlloc(h_host_device_interface)");
+
+  checkCuda(cudaHostGetDevicePointer(&d_host_device_interface, 
+            h_host_device_interface, 0),
+            "error in cudaHostGetDevicePointer(d_host_device_interface)");
+
+  // init HostMonitor
+  host_monitor = new HostMonitor(h_host_device_interface, port);
+  host_monitor->start_monitoring();
+
+  // wait for HostMonitor monitoring
+  while (!host_monitor->is_monitoring) {}
+
+  return result;
 }

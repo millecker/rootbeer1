@@ -32,12 +32,12 @@ public class CudaLoader {
     } else if(File.separator.equals("/")){
       if(is32Bit()){
         m_libCudas.add("/usr/lib/libcuda.so");
-        m_libCudas.add("/usr/lib/x86_64-linux-gnu/libcudart.so.5.0");
+        m_libCudas.add("/usr/local/cuda/lib/libcudart.so");
         m_rootbeers.add(RootbeerPaths.v().getRootbeerHome()+"cudaruntime_x86.so.1");
         extract("cudaruntime_x86.so.1");
       } else {
-        m_libCudas.add("/usr/lib64/libcuda.so");
-        m_libCudas.add("/usr/lib/x86_64-linux-gnu/libcudart.so.5.0");
+        m_libCudas.add("/usr/lib/libcuda.so");
+        m_libCudas.add("/usr/local/cuda/lib64/libcudart.so");
         m_rootbeers.add(RootbeerPaths.v().getRootbeerHome()+"cudaruntime_x64.so.1");
         extract("cudaruntime_x64.so.1");
       }
@@ -77,7 +77,6 @@ public class CudaLoader {
       File file = new File(path);
       if(file.exists()){
         System.load(file.getAbsolutePath());
-        return;
       }
     }
   }

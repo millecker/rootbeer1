@@ -53,7 +53,10 @@ long long java_lang_System_nanoTime(char * gc_info, int * exception){
 
 __global__ void entry(char * gc_info, char * to_space, int * handles, 
   long long * to_space_free_ptr, long long * space_size, int * exceptions,
-  int * java_lang_class_refs, int num_blocks){
+  int * java_lang_class_refs, int num_blocks, 
+  HostDeviceInterface *d_h_d_interface){
+
+  d_host_device_interface = d_h_d_interface;
 
   edu_syr_pcpratts_gc_init(to_space, *space_size, java_lang_class_refs);
   __syncthreads();
