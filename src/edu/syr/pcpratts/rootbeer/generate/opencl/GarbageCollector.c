@@ -1203,6 +1203,87 @@ int java_lang_Float_toString9_7_(char * gc_info, float parameter0, int * excepti
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$$ char * gc_info, int * exception){
   
-  // return d_kernelWrapper->getNumCurrentMessages();
-  return 21;
+return 22;
+/*
+  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+  int count = 0;
+  int timeout = 0;
+  bool done = false;
+  int return_value = -1;
+
+  while (count < 100) {
+
+    if (++timeout > 100000) {
+      break;
+    }
+    __syncthreads();
+    
+    if (done) {
+      break;
+    }
+
+    // (lock_thread_id == -1 ? thread_id : lock_thread_id)
+    int old = atomicCAS((int *) &d_host_device_interface->lock_thread_id, -1,
+                        thread_id);
+
+    // cuPrintf("Thread %d old: %d\n", thread_id, old);
+
+    if (old == -1 || old == thread_id) {
+      //do critical section code
+      // thread won race condition
+
+      //cuPrintf("Thread %d GOT LOCK lock_thread_id: %d\n", thread_id,
+      //         d_host_device_interface->lock_thread_id);
+
+
+      //int val = d_kernelWrapper->getValue(thread_id);
+      // do work
+      int inner_timeout = 0;
+      // wait for possible old task to end
+      while (d_host_device_interface->has_task) {
+        if (++inner_timeout > 10000) {
+	  break;
+	}
+      }
+		
+      // Setup command
+      d_host_device_interface->command = HostDeviceInterface::GET_NUM_MESSAGES;
+      d_host_device_interface->has_task = true;
+      __threadfence_system();
+      //__threadfence();
+
+      inner_timeout = 0;
+      // wait for socket communication to end
+      while (!d_host_device_interface->is_result_available) {
+        __threadfence_system();
+        //__threadfence();
+	      
+        if (++inner_timeout > 30000) {
+	  break;
+        }
+      }
+
+      d_host_device_interface->is_result_available = false;
+      __threadfence_system();
+      //__threadfence();
+
+      return_value = d_host_device_interface->result_int;
+      
+      d_host_device_interface->lock_thread_id = -1;
+      
+      __threadfence_system();
+      //__threadfence();
+
+      // exit infinite loop
+      done = true; // finished work
+
+    } else {
+      count++;
+      if (count > 50) {
+        count = 0;
+      }
+    }
+  }
+  return return_value;
+*/
 }

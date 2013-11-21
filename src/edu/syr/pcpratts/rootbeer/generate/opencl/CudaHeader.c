@@ -96,7 +96,7 @@ public:
 
   // Request for HostMonitor
   enum MESSAGE_TYPE {
-	UNDEFINED, GET_VALUE, DONE
+	UNDEFINED, GET_NUM_MESSAGES, DONE
   };
   volatile MESSAGE_TYPE command;
   volatile int param1;
@@ -120,6 +120,6 @@ public:
   __device__ __host__ ~HostDeviceInterface() {}
 };
 
-__device__ HostDeviceInterface *d_host_device_interface;
+__device__ HostDeviceInterface *d_host_device_interface = NULL;
 
 /*HAMA_PIPES_CODE_END*/
