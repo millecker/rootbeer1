@@ -107,12 +107,14 @@ public:
   volatile string result_string;
 
   __device__ __host__ HostDeviceInterface() {
+    init();
+  }
+
+  __device__ __host__ void init() {
     lock_thread_id = -1;
     has_task = false;
     done = false;
-
     command = UNDEFINED;
-
     is_result_available = false;
     result_int = 0;
   }
@@ -545,7 +547,7 @@ public:
     printf("SocketClient started\n");
     
     if (port <= 0) {
-      printf("SocketClient: invalid port number!\n");
+      fprintf(stderr, "SocketClient: invalid port number!\n");
       return; /* Failed */
     }
     
@@ -655,26 +657,21 @@ public:
   volatile bool is_monitoring;
   volatile HostDeviceInterface *host_device_interface;
 
-  HostMonitor(int port) {
+  HostMonitor(HostDeviceInterface *h_d_interface, int port) {
+    host_device_interface = h_d_interface;
     is_monitoring = false;
-    host_device_interface = NULL;
     pthread_mutex_init(&mutex_process_command, NULL);
     socket_client = new SocketClient();
 
     // connect SocketClient
     socket_client->connectSocket(port);
 
+    reset();
     printf("HostMonitor init finished...\n");
   }
 
   ~HostMonitor() {
     pthread_mutex_destroy(&mutex_process_command);
-  }
-
-  void setHostDeviceInterface(HostDeviceInterface *h_d_interface) {
-    printf("HostMonitor setHostDeviceInterface...\n");
-    host_device_interface = h_d_interface;
-    reset();
   }
 
   void reset() volatile {
@@ -688,7 +685,7 @@ public:
 
   void startMonitoring() {
     if ( (host_device_interface != NULL) && (!is_monitoring) ) {
-      printf("HostMonitor startMonitoring thread\n");
+      printf("HostMonitor.startMonitoring...\n");
       pthread_create(&monitor_thread, NULL, &HostMonitor::thread, this);
 
       // wait for monitoring
@@ -698,12 +695,13 @@ public:
       //}
       printf("HostMonitor.startMonitoring started thread! is_monitoring: %s\n",
             (is_monitoring) ? "true" : "false");
+      fflush(stdout);
     }
   }
 
   void stopMonitoring() {
     if ( (host_device_interface != NULL) && (is_monitoring) ) {
-      printf("HostMonitor stopMonitoring thread\n");
+      printf("HostMonitor.stopMonitoring...\n");
 
       host_device_interface->done = true;
 
@@ -719,15 +717,19 @@ public:
   }
 
   static void *thread(void *context) {
+    printf("HostMonitorThread started...\n");
+    fflush(stdout);
     volatile HostMonitor *_this = ((HostMonitor *) context);
-    printf("HostMonitor thread started... done: %s\n",
+    printf("HostMonitorThread started... done: %s\n",
             (_this->host_device_interface->done) ? "true" : "false");
+    fflush(stdout);
 
     while (!_this->host_device_interface->done) {
       _this->is_monitoring = true;
 
-      //printf("HostMonitor thread is_monitoring: %s\n",
-      //      (_this->is_monitoring) ? "true" : "false");
+      printf("HostMonitorThread is_monitoring: %s\n",
+            (_this->is_monitoring) ? "true" : "false");
+      fflush(stdout);
 
       //printf("HostMonitor thread running... has_task: %s lock_thread_id: %d command: %d\n",
       //      (_this->host_device_interface->has_task) ? "true" : "false",
@@ -805,11 +807,13 @@ public:
 
 };
 
-// Global HostDeviceInterface
-HostDeviceInterface *h_host_device_interface = NULL;
-HostDeviceInterface *d_host_device_interface = NULL;
 // Global HostMonitor
 HostMonitor *host_monitor = NULL;
+
+// Global HostDeviceInterface
+HostDeviceInterface *h_host_device_interface = NULL;
+CUdeviceptr d_host_device_interface = NULL;
+
 
 /*****************************************************************************/
 /**************************** HAMA_PIPES_CODE_END ****************************/
@@ -1007,21 +1011,22 @@ void initDevice(JNIEnv * env, jobject this_ref, jint max_blocks_per_proc, jint m
 
   savePointers(env, this_ref);
 
-  if (host_monitor != NULL) {
-    printf("initDevice - init hostdevice_interface\n");
+  printf("initDevice - init host_device_interface\n");
     
-    // allocate host_device_interface as pinned memory
-    checkCuda(cudaHostAlloc((void**) &h_host_device_interface, 
-              sizeof(HostDeviceInterface),
-              cudaHostAllocWriteCombined | cudaHostAllocMapped),
-              "error in cudaHostAlloc(h_host_device_interface)");
+  // allocate host_device_interface as pinned memory
+  checkCuda(cudaHostAlloc((void**) &h_host_device_interface, 
+            sizeof(HostDeviceInterface),
+            cudaHostAllocWriteCombined | cudaHostAllocMapped),
+            "error in cudaHostAlloc(h_host_device_interface)");
 
-    checkCuda(cudaHostGetDevicePointer(&d_host_device_interface, 
-              h_host_device_interface, 0),
-              "error in cudaHostGetDevicePointer(d_host_device_interface)");
 
-    host_monitor->setHostDeviceInterface(h_host_device_interface);
-  }
+  h_host_device_interface->init();
+
+  status = cuMemHostGetDevicePointer(&d_host_device_interface, h_host_device_interface, 0);
+  CHECK_STATUS(env,"cuMemHostGetDevicePointer failed",status)
+  //checkCuda(cudaHostGetDevicePointer(&d_host_device_interface, 
+  //          h_host_device_interface, 0),
+  //          "error in cudaHostGetDevicePointer(d_host_device_interface)");
 
   printf("initDevice finished!\n");
 
@@ -1388,6 +1393,8 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   CUresult status;
   char * native_filename;
   heapEndPtr = heap_end_ptr;
+
+  printf("loadFunction...\n");
   
   cuCtxPushCurrent(cuContext);
   fatcubin = readCubinFileFromBuffers(env, buffers, size, total_size);
@@ -1395,13 +1402,13 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   CHECK_STATUS(env, "error in cuModuleLoad", status);
   free(fatcubin);
 
-  status = cuModuleGetFunction(&cuFunction, cuModule, "_Z5entryPcS_PiPxS1_S0_S0_iP19HostDeviceInterface"); 
+  status = cuModuleGetFunction(&cuFunction, cuModule, "_Z5entryPcS_PiPxS1_S0_S0_P19HostDeviceInterfacei"); 
   CHECK_STATUS(env,"error in cuModuleGetFunction",status)
 
   status = cuFuncSetCacheConfig(cuFunction, CU_FUNC_CACHE_PREFER_L1);
   CHECK_STATUS(env,"error in cuFuncSetCacheConfig",status)
 
-  status = cuParamSetSize(cuFunction, (7 * sizeof(CUdeviceptr) + sizeof(int))); 
+  status = cuParamSetSize(cuFunction, (8 * sizeof(CUdeviceptr) + sizeof(int))); 
   CHECK_STATUS(env,"error in cuParamSetSize",status)
 
   offset = 0;
@@ -1425,6 +1432,9 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   CHECK_STATUS(env,"error in cuParamSetv gpuBufferSize",status)
   offset += sizeof(CUdeviceptr); 
 
+  printf("loadFunction - gpuExceptionsMemory: %p &gpuExceptionsMemory: %p\n", gpuExceptionsMemory, &gpuExceptionsMemory);
+  fflush(stdout);
+
   status = cuParamSetv(cuFunction, offset, (void *) &gpuExceptionsMemory, sizeof(CUdeviceptr)); 
   CHECK_STATUS(env,"error in cuParamSetv gpuExceptionsMemory",status)
   offset += sizeof(CUdeviceptr);
@@ -1433,16 +1443,24 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   CHECK_STATUS(env,"error in cuParamSetv gpuClassMemory",status)
   offset += sizeof(CUdeviceptr);
 
+  printf("loadFunction - lock_thread_id: %d\n",h_host_device_interface->lock_thread_id);
+  printf("loadFunction - h_host_device_interface: %p\n",h_host_device_interface);
+  printf("loadFunction - d_host_device_interface: %p\n",d_host_device_interface);
+  fflush(stdout);
+
+  status = cuParamSetv(cuFunction, offset, (void *) &d_host_device_interface, sizeof(CUdeviceptr)); 
+  CHECK_STATUS(env,"error in cuParamSetv d_host_device_interface",status)
+  offset += sizeof(CUdeviceptr);
+
   status = cuParamSeti(cuFunction, offset, num_blocks); 
   CHECK_STATUS(env,"error in cuParamSetv num_blocks",status)
   offset += sizeof(int);
 
-  status = cuParamSetv(cuFunction, offset, (void *) &d_host_device_interface, sizeof(HostDeviceInterface)); 
-  CHECK_STATUS(env,"error in cuParamSetv d_host_device_interface",status)
-  offset += sizeof(int);
-
   cuCtxPopCurrent(&cuContext);
   
+  printf("loadFunction finished!\n");
+  fflush(stdout);
+
   return;
 }
 
@@ -1479,9 +1497,12 @@ JNIEXPORT jint JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   }
 */
 
+
   if (host_monitor != NULL) {
     printf("runBlocks - startMonitoring...\n");
     host_monitor->startMonitoring();
+    printf("runBlocks - startMonitoring finished!\n");
+    fflush(stdout);
   }
 
   status = cuFuncSetBlockShape(cuFunction, block_shape, 1, 1);
@@ -1504,10 +1525,13 @@ JNIEXPORT jint JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
     cuCtxPopCurrent(&cuContext);
   }
   CHECK_STATUS_RTN(env,"error in cuCtxSynchronize",status, (jint)status)
-  
+ 
+
   if (host_monitor != NULL) {
     printf("runBlocks - stopMonitoring...\n");
     host_monitor->stopMonitoring();
+    printf("runBlocks - stopMonitoring finished!\n");
+    fflush(stdout);
   }
 
   cuMemcpyDtoH(infoSpace, gcInfoSpace, gc_space_size);
@@ -1543,9 +1567,11 @@ JNIEXPORT jboolean JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRunt
   (JNIEnv *env, jobject this_ref, jint port) {
 
   printf("CudaRuntime2.connect started...\n");
+  //fprintf(stderr, "CudaRuntime2.connect started...\n");
+
 
   // init HostMonitor
-  host_monitor = new HostMonitor(port);
+  host_monitor = new HostMonitor(h_host_device_interface, port);
 
   printf("CudaRuntime2.connect is_monitoring: %s\n",
         (host_monitor->is_monitoring) ? "true" : "false");

@@ -1202,8 +1202,10 @@ int java_lang_Float_toString9_7_(char * gc_info, float parameter0, int * excepti
 // HamaPeer getNumCurrentMessages
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$$ char * gc_info, int * exception){
-  
-return 22;
+
+  return host_device_interface->lock_thread_id;
+//  return 21;
+
 /*
   int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
   int count = 0;
