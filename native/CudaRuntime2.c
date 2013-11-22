@@ -84,7 +84,22 @@ public:
 
   // Request for HostMonitor
   enum MESSAGE_TYPE {
-	UNDEFINED, GET_NUM_MESSAGES, DONE
+    START_MESSAGE, SET_BSPJOB_CONF, SET_INPUT_TYPES,
+    RUN_SETUP, RUN_BSP, RUN_CLEANUP,
+    READ_KEYVALUE, WRITE_KEYVALUE,
+    GET_MSG, GET_MSG_COUNT,
+    SEND_MSG, SYNC,
+    GET_ALL_PEERNAME, GET_PEERNAME,
+    GET_PEER_INDEX, GET_PEER_COUNT, GET_SUPERSTEP_COUNT,
+    REOPEN_INPUT, CLEAR,
+    CLOSE, ABORT,
+    DONE, TASK_DONE,
+    REGISTER_COUNTER, INCREMENT_COUNTER,
+    SEQFILE_OPEN, SEQFILE_READNEXT,
+    SEQFILE_APPEND, SEQFILE_CLOSE,
+    PARTITION_REQUEST, PARTITION_RESPONSE,
+    LOG, END_OF_DATA,
+    UNDEFINED
   };
   volatile MESSAGE_TYPE command;
   volatile int param1;
@@ -111,8 +126,24 @@ public:
 };
 
 /* Only needed for debugging output */
-const char* messageTypeNames[] = { stringify(UNDEFINED), stringify(GET_NUM_MESSAGES),
-  stringify(DONE) };
+const char* messageTypeNames[] = {
+  stringify( START_MESSAGE ), stringify( SET_BSPJOB_CONF ), stringify( SET_INPUT_TYPES ),
+  stringify( RUN_SETUP ), stringify( RUN_BSP ), stringify( RUN_CLEANUP ),
+  stringify( READ_KEYVALUE ), stringify( WRITE_KEYVALUE ),
+  stringify( GET_MSG ), stringify( GET_MSG_COUNT ),
+  stringify( SEND_MSG ), stringify( SYNC ),
+  stringify( GET_ALL_PEERNAME ), stringify( GET_PEERNAME ),
+  stringify( GET_PEER_INDEX ), stringify( GET_PEER_COUNT ), stringify( GET_SUPERSTEP_COUNT ),
+  stringify( REOPEN_INPUT ), stringify( CLEAR ),
+  stringify( CLOSE ), stringify( ABORT ),
+  stringify( DONE ), stringify( TASK_DONE ),
+  stringify( REGISTER_COUNTER ), stringify( INCREMENT_COUNTER ),
+  stringify( SEQFILE_OPEN ), stringify( SEQFILE_READNEXT ),
+  stringify( SEQFILE_APPEND ), stringify( SEQFILE_CLOSE ),
+  stringify( PARTITION_REQUEST ), stringify( PARTITION_RESPONSE ),
+  stringify( LOG ), stringify( END_OF_DATA ),
+  stringify( UNDEFINED )
+};
 
 /*****************************************************************************/
 // Hadoop Utils
@@ -616,9 +647,9 @@ public:
     
     switch (cmd) {
         
-      case HostDeviceInterface::GET_NUM_MESSAGES: {
+      case HostDeviceInterface::GET_MSG_COUNT: {
         resultInt = deserializeInt(*inStream);
-        printf("SocketClient - GET_NUM_MESSAGES IN=%d\n", resultInt);
+        printf("SocketClient - GET_MSG_COUNT resultInt: %d\n", resultInt);
         isNewResultInt = true;
         break;
       }
@@ -694,10 +725,10 @@ public:
       host_device_interface->done = true;
 
       // wait for monitoring to end
-      while (is_monitoring) {
-        printf("HostMonitor.stopMonitoring is_monitoring: %s\n",
-          (is_monitoring) ? "true" : "false");
-      }
+      //while (is_monitoring) {
+      //  printf("HostMonitor.stopMonitoring is_monitoring: %s\n",
+      //    (is_monitoring) ? "true" : "false");
+      //}
 
       printf("HostMonitor.stopMonitoring stopped! done: %s\n",
             (host_device_interface->done) ? "true" : "false");
@@ -715,9 +746,9 @@ public:
     while (!_this->host_device_interface->done) {
       _this->is_monitoring = true;
 
-      printf("HostMonitorThread is_monitoring: %s\n",
-            (_this->is_monitoring) ? "true" : "false");
-      fflush(stdout);
+      //printf("HostMonitorThread is_monitoring: %s\n",
+      //      (_this->is_monitoring) ? "true" : "false");
+      //fflush(stdout);
 
       //printf("HostMonitor thread running... has_task: %s lock_thread_id: %d command: %d\n",
       //      (_this->host_device_interface->has_task) ? "true" : "false",
@@ -739,6 +770,7 @@ public:
 
 	pthread_mutex_unlock(lock);
 	printf("HostMonitor thread: %p, UNLOCKED(mutex_process_command)\n", pthread_self());
+        fflush(stdout);
       }
     }
     _this->is_monitoring = false;
@@ -754,8 +786,8 @@ public:
 
     switch (host_device_interface->command) {
       
-      case HostDeviceInterface::GET_NUM_MESSAGES: {
-        socket_client->sendCMD(HostDeviceInterface::GET_NUM_MESSAGES);
+      case HostDeviceInterface::GET_MSG_COUNT: {
+        socket_client->sendCMD(HostDeviceInterface::GET_MSG_COUNT);
         
         while (!socket_client->isNewResultInt) {
           socket_client->nextEvent();
