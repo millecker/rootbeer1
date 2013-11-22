@@ -84,6 +84,8 @@ ptxas info    : Used 12 registers, 24 bytes smem, 104 bytes cmem[0]
 
 #include <string>
 
+#define STR_SIZE 1024
+
 using std::string;
 
 class HostDeviceInterface {
@@ -123,7 +125,7 @@ public:
   // Response of HostMonitor
   volatile bool is_result_available;
   volatile int result_int;
-  volatile string result_string;
+  volatile char result_string[1024];
 
   HostDeviceInterface() {
     init();

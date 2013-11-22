@@ -17,6 +17,7 @@ import edu.syr.pcpratts.rootbeer.runtimegpu.GpuException;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.kerneltemplate.FastMatrixTest;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel;
 import edu.syr.pcpratts.rootbeer.util.ResourceReader;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -627,6 +628,11 @@ public class CudaRuntime2 implements ParallelRuntime {
   private native int runBlocks(int size, int block_shape, int grid_shape);
   private native void unload();
   private native void reinit(int max_blocks_per_proc, int max_threads_per_block, long free_memory);
+  /**
+  * Init socket connection to Hama Pipes
+  *    
+  * @param port of socket connection
+  */
   public native boolean connect(int port);
   
 }

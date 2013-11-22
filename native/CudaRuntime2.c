@@ -64,6 +64,7 @@ static size_t gc_space_size;
 #include <sys/socket.h>
 
 #define stringify( name ) # name
+#define STR_SIZE 1024
 
 using std::string;
 
@@ -107,7 +108,7 @@ public:
   // Response of HostMonitor
   volatile bool is_result_available;
   volatile int result_int;
-  volatile string result_string;
+  volatile char result_string[STR_SIZE];
 
   HostDeviceInterface() {
     init();
@@ -646,14 +647,35 @@ public:
     int32_t cmd = deserializeInt(*inStream);
     
     switch (cmd) {
-        
+
+      case HostDeviceInterface::GET_MSG: {
+        const_cast<std::string&>(resultString) = deserializeString(*inStream);
+        printf("SocketClient - GET_MSG resultString: %s\n", 
+               const_cast<std::string&>(resultString).c_str());
+        isNewResultString = true;
+      }
+
       case HostDeviceInterface::GET_MSG_COUNT: {
         resultInt = deserializeInt(*inStream);
         printf("SocketClient - GET_MSG_COUNT resultInt: %d\n", resultInt);
         isNewResultInt = true;
         break;
       }
-        
+
+      case HostDeviceInterface::GET_PEERNAME: {
+        const_cast<std::string&>(resultString) = deserializeString(*inStream);
+        printf("SocketClient - GET_PEERNAME resultString: %s\n", 
+               const_cast<std::string&>(resultString).c_str());
+        isNewResultString = true;
+      }
+
+      case HostDeviceInterface::GET_PEER_COUNT: {
+        resultInt = deserializeInt(*inStream);
+        printf("SocketClient - GET_PEER_COUNT resultInt: %d\n", resultInt);
+        isNewResultInt = true;
+        break;
+      }
+
       default:
         fprintf(stderr, "SocketClient - Unknown binary command: %d\n", cmd);
         break;
@@ -786,6 +808,36 @@ public:
 
     switch (host_device_interface->command) {
       
+
+      case HostDeviceInterface::GET_MSG: {
+        socket_client->sendCMD(HostDeviceInterface::GET_MSG);
+        
+        while (!socket_client->isNewResultString) {
+          socket_client->nextEvent();
+        }
+        
+        socket_client->isNewResultString = false;
+        //const_cast<std::string&>(host_device_interface->result_string) = const_cast<std::string&>(socket_client->resultString);
+        strcpy(const_cast<char *>(host_device_interface->result_string), const_cast<std::string&>(socket_client->resultString).c_str());
+
+        host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %s result_available: %s\n",
+               host_device_interface->result_string,
+               (host_device_interface->is_result_available) ? "true" : "false");
+
+        // block until result was consumed
+        while (host_device_interface->is_result_available) {
+          printf("HostMonitor wait for consuming result! result_string: %s, result_available: %s\n",
+                 host_device_interface->result_string,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
+	
+        printf("HostMonitor consumed result: %s\n", host_device_interface->result_string);
+
+        break;
+      }
+
       case HostDeviceInterface::GET_MSG_COUNT: {
         socket_client->sendCMD(HostDeviceInterface::GET_MSG_COUNT);
         
@@ -808,20 +860,66 @@ public:
                  host_device_interface->result_int, 
                  (host_device_interface->is_result_available) ? "true" : "false");
 	}
-	
-	printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
+        printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
 
         break;
       }
 
-      case HostDeviceInterface::DONE: {
-        socket_client->sendCMD(HostDeviceInterface::DONE);
+      case HostDeviceInterface::GET_PEERNAME: {
+        socket_client->sendCMD(HostDeviceInterface::GET_PEERNAME, host_device_interface->param1);
+        
+        while (!socket_client->isNewResultString) {
+          socket_client->nextEvent();
+        }
+        
+        socket_client->isNewResultString = false;
+        //const_cast<std::string&>(host_device_interface->result_string) = const_cast<std::string&>(socket_client->resultString);
+        strcpy(const_cast<char *>(host_device_interface->result_string), const_cast<std::string&>(socket_client->resultString).c_str());
+
         host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %s result_available: %s\n",
+               host_device_interface->result_string,
+               (host_device_interface->is_result_available) ? "true" : "false");
+
         // block until result was consumed
-        while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {
+          printf("HostMonitor wait for consuming result! result_string: %s, result_available: %s\n",
+                 host_device_interface->result_string,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
+        printf("HostMonitor consumed result: %s\n", host_device_interface->result_string);
 
         break;
       }
+
+      case HostDeviceInterface::GET_PEER_COUNT: {
+        socket_client->sendCMD(HostDeviceInterface::GET_PEER_COUNT);
+        
+        while (!socket_client->isNewResultInt) {
+          socket_client->nextEvent();
+        }
+        
+        socket_client->isNewResultInt = false;
+        host_device_interface->result_int = socket_client->resultInt;
+
+        host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %d result_available: %s\n",
+               host_device_interface->result_int, 
+               (host_device_interface->is_result_available) ? "true" : "false");
+
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {
+          printf("HostMonitor wait for consuming result! result_int: %d, result_available: %s\n",
+                 host_device_interface->result_int, 
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
+        printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
+
+        break;
+      }
+
     }
   }
 
