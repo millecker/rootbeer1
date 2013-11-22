@@ -54,7 +54,6 @@ static size_t gc_space_size;
 /*************************** HAMA_PIPES_CODE_START ***************************/
 /*****************************************************************************/
 
-#include <cuda_runtime.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <pthread.h>
@@ -67,17 +66,6 @@ static size_t gc_space_size;
 #define stringify( name ) # name
 
 using std::string;
-
-// Convenience function for checking CUDA runtime API results
-// can be wrapped around any runtime API call. No-op in release builds.
-inline cudaError_t checkCuda(cudaError_t result, string message) {
-  if (result != cudaSuccess) {
-    fprintf(stderr, "%s - CUDA Runtime Error: %s\n", message.c_str(), 
-            cudaGetErrorString(result));
-    assert(result == cudaSuccess);
-  }
-  return result;
-}
 
 /*****************************************************************************/
 // HostDeviceInterface
@@ -106,11 +94,11 @@ public:
   volatile int result_int;
   volatile string result_string;
 
-  __device__ __host__ HostDeviceInterface() {
+  HostDeviceInterface() {
     init();
   }
 
-  __device__ __host__ void init() {
+  void init() {
     lock_thread_id = -1;
     has_task = false;
     done = false;
@@ -119,7 +107,7 @@ public:
     result_int = 0;
   }
 
-  __device__ __host__ ~HostDeviceInterface() {}
+  ~HostDeviceInterface() {}
 };
 
 /* Only needed for debugging output */
@@ -812,7 +800,7 @@ HostMonitor *host_monitor = NULL;
 
 // Global HostDeviceInterface
 HostDeviceInterface *h_host_device_interface = NULL;
-CUdeviceptr d_host_device_interface = NULL;
+CUdeviceptr d_host_device_interface;
 
 
 /*****************************************************************************/
@@ -1011,23 +999,18 @@ void initDevice(JNIEnv * env, jobject this_ref, jint max_blocks_per_proc, jint m
 
   savePointers(env, this_ref);
 
-  printf("initDevice - init host_device_interface\n");
+  printf("initDevice - allocate host_device_interface pinned memory.\n");
     
   // allocate host_device_interface as pinned memory
-  checkCuda(cudaHostAlloc((void**) &h_host_device_interface, 
-            sizeof(HostDeviceInterface),
-            cudaHostAllocWriteCombined | cudaHostAllocMapped),
-            "error in cudaHostAlloc(h_host_device_interface)");
-
+  status = cuMemHostAlloc((void**)&h_host_device_interface, sizeof(HostDeviceInterface),
+                          CU_MEMHOSTALLOC_WRITECOMBINED | CU_MEMHOSTALLOC_DEVICEMAP);
+  CHECK_STATUS(env,"h_host_device_interface memory allocation failed",status)
 
   h_host_device_interface->init();
 
   status = cuMemHostGetDevicePointer(&d_host_device_interface, h_host_device_interface, 0);
-  CHECK_STATUS(env,"cuMemHostGetDevicePointer failed",status)
-  //checkCuda(cudaHostGetDevicePointer(&d_host_device_interface, 
-  //          h_host_device_interface, 0),
-  //          "error in cudaHostGetDevicePointer(d_host_device_interface)");
-
+  CHECK_STATUS(env,"d_host_device_interface memory allocation failed",status)
+  
   printf("initDevice finished!\n");
 
   return;

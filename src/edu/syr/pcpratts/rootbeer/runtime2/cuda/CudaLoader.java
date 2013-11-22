@@ -77,6 +77,7 @@ public class CudaLoader {
       File file = new File(path);
       if(file.exists()){
         System.load(file.getAbsolutePath());
+        return; // this will prevent loading cudart
       }
     }
   }
