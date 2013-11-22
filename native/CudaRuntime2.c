@@ -54,7 +54,6 @@ static size_t gc_space_size;
 /*************************** HAMA_PIPES_CODE_START ***************************/
 /*****************************************************************************/
 
-#include <cuda_runtime.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <pthread.h>
@@ -65,19 +64,9 @@ static size_t gc_space_size;
 #include <sys/socket.h>
 
 #define stringify( name ) # name
+#define STR_SIZE 1024
 
 using std::string;
-
-// Convenience function for checking CUDA runtime API results
-// can be wrapped around any runtime API call. No-op in release builds.
-inline cudaError_t checkCuda(cudaError_t result, string message) {
-  if (result != cudaSuccess) {
-    fprintf(stderr, "%s - CUDA Runtime Error: %s\n", message.c_str(), 
-            cudaGetErrorString(result));
-    assert(result == cudaSuccess);
-  }
-  return result;
-}
 
 /*****************************************************************************/
 // HostDeviceInterface
@@ -96,7 +85,22 @@ public:
 
   // Request for HostMonitor
   enum MESSAGE_TYPE {
-	UNDEFINED, GET_NUM_MESSAGES, DONE
+    START_MESSAGE, SET_BSPJOB_CONF, SET_INPUT_TYPES,
+    RUN_SETUP, RUN_BSP, RUN_CLEANUP,
+    READ_KEYVALUE, WRITE_KEYVALUE,
+    GET_MSG, GET_MSG_COUNT,
+    SEND_MSG, SYNC,
+    GET_ALL_PEERNAME, GET_PEERNAME,
+    GET_PEER_INDEX, GET_PEER_COUNT, GET_SUPERSTEP_COUNT,
+    REOPEN_INPUT, CLEAR,
+    CLOSE, ABORT,
+    DONE, TASK_DONE,
+    REGISTER_COUNTER, INCREMENT_COUNTER,
+    SEQFILE_OPEN, SEQFILE_READNEXT,
+    SEQFILE_APPEND, SEQFILE_CLOSE,
+    PARTITION_REQUEST, PARTITION_RESPONSE,
+    LOG, END_OF_DATA,
+    UNDEFINED
   };
   volatile MESSAGE_TYPE command;
   volatile int param1;
@@ -104,13 +108,13 @@ public:
   // Response of HostMonitor
   volatile bool is_result_available;
   volatile int result_int;
-  volatile string result_string;
+  volatile char result_string[STR_SIZE];
 
-  __device__ __host__ HostDeviceInterface() {
+  HostDeviceInterface() {
     init();
   }
 
-  __device__ __host__ void init() {
+  void init() {
     lock_thread_id = -1;
     has_task = false;
     done = false;
@@ -119,12 +123,28 @@ public:
     result_int = 0;
   }
 
-  __device__ __host__ ~HostDeviceInterface() {}
+  ~HostDeviceInterface() {}
 };
 
 /* Only needed for debugging output */
-const char* messageTypeNames[] = { stringify(UNDEFINED), stringify(GET_NUM_MESSAGES),
-  stringify(DONE) };
+const char* messageTypeNames[] = {
+  stringify( START_MESSAGE ), stringify( SET_BSPJOB_CONF ), stringify( SET_INPUT_TYPES ),
+  stringify( RUN_SETUP ), stringify( RUN_BSP ), stringify( RUN_CLEANUP ),
+  stringify( READ_KEYVALUE ), stringify( WRITE_KEYVALUE ),
+  stringify( GET_MSG ), stringify( GET_MSG_COUNT ),
+  stringify( SEND_MSG ), stringify( SYNC ),
+  stringify( GET_ALL_PEERNAME ), stringify( GET_PEERNAME ),
+  stringify( GET_PEER_INDEX ), stringify( GET_PEER_COUNT ), stringify( GET_SUPERSTEP_COUNT ),
+  stringify( REOPEN_INPUT ), stringify( CLEAR ),
+  stringify( CLOSE ), stringify( ABORT ),
+  stringify( DONE ), stringify( TASK_DONE ),
+  stringify( REGISTER_COUNTER ), stringify( INCREMENT_COUNTER ),
+  stringify( SEQFILE_OPEN ), stringify( SEQFILE_READNEXT ),
+  stringify( SEQFILE_APPEND ), stringify( SEQFILE_CLOSE ),
+  stringify( PARTITION_REQUEST ), stringify( PARTITION_RESPONSE ),
+  stringify( LOG ), stringify( END_OF_DATA ),
+  stringify( UNDEFINED )
+};
 
 /*****************************************************************************/
 // Hadoop Utils
@@ -627,14 +647,35 @@ public:
     int32_t cmd = deserializeInt(*inStream);
     
     switch (cmd) {
-        
-      case HostDeviceInterface::GET_NUM_MESSAGES: {
+
+      case HostDeviceInterface::GET_MSG: {
+        const_cast<std::string&>(resultString) = deserializeString(*inStream);
+        printf("SocketClient - GET_MSG resultString: %s\n", 
+               const_cast<std::string&>(resultString).c_str());
+        isNewResultString = true;
+      }
+
+      case HostDeviceInterface::GET_MSG_COUNT: {
         resultInt = deserializeInt(*inStream);
-        printf("SocketClient - GET_NUM_MESSAGES IN=%d\n", resultInt);
+        printf("SocketClient - GET_MSG_COUNT resultInt: %d\n", resultInt);
         isNewResultInt = true;
         break;
       }
-        
+
+      case HostDeviceInterface::GET_PEERNAME: {
+        const_cast<std::string&>(resultString) = deserializeString(*inStream);
+        printf("SocketClient - GET_PEERNAME resultString: %s\n", 
+               const_cast<std::string&>(resultString).c_str());
+        isNewResultString = true;
+      }
+
+      case HostDeviceInterface::GET_PEER_COUNT: {
+        resultInt = deserializeInt(*inStream);
+        printf("SocketClient - GET_PEER_COUNT resultInt: %d\n", resultInt);
+        isNewResultInt = true;
+        break;
+      }
+
       default:
         fprintf(stderr, "SocketClient - Unknown binary command: %d\n", cmd);
         break;
@@ -706,10 +747,10 @@ public:
       host_device_interface->done = true;
 
       // wait for monitoring to end
-      while (is_monitoring) {
-        printf("HostMonitor.stopMonitoring is_monitoring: %s\n",
-          (is_monitoring) ? "true" : "false");
-      }
+      //while (is_monitoring) {
+      //  printf("HostMonitor.stopMonitoring is_monitoring: %s\n",
+      //    (is_monitoring) ? "true" : "false");
+      //}
 
       printf("HostMonitor.stopMonitoring stopped! done: %s\n",
             (host_device_interface->done) ? "true" : "false");
@@ -727,9 +768,9 @@ public:
     while (!_this->host_device_interface->done) {
       _this->is_monitoring = true;
 
-      printf("HostMonitorThread is_monitoring: %s\n",
-            (_this->is_monitoring) ? "true" : "false");
-      fflush(stdout);
+      //printf("HostMonitorThread is_monitoring: %s\n",
+      //      (_this->is_monitoring) ? "true" : "false");
+      //fflush(stdout);
 
       //printf("HostMonitor thread running... has_task: %s lock_thread_id: %d command: %d\n",
       //      (_this->host_device_interface->has_task) ? "true" : "false",
@@ -751,6 +792,7 @@ public:
 
 	pthread_mutex_unlock(lock);
 	printf("HostMonitor thread: %p, UNLOCKED(mutex_process_command)\n", pthread_self());
+        fflush(stdout);
       }
     }
     _this->is_monitoring = false;
@@ -766,8 +808,38 @@ public:
 
     switch (host_device_interface->command) {
       
-      case HostDeviceInterface::GET_NUM_MESSAGES: {
-        socket_client->sendCMD(HostDeviceInterface::GET_NUM_MESSAGES);
+
+      case HostDeviceInterface::GET_MSG: {
+        socket_client->sendCMD(HostDeviceInterface::GET_MSG);
+        
+        while (!socket_client->isNewResultString) {
+          socket_client->nextEvent();
+        }
+        
+        socket_client->isNewResultString = false;
+        //const_cast<std::string&>(host_device_interface->result_string) = const_cast<std::string&>(socket_client->resultString);
+        strcpy(const_cast<char *>(host_device_interface->result_string), const_cast<std::string&>(socket_client->resultString).c_str());
+
+        host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %s result_available: %s\n",
+               host_device_interface->result_string,
+               (host_device_interface->is_result_available) ? "true" : "false");
+
+        // block until result was consumed
+        while (host_device_interface->is_result_available) {
+          printf("HostMonitor wait for consuming result! result_string: %s, result_available: %s\n",
+                 host_device_interface->result_string,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
+	
+        printf("HostMonitor consumed result: %s\n", host_device_interface->result_string);
+
+        break;
+      }
+
+      case HostDeviceInterface::GET_MSG_COUNT: {
+        socket_client->sendCMD(HostDeviceInterface::GET_MSG_COUNT);
         
         while (!socket_client->isNewResultInt) {
           socket_client->nextEvent();
@@ -788,20 +860,66 @@ public:
                  host_device_interface->result_int, 
                  (host_device_interface->is_result_available) ? "true" : "false");
 	}
-	
-	printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
+        printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
 
         break;
       }
 
-      case HostDeviceInterface::DONE: {
-        socket_client->sendCMD(HostDeviceInterface::DONE);
+      case HostDeviceInterface::GET_PEERNAME: {
+        socket_client->sendCMD(HostDeviceInterface::GET_PEERNAME, host_device_interface->param1);
+        
+        while (!socket_client->isNewResultString) {
+          socket_client->nextEvent();
+        }
+        
+        socket_client->isNewResultString = false;
+        //const_cast<std::string&>(host_device_interface->result_string) = const_cast<std::string&>(socket_client->resultString);
+        strcpy(const_cast<char *>(host_device_interface->result_string), const_cast<std::string&>(socket_client->resultString).c_str());
+
         host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %s result_available: %s\n",
+               host_device_interface->result_string,
+               (host_device_interface->is_result_available) ? "true" : "false");
+
         // block until result was consumed
-        while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {
+          printf("HostMonitor wait for consuming result! result_string: %s, result_available: %s\n",
+                 host_device_interface->result_string,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
+        printf("HostMonitor consumed result: %s\n", host_device_interface->result_string);
 
         break;
       }
+
+      case HostDeviceInterface::GET_PEER_COUNT: {
+        socket_client->sendCMD(HostDeviceInterface::GET_PEER_COUNT);
+        
+        while (!socket_client->isNewResultInt) {
+          socket_client->nextEvent();
+        }
+        
+        socket_client->isNewResultInt = false;
+        host_device_interface->result_int = socket_client->resultInt;
+
+        host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %d result_available: %s\n",
+               host_device_interface->result_int, 
+               (host_device_interface->is_result_available) ? "true" : "false");
+
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {
+          printf("HostMonitor wait for consuming result! result_int: %d, result_available: %s\n",
+                 host_device_interface->result_int, 
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
+        printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
+
+        break;
+      }
+
     }
   }
 
@@ -812,7 +930,7 @@ HostMonitor *host_monitor = NULL;
 
 // Global HostDeviceInterface
 HostDeviceInterface *h_host_device_interface = NULL;
-CUdeviceptr d_host_device_interface = NULL;
+CUdeviceptr d_host_device_interface;
 
 
 /*****************************************************************************/
@@ -1011,23 +1129,18 @@ void initDevice(JNIEnv * env, jobject this_ref, jint max_blocks_per_proc, jint m
 
   savePointers(env, this_ref);
 
-  printf("initDevice - init host_device_interface\n");
+  printf("initDevice - allocate host_device_interface pinned memory.\n");
     
   // allocate host_device_interface as pinned memory
-  checkCuda(cudaHostAlloc((void**) &h_host_device_interface, 
-            sizeof(HostDeviceInterface),
-            cudaHostAllocWriteCombined | cudaHostAllocMapped),
-            "error in cudaHostAlloc(h_host_device_interface)");
-
+  status = cuMemHostAlloc((void**)&h_host_device_interface, sizeof(HostDeviceInterface),
+                          CU_MEMHOSTALLOC_WRITECOMBINED | CU_MEMHOSTALLOC_DEVICEMAP);
+  CHECK_STATUS(env,"h_host_device_interface memory allocation failed",status)
 
   h_host_device_interface->init();
 
   status = cuMemHostGetDevicePointer(&d_host_device_interface, h_host_device_interface, 0);
-  CHECK_STATUS(env,"cuMemHostGetDevicePointer failed",status)
-  //checkCuda(cudaHostGetDevicePointer(&d_host_device_interface, 
-  //          h_host_device_interface, 0),
-  //          "error in cudaHostGetDevicePointer(d_host_device_interface)");
-
+  CHECK_STATUS(env,"d_host_device_interface memory allocation failed",status)
+  
   printf("initDevice finished!\n");
 
   return;

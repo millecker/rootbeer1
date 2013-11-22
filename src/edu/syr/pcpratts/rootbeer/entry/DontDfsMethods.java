@@ -86,6 +86,19 @@ public class DontDfsMethods {
     m_methods.add("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int)>");
     m_methods.add("<java.lang.String: void <init>(char[])>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getNumCurrentMessages()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void sync()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: long getSuperstepCount()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: java.lang.String getPeerName()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: java.lang.String getPeerName(int)>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getPeerIndex()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: java.lang.String[] getAllPeerNames()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getNumPeers()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void clear()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void reopenInput()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void send(java.lang.String,java.lang.String)>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: java.lang.String getCurrentMessage()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void write(java.lang.String,java.lang.String)>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean readNext(java.lang.String,java.lang.String)>");
   }
   
   public Set<String> get(){

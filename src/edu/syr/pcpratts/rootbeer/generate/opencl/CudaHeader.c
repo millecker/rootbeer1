@@ -84,6 +84,8 @@ ptxas info    : Used 12 registers, 24 bytes smem, 104 bytes cmem[0]
 
 #include <string>
 
+#define STR_SIZE 1024
+
 using std::string;
 
 class HostDeviceInterface {
@@ -100,7 +102,22 @@ public:
 
   // Request for HostMonitor
   enum MESSAGE_TYPE {
-	UNDEFINED, GET_NUM_MESSAGES, DONE
+    START_MESSAGE, SET_BSPJOB_CONF, SET_INPUT_TYPES,
+    RUN_SETUP, RUN_BSP, RUN_CLEANUP,
+    READ_KEYVALUE, WRITE_KEYVALUE,
+    GET_MSG, GET_MSG_COUNT,
+    SEND_MSG, SYNC,
+    GET_ALL_PEERNAME, GET_PEERNAME,
+    GET_PEER_INDEX, GET_PEER_COUNT, GET_SUPERSTEP_COUNT,
+    REOPEN_INPUT, CLEAR,
+    CLOSE, ABORT,
+    DONE, TASK_DONE,
+    REGISTER_COUNTER, INCREMENT_COUNTER,
+    SEQFILE_OPEN, SEQFILE_READNEXT,
+    SEQFILE_APPEND, SEQFILE_CLOSE,
+    PARTITION_REQUEST, PARTITION_RESPONSE,
+    LOG, END_OF_DATA,
+    UNDEFINED
   };
   volatile MESSAGE_TYPE command;
   volatile int param1;
@@ -108,13 +125,13 @@ public:
   // Response of HostMonitor
   volatile bool is_result_available;
   volatile int result_int;
-  volatile string result_string;
+  volatile char result_string[1024];
 
-  __device__ __host__ HostDeviceInterface() {
+  HostDeviceInterface() {
     init();
   }
 
-  __device__ __host__ void init() {
+  void init() {
     lock_thread_id = -1;
     has_task = false;
     done = false;
@@ -123,7 +140,7 @@ public:
     result_int = 0;
   }
 
-  __device__ __host__ ~HostDeviceInterface() {}
+  ~HostDeviceInterface() {}
 };
 
 __device__ HostDeviceInterface *host_device_interface;
