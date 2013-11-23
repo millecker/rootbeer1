@@ -844,10 +844,13 @@ edu_syr_pcpratts_string_constant($$__global$$ char * gc_info, volatile char * st
   int len = edu_syr_pcpratts_strlen(str_constant);
   int characters = char__array_new(gc_info, len, exception);
   unsigned long long * addr = (unsigned long long *) (gc_info + TO_SPACE_FREE_POINTER_OFFSET);
+  printf("edu_syr_pcpratts_string_constant str: '"); 
   for(i = 0; i < len; ++i){
     char__array_set(gc_info, characters, i, str_constant[i], exception);
+    printf("%c",str_constant[i]);
   }
-  
+  printf("'\n");  
+
   return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
 }
 
@@ -1273,8 +1276,10 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentMessage($$__global$$ ch
       }
 
       // make new String object
-      return_value = edu_syr_pcpratts_string_constant(gc_info, host_device_interface->result_string, exception);
-      
+      edu_syr_pcpratts_gc_assign(gc_info, &return_value, 
+        java_lang_String_initab850b60f96d11de8a390800200c9a660_9_(gc_info,
+        edu_syr_pcpratts_string_constant(gc_info, host_device_interface->result_string, exception) , exception));
+
       host_device_interface->is_result_available = false;
       host_device_interface->lock_thread_id = -1;
       
@@ -1460,7 +1465,9 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
 
 
       // make new String object
-      return_value = edu_syr_pcpratts_string_constant(gc_info, host_device_interface->result_string, exception);
+      edu_syr_pcpratts_gc_assign(gc_info, &return_value, 
+        java_lang_String_initab850b60f96d11de8a390800200c9a660_9_(gc_info,
+        edu_syr_pcpratts_string_constant(gc_info, host_device_interface->result_string, exception) , exception));
 
       host_device_interface->is_result_available = false;      
       host_device_interface->lock_thread_id = -1;

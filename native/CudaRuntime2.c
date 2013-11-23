@@ -60,8 +60,10 @@ static size_t gc_space_size;
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #include <signal.h>
+#include <sstream> /* ostringstream */
 #include <string>
 #include <sys/socket.h>
+#include <typeinfo> /* typeid */
 
 #define stringify( name ) # name
 #define STR_SIZE 1024
@@ -163,10 +165,21 @@ __PRETTY_FUNCTION__); \
 } \
 }
 
-string toString(int32_t x) {
-  char str[100];
-  sprintf(str, "%d", x);
-  return str;
+/**
+ * Generic toString
+ */
+template <class T>
+string toString(const T& t) {
+  std::ostringstream oss;
+  oss << t;
+  return oss.str();
+}
+
+/**
+ * Generic toString template specializations
+ */
+template <> string toString<string>(const string& t) {
+  return t;
 }
 
 class Error {
@@ -179,7 +192,7 @@ public:
   Error(const string& msg,
         const string& file, int line,
         const string& function) {
-    error = msg + " at " + file + ":" + toString(line) +
+    error = msg + " at " + file + ":" + toString<int32_t>(line) +
     " in " + function;
   }
   
@@ -368,8 +381,18 @@ public:
 /*****************************************************************************/
 // Serialization and Deserialization
 /*****************************************************************************/
-void serializeLong(int64_t t, FileOutStream& stream)
-{
+/**
+ * Generic serialization
+ */
+template<class T>
+void serialize(T t, FileOutStream& stream) {
+  serializeString(toString<T>(t), stream);
+}
+
+/**
+ * Generic serialization template specializations
+ */
+template <> void serialize<int64_t>(int64_t t, FileOutStream& stream) {
   if (t >= -112 && t <= 127) {
     int8_t b = t;
     stream.write(&b, 1);
@@ -399,8 +422,46 @@ void serializeLong(int64_t t, FileOutStream& stream)
   }
 }
 
-int64_t deserializeLong(FileInStream& stream)
-{
+template <> void serialize<int32_t>(int32_t t, FileOutStream& stream) {
+  serialize<int64_t>(t, stream);
+}
+
+template <> void serialize<float>(float t, FileOutStream& stream) {
+  char buf[sizeof(float)];
+  XDR xdrs;
+  xdrmem_create(&xdrs, buf, sizeof(float), XDR_ENCODE);
+  xdr_float(&xdrs, &t);
+  stream.write(buf, sizeof(float));
+}
+
+template <> void serialize<double>(double t, FileOutStream& stream) {
+  char buf[sizeof(double)];
+  XDR xdrs;
+  xdrmem_create(&xdrs, buf, sizeof(double), XDR_ENCODE);
+  xdr_double(&xdrs, &t);
+  stream.write(buf, sizeof(double));
+}
+
+template <> void serialize<string>(string t, FileOutStream& stream) {
+  serialize<int64_t>(t.length(), stream);
+  if (t.length() > 0) {
+    stream.write(t.data(), t.length());
+  }
+}
+  
+/**
+ * Generic deserialization
+ */
+template<class T>
+T deserialize(FileInStream& stream) {
+  string str = "Not able to deserialize type: ";
+  throw Error(str.append(typeid(T).name()));
+}
+  
+/**
+ * Generic deserialization template specializations
+ */
+template <> int64_t deserialize<int64_t>(FileInStream& stream) {
   int8_t b;
   stream.read(&b, 1);
   if (b >= -112) {
@@ -428,26 +489,11 @@ int64_t deserializeLong(FileInStream& stream)
   return t;
 }
 
-void serializeInt(int32_t t, FileOutStream& stream) {
-  serializeLong(t, stream);
+template <> int32_t deserialize<int32_t>(FileInStream& stream) {
+  return deserialize<int64_t>(stream);
 }
 
-int32_t deserializeInt(FileInStream& stream) {
-  return deserializeLong(stream);
-}
-
-
-void serializeFloat(float t, FileOutStream& stream)
-{
-  char buf[sizeof(float)];
-  XDR xdrs;
-  xdrmem_create(&xdrs, buf, sizeof(float), XDR_ENCODE);
-  xdr_float(&xdrs, &t);
-  stream.write(buf, sizeof(float));
-}
-
-float deserializeFloat(FileInStream& stream)
-{
+template <> float deserialize<float>(FileInStream& stream) {
   float t;
   char buf[sizeof(float)];
   stream.read(buf, sizeof(float));
@@ -457,17 +503,7 @@ float deserializeFloat(FileInStream& stream)
   return t;
 }
 
-void serializeDouble(double t, FileOutStream& stream)
-{
-  char buf[sizeof(double)];
-  XDR xdrs;
-  xdrmem_create(&xdrs, buf, sizeof(double), XDR_ENCODE);
-  xdr_double(&xdrs, &t);
-  stream.write(buf, sizeof(double));
-}
-
-double deserializeDouble(FileInStream& stream)
-{
+template <> double deserialize<double>(FileInStream& stream) {
   double t;
   char buf[sizeof(double)];
   stream.read(buf, sizeof(double));
@@ -477,18 +513,9 @@ double deserializeDouble(FileInStream& stream)
   return t;
 }
 
-void serializeString(const string& t, FileOutStream& stream)
-{
-  serializeInt(t.length(), stream);
-  if (t.length() > 0) {
-    stream.write(t.data(), t.length());
-  }
-}
-
-string deserializeString(FileInStream& stream)
-{
+template <> string deserialize<string>(FileInStream& stream) {
   string t;
-  int32_t len = deserializeInt(stream);
+  int32_t len = deserialize<int32_t>(stream);
   if (len > 0) {
     // resize the string to the right length
     t.resize(len);
@@ -514,53 +541,41 @@ string deserializeString(FileInStream& stream)
 /*****************************************************************************/
 class SocketClient {
 private:
-  int sock;
-  FILE* in_stream;
-  FILE* out_stream;
-  FileInStream* inStream;
-  FileOutStream* outStream;
+  int sock_;
+  FILE* in_stream_;
+  FILE* out_stream_;
+  FileInStream* file_in_stream_;
+  FileOutStream* file_out_stream_;
 
-public:
-  volatile int32_t resultInt;
-  volatile bool isNewResultInt;
-  volatile int64_t resultLong;
-  volatile bool isNewResultLong;
-  volatile string resultString;
-  volatile bool isNewResultString;
-  //vector<string> resultVector;
-  //bool isNewResultVector;
-  //bool isNewKeyValuePair;
-  //string currentKey;
-  //string currentValue;
-  
+public: 
   SocketClient() {
-    sock = -1;
-    in_stream = NULL;
-    out_stream = NULL;
-    isNewResultInt = false;
-    isNewResultString = false;
-    //isNewResultVector = false;
-    //isNewKeyValuePair = false;
+    sock_ = -1;
+    in_stream_ = NULL;
+    out_stream_ = NULL;
+    file_in_stream_ = NULL;
+    file_out_stream_ = NULL;
   }
   
   ~SocketClient() {
-    if (in_stream != NULL) {
-      fflush(in_stream);
+    if (in_stream_ != NULL) {
+      fflush(in_stream_);
     }
-    if (out_stream != NULL) {
-      fflush(out_stream);
+    if (out_stream_ != NULL) {
+      fflush(out_stream_);
     }
     fflush(stdout);
-    if (sock != -1) {
-      int result = shutdown(sock, SHUT_RDWR);
-      //if (result != 0) {
-      //	fprintf(stderr, "SocketClient: problem shutting down socket\n");
-      //}
-      result = shutdown(sock, 2);
+
+    if (sock_ != -1) {
+      int result = shutdown(sock_, SHUT_RDWR);
       if (result != 0) {
-        fprintf(stderr, "SocketClient: problem closing socket\n");
+        fprintf(stderr, "SocketClient: problem shutting down socket\n");
       }
     }
+
+    delete in_stream_;
+    delete out_stream_;
+    delete file_in_stream_;
+    delete file_out_stream_;
   }
   
   void connectSocket(int port) {
@@ -571,8 +586,8 @@ public:
       return; /* Failed */
     }
     
-    sock = socket(PF_INET, SOCK_STREAM, 0);
-    if (sock == -1) {
+    sock_ = socket(PF_INET, SOCK_STREAM, 0);
+    if (sock_ == -1) {
       fprintf(stderr, "SocketClient: problem creating socket: %s\n",
               strerror(errno));
     }
@@ -582,107 +597,146 @@ public:
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     
-    int res = connect(sock, (sockaddr*) &addr, sizeof(addr));
+    int res = connect(sock_, (sockaddr*) &addr, sizeof(addr));
     if (res != 0) {
       fprintf(stderr, "SocketClient: problem connecting command socket: %s\n",
               strerror(errno));
     }
     
-    in_stream = fdopen(sock, "r");
-    out_stream = fdopen(sock, "w");
+    FILE* in_stream = fdopen(sock_, "r");
+    FILE* out_stream = fdopen(sock_, "w");
     
-    inStream = new FileInStream();
-    inStream->open(in_stream);
-    outStream = new FileOutStream();
-    outStream->open(out_stream);
+    file_in_stream_ = new FileInStream();
+    file_in_stream_->open(in_stream);
+    file_out_stream_ = new FileOutStream();
+    file_out_stream_->open(out_stream);
     
     printf("SocketClient is connected to port %d ...\n", port);
   }
   
   void sendCMD(int32_t cmd) volatile {
-    serializeInt(cmd, *outStream);
-    outStream->flush();
+    serialize<int32_t>(cmd, *file_out_stream_);
+    file_out_stream_->flush();
     printf("SocketClient sent CMD %s\n", messageTypeNames[cmd]);
   }
   
   void sendCMD(int32_t cmd, int32_t value) volatile {
-    serializeInt(cmd, *outStream);
-    serializeInt(value, *outStream);
-    outStream->flush();
+    serialize<int32_t>(cmd, *file_out_stream_);
+    serialize<int32_t>(value, *file_out_stream_);
+    file_out_stream_->flush();
     printf("SocketClient sent CMD: %s with Value: %d\n", messageTypeNames[cmd],
            value);
   }
   
   void sendCMD(int32_t cmd, const string& value) volatile {
-    serializeInt(cmd, *outStream);
-    serializeString(value, *outStream);
-    outStream->flush();
+    serialize<int32_t>(cmd, *file_out_stream_);
+    serialize<string>(value, *file_out_stream_);
+    file_out_stream_->flush();
     printf("SocketClient sent CMD: %s with Value: %s\n", messageTypeNames[cmd],
            value.c_str());
   }
   
   void sendCMD(int32_t cmd, const string values[], int size) volatile {
-    serializeInt(cmd, *outStream);
+    serialize<int32_t>(cmd, *file_out_stream_);
     for (int i = 0; i < size; i++) {
-      serializeString(values[i], *outStream);
+      serialize<string>(values[i], *file_out_stream_);
       printf("SocketClient sent CMD: %s with Param%d: %s\n",
              messageTypeNames[cmd], i + 1, values[i].c_str());
     }
-    outStream->flush();
+    file_out_stream_->flush();
   }
   
   void sendCMD(int32_t cmd, int32_t value, const string values[],
                int size) volatile {
-    serializeInt(cmd, *outStream);
-    serializeInt(value, *outStream);
+    serialize<int32_t>(cmd, *file_out_stream_);
+    serialize<int32_t>(value, *file_out_stream_);
     for (int i = 0; i < size; i++) {
-      serializeString(values[i], *outStream);
+      serialize<string>(values[i], *file_out_stream_);
       printf("SocketClient sent CMD: %s with Param%d: %s\n",
              messageTypeNames[cmd], i + 1, values[i].c_str());
     }
-    outStream->flush();
+    file_out_stream_->flush();
   }
   
-  void nextEvent() volatile {
-    int32_t cmd = deserializeInt(*inStream);
+  /**
+   * Wait for next event, which should be a response for
+   * a previously sent command (expected_response_cmd)
+   * and return the generic result
+   */
+  template<class T>
+  T getResult(int32_t expected_response_cmd) volatile {
     
-    switch (cmd) {
+    T result = T();
 
-      case HostDeviceInterface::GET_MSG: {
-        const_cast<std::string&>(resultString) = deserializeString(*inStream);
-        printf("SocketClient - GET_MSG resultString: %s\n", 
-               const_cast<std::string&>(resultString).c_str());
-        isNewResultString = true;
-      }
+    // read response command
+    int32_t cmd = deserialize<int32_t>(*file_in_stream_);
+    
+    // check if response is expected
+    if (expected_response_cmd == cmd) {
 
-      case HostDeviceInterface::GET_MSG_COUNT: {
-        resultInt = deserializeInt(*inStream);
-        printf("SocketClient - GET_MSG_COUNT resultInt: %d\n", resultInt);
-        isNewResultInt = true;
-        break;
-      }
+      switch (cmd) {
 
-      case HostDeviceInterface::GET_PEERNAME: {
-        const_cast<std::string&>(resultString) = deserializeString(*inStream);
-        printf("SocketClient - GET_PEERNAME resultString: %s\n", 
-               const_cast<std::string&>(resultString).c_str());
-        isNewResultString = true;
-      }
-
-      case HostDeviceInterface::GET_PEER_COUNT: {
-        resultInt = deserializeInt(*inStream);
-        printf("SocketClient - GET_PEER_COUNT resultInt: %d\n", resultInt);
-        isNewResultInt = true;
-        break;
-      }
-
-      default:
-        fprintf(stderr, "SocketClient - Unknown binary command: %d\n", cmd);
-        break;
+        case HostDeviceInterface::GET_MSG: {
+          T msg;
+          msg = deserialize<T>(*file_in_stream_);
+          return msg;
+        }
+        case HostDeviceInterface::GET_MSG_COUNT: {
+          T msg_count;
+          msg_count = deserialize<T>(*file_in_stream_);
+          return msg_count;
+        }
+        case HostDeviceInterface::GET_PEERNAME: {
+          T peername;
+          peername = deserialize<T>(*file_in_stream_);
+          return peername;
+        }
+        case HostDeviceInterface::GET_PEER_INDEX: {
+          T peer_index = deserialize<T>(*file_in_stream_);
+          return peer_index;
+        }
+        case HostDeviceInterface::GET_PEER_COUNT: {
+          T peer_count = deserialize<T>(*file_in_stream_);
+          return peer_count;
+        }
+        case HostDeviceInterface::GET_SUPERSTEP_COUNT: {
+          T superstep_count = deserialize<T>(*file_in_stream_);
+          return superstep_count;
+        }
         
+        case HostDeviceInterface::SEQFILE_OPEN: {
+          T file_id = deserialize<T>(*file_in_stream_);
+          return file_id;
+        }
+        case HostDeviceInterface::SEQFILE_APPEND: {
+          result = deserialize<T>(*file_in_stream_);
+          return result;
+        }
+        case HostDeviceInterface::SEQFILE_CLOSE: {
+          result = deserialize<T>(*file_in_stream_);
+          return result;
+        }
+      }
+      // Not expected response
+    } else {
+      
+      /*
+       case CLOSE: {
+       if(logging)fprintf(stderr,"HamaPipes::BinaryProtocol::nextEvent - got CLOSE\n");
+       handler_->close();
+       break;
+       }
+       case ABORT: {
+       if(logging)fprintf(stderr,"HamaPipes::BinaryProtocol::nextEvent - got ABORT\n");
+       handler_->abort();
+       break;
+       }
+       */
+      fprintf(stderr, "SocketClient - Unknown binary command: %d\n", cmd);
+      //HADOOP_ASSERT(false, "Unknown binary command " + toString(cmd));
     }
+    return result;
   }
-
 };
 
 /*****************************************************************************/
@@ -690,9 +744,9 @@ public:
 /*****************************************************************************/
 class HostMonitor {
 private:
-  pthread_t monitor_thread;
-  pthread_mutex_t mutex_process_command;
-  SocketClient *socket_client;
+  pthread_t monitor_thread_;
+  pthread_mutex_t mutex_process_command_;
+  SocketClient *socket_client_;
 
 public:
   volatile bool is_monitoring;
@@ -701,18 +755,18 @@ public:
   HostMonitor(HostDeviceInterface *h_d_interface, int port) {
     host_device_interface = h_d_interface;
     is_monitoring = false;
-    pthread_mutex_init(&mutex_process_command, NULL);
-    socket_client = new SocketClient();
+    pthread_mutex_init(&mutex_process_command_, NULL);
+    socket_client_ = new SocketClient();
 
     // connect SocketClient
-    socket_client->connectSocket(port);
+    socket_client_->connectSocket(port);
 
     reset();
     printf("HostMonitor init finished...\n");
   }
 
   ~HostMonitor() {
-    pthread_mutex_destroy(&mutex_process_command);
+    pthread_mutex_destroy(&mutex_process_command_);
   }
 
   void reset() volatile {
@@ -727,7 +781,7 @@ public:
   void startMonitoring() {
     if ( (host_device_interface != NULL) && (!is_monitoring) ) {
       printf("HostMonitor.startMonitoring...\n");
-      pthread_create(&monitor_thread, NULL, &HostMonitor::thread, this);
+      pthread_create(&monitor_thread_, NULL, &HostMonitor::thread, this);
 
       // wait for monitoring
       //while (!is_monitoring) {
@@ -736,7 +790,6 @@ public:
       //}
       printf("HostMonitor.startMonitoring started thread! is_monitoring: %s\n",
             (is_monitoring) ? "true" : "false");
-      fflush(stdout);
     }
   }
 
@@ -751,15 +804,12 @@ public:
       //  printf("HostMonitor.stopMonitoring is_monitoring: %s\n",
       //    (is_monitoring) ? "true" : "false");
       //}
-
       printf("HostMonitor.stopMonitoring stopped! done: %s\n",
             (host_device_interface->done) ? "true" : "false");
     }
   }
 
   static void *thread(void *context) {
-    printf("HostMonitorThread started...\n");
-    fflush(stdout);
     volatile HostMonitor *_this = ((HostMonitor *) context);
     printf("HostMonitorThread started... done: %s\n",
             (_this->host_device_interface->done) ? "true" : "false");
@@ -781,17 +831,17 @@ public:
           (_this->host_device_interface->lock_thread_id >= 0) && 
           (_this->host_device_interface->command != HostDeviceInterface::UNDEFINED)) {
 
-        pthread_mutex_t *lock = (pthread_mutex_t *) &_this->mutex_process_command;
-	pthread_mutex_lock(lock);
+        pthread_mutex_t *lock = (pthread_mutex_t *) &_this->mutex_process_command_;
+        pthread_mutex_lock(lock);
 	
         printf("HostMonitor thread: %p, LOCKED(mutex_process_command)\n", pthread_self());
 
-	_this->processCommand();
+        _this->processCommand();
         
         _this->reset();
 
-	pthread_mutex_unlock(lock);
-	printf("HostMonitor thread: %p, UNLOCKED(mutex_process_command)\n", pthread_self());
+        pthread_mutex_unlock(lock);
+        printf("HostMonitor thread: %p, UNLOCKED(mutex_process_command)\n", pthread_self());
         fflush(stdout);
       }
     }
@@ -808,74 +858,22 @@ public:
 
     switch (host_device_interface->command) {
       
-
       case HostDeviceInterface::GET_MSG: {
-        socket_client->sendCMD(HostDeviceInterface::GET_MSG);
-        
-        while (!socket_client->isNewResultString) {
-          socket_client->nextEvent();
-        }
-        
-        socket_client->isNewResultString = false;
-        //const_cast<std::string&>(host_device_interface->result_string) = const_cast<std::string&>(socket_client->resultString);
-        strcpy(const_cast<char *>(host_device_interface->result_string), const_cast<std::string&>(socket_client->resultString).c_str());
-
-        host_device_interface->is_result_available = true;
-
-        printf("HostMonitor got result: %s result_available: %s\n",
-               host_device_interface->result_string,
-               (host_device_interface->is_result_available) ? "true" : "false");
-
-        // block until result was consumed
-        while (host_device_interface->is_result_available) {
-          printf("HostMonitor wait for consuming result! result_string: %s, result_available: %s\n",
-                 host_device_interface->result_string,
-                 (host_device_interface->is_result_available) ? "true" : "false");
-        }
-	
-        printf("HostMonitor consumed result: %s\n", host_device_interface->result_string);
 
         break;
       }
 
       case HostDeviceInterface::GET_MSG_COUNT: {
-        socket_client->sendCMD(HostDeviceInterface::GET_MSG_COUNT);
-        
-        while (!socket_client->isNewResultInt) {
-          socket_client->nextEvent();
-        }
-        
-        socket_client->isNewResultInt = false;
-        host_device_interface->result_int = socket_client->resultInt;
-
-        host_device_interface->is_result_available = true;
-
-        printf("HostMonitor got result: %d result_available: %s\n",
-               host_device_interface->result_int, 
-               (host_device_interface->is_result_available) ? "true" : "false");
-
-	// block until result was consumed
-	while (host_device_interface->is_result_available) {
-          printf("HostMonitor wait for consuming result! result_int: %d, result_available: %s\n",
-                 host_device_interface->result_int, 
-                 (host_device_interface->is_result_available) ? "true" : "false");
-	}
-        printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
 
         break;
       }
 
       case HostDeviceInterface::GET_PEERNAME: {
-        socket_client->sendCMD(HostDeviceInterface::GET_PEERNAME, host_device_interface->param1);
+        socket_client_->sendCMD(HostDeviceInterface::GET_PEERNAME, host_device_interface->param1);
         
-        while (!socket_client->isNewResultString) {
-          socket_client->nextEvent();
-        }
-        
-        socket_client->isNewResultString = false;
-        //const_cast<std::string&>(host_device_interface->result_string) = const_cast<std::string&>(socket_client->resultString);
-        strcpy(const_cast<char *>(host_device_interface->result_string), const_cast<std::string&>(socket_client->resultString).c_str());
+        string result = socket_client_->getResult<string>(HostDeviceInterface::GET_PEERNAME);
 
+        strcpy(const_cast<char *>(host_device_interface->result_string), result.c_str());
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %s result_available: %s\n",
@@ -883,43 +881,44 @@ public:
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
-        while (host_device_interface->is_result_available) {
-          printf("HostMonitor wait for consuming result! result_string: %s, result_available: %s\n",
-                 host_device_interface->result_string,
-                 (host_device_interface->is_result_available) ? "true" : "false");
-        }
+        while (host_device_interface->is_result_available) {}
         printf("HostMonitor consumed result: %s\n", host_device_interface->result_string);
+        break;
+      }
 
+      case HostDeviceInterface::GET_PEER_INDEX: {
         break;
       }
 
       case HostDeviceInterface::GET_PEER_COUNT: {
-        socket_client->sendCMD(HostDeviceInterface::GET_PEER_COUNT);
+        socket_client_->sendCMD(HostDeviceInterface::GET_PEER_COUNT);
         
-        while (!socket_client->isNewResultInt) {
-          socket_client->nextEvent();
-        }
-        
-        socket_client->isNewResultInt = false;
-        host_device_interface->result_int = socket_client->resultInt;
-
+        host_device_interface->result_int = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_PEER_COUNT);
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %d result_available: %s\n",
-               host_device_interface->result_int, 
+               host_device_interface->result_int,
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {
-          printf("HostMonitor wait for consuming result! result_int: %d, result_available: %s\n",
-                 host_device_interface->result_int, 
-                 (host_device_interface->is_result_available) ? "true" : "false");
-        }
+	while (host_device_interface->is_result_available) {}
         printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
-
         break;
       }
 
+      case HostDeviceInterface::GET_SUPERSTEP_COUNT: {
+        break;
+      }
+        
+      case HostDeviceInterface::SEQFILE_OPEN: {
+        break;
+      }
+      case HostDeviceInterface::SEQFILE_APPEND: {
+        break;
+      }
+      case HostDeviceInterface::SEQFILE_CLOSE: {
+        break;
+      }
     }
   }
 
