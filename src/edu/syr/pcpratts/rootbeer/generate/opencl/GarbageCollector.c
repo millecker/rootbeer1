@@ -743,7 +743,7 @@ edu_syr_pcpratts_gc_get_space_size($$__global$$ char * gc_info){
 }
 
 $$__device__$$ int
-edu_syr_pcpratts_strlen(volatile char * str_constant){
+edu_syr_pcpratts_strlen(char * str_constant){
   int ret = 0;
   while(1){
     if(str_constant[ret] != '\0'){
@@ -839,17 +839,14 @@ $$__device__$$ void
 char__array_set($$__global$$ char * gc_info, int thisref, int parameter0, char parameter1, int * exception);
 
 $$__device__$$ int
-edu_syr_pcpratts_string_constant($$__global$$ char * gc_info, volatile char * str_constant, int * exception){
+edu_syr_pcpratts_string_constant($$__global$$ char * gc_info, char * str_constant, int * exception){
   int i;
   int len = edu_syr_pcpratts_strlen(str_constant);
   int characters = char__array_new(gc_info, len, exception);
   unsigned long long * addr = (unsigned long long *) (gc_info + TO_SPACE_FREE_POINTER_OFFSET);
-  printf("edu_syr_pcpratts_string_constant str: '"); 
   for(i = 0; i < len; ++i){
     char__array_set(gc_info, characters, i, str_constant[i], exception);
-    printf("%c",str_constant[i]);
   }
-  printf("'\n");  
 
   return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
 }
@@ -1203,6 +1200,35 @@ int java_lang_Float_toString9_7_(char * gc_info, float parameter0, int * excepti
 }
 
 // Hama Peer implementation
+
+$$__device__$$
+int at_illecker_strlen(volatile char * str_constant) {
+  int ret = 0;
+  while(1) {
+    if(str_constant[ret] != '\0') {
+      ret++;
+    } else {
+      return ret;
+    }
+  }
+}
+
+$$__device__$$
+int at_illecker_string_constant( char * gc_info, volatile char * str_constant, int * exception) {
+  int i;
+  int len = at_illecker_strlen(str_constant);
+  int characters = char__array_new(gc_info, len, exception);
+  unsigned long long * addr = (unsigned long long *) (gc_info + TO_SPACE_FREE_POINTER_OFFSET);
+  printf("at_illecker_string_constant str: '"); 
+  for(i = 0; i < len; ++i) {
+    char__array_set(gc_info, characters, i, str_constant[i], exception);
+    printf("%c",str_constant[i]);
+  }
+  printf("'\n");  
+
+  return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
+}
+
 $$__device__$$
 int at_illecker_getIntResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, 
     int * exception) {
@@ -1424,9 +1450,8 @@ int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface
       }
 
       // make new String object
-      edu_syr_pcpratts_gc_assign(gc_info, &return_value, 
-        java_lang_String_initab850b60f96d11de8a390800200c9a660_9_(gc_info,
-        edu_syr_pcpratts_string_constant(gc_info, host_device_interface->result_string, exception) , exception));
+      edu_syr_pcpratts_gc_assign(gc_info, &return_value,
+        at_illecker_string_constant(gc_info, host_device_interface->result_string, exception));
 
       host_device_interface->is_result_available = false;
       host_device_interface->lock_thread_id = -1;
