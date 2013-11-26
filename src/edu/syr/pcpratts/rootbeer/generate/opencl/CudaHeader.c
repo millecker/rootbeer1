@@ -125,7 +125,8 @@ public:
   // Response of HostMonitor
   volatile bool is_result_available;
   volatile int result_int;
-  volatile char result_string[1024];
+  volatile long result_long;
+  volatile char result_string[STR_SIZE];
 
   HostDeviceInterface() {
     init();

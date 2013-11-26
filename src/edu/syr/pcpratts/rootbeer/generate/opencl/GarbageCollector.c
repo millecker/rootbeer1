@@ -1203,106 +1203,8 @@ int java_lang_Float_toString9_7_(char * gc_info, float parameter0, int * excepti
 }
 
 // Hama Peer implementation
-
-// HamaPeer.send
-// public static void send(String peerName, String msg)
 $$__device__$$
-void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentMessage($$__global$$ char * gc_info, 
-     int peer_name_str_ref, int message_str_ref, int * exception) {
-
-}
-
-// HamaPeer.getCurrentMessage
-// public static String getCurrentMessage()
-$$__device__$$
-int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentMessage($$__global$$ char * gc_info, 
-    int * exception) {
-
-  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
-  int count = 0;
-  int timeout = 0;
-  bool done = false;
-  int return_value = 0;
-
-  while (count < 100) {
-
-    if (++timeout > 100000) {
-      break;
-    }
-    __syncthreads();
-    
-    if (done) {
-      break;
-    }
-
-    // (lock_thread_id == -1 ? thread_id : lock_thread_id)
-    int old = atomicCAS((int *) &host_device_interface->lock_thread_id, -1, thread_id);
-
-    // printf("Thread %d old: %d\n", thread_id, old);
-
-    if (old == -1 || old == thread_id) {
-      //do critical section code
-      // thread won race condition
-
-      printf("gpu_Thread %d GOT LOCK lock_thread_id: %d\n", thread_id,
-             host_device_interface->lock_thread_id);
-
-
-      //int val = d_kernelWrapper->getValue(thread_id);
-      // do work
-      int inner_timeout = 0;
-      // wait for possible old task to end
-      while (host_device_interface->has_task) {
-        if (++inner_timeout > 10000) {
-	  break;
-	}
-      }
-		
-      // Setup command
-      host_device_interface->command = HostDeviceInterface::GET_MSG;
-      host_device_interface->has_task = true;
-      __threadfence_system();
-      //__threadfence();
-
-      inner_timeout = 0;
-      // wait for socket communication to end
-      while (!host_device_interface->is_result_available) {
-        __threadfence_system();
-        //__threadfence();
-	      
-        if (++inner_timeout > 30000) {
-	  break;
-        }
-      }
-
-      // make new String object
-      edu_syr_pcpratts_gc_assign(gc_info, &return_value, 
-        java_lang_String_initab850b60f96d11de8a390800200c9a660_9_(gc_info,
-        edu_syr_pcpratts_string_constant(gc_info, host_device_interface->result_string, exception) , exception));
-
-      host_device_interface->is_result_available = false;
-      host_device_interface->lock_thread_id = -1;
-      
-      __threadfence_system();
-      //__threadfence();
-
-      // exit infinite loop
-      done = true; // finished work
-
-    } else {
-      count++;
-      if (count > 50) {
-        count = 0;
-      }
-    }
-  }
-  return return_value;
-}
-
-// HamaPeer.getNumCurrentMessages
-// public static int getNumCurrentMessages()
-$$__device__$$
-int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$$ char * gc_info, 
+int at_illecker_getIntResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, 
     int * exception) {
 
   int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
@@ -1334,9 +1236,6 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$
       printf("gpu_Thread %d GOT LOCK lock_thread_id: %d\n", thread_id,
              host_device_interface->lock_thread_id);
 
-
-      //int val = d_kernelWrapper->getValue(thread_id);
-      // do work
       int inner_timeout = 0;
       // wait for possible old task to end
       while (host_device_interface->has_task) {
@@ -1346,7 +1245,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$
       }
 		
       // Setup command
-      host_device_interface->command = HostDeviceInterface::GET_MSG_COUNT;
+      host_device_interface->command = cmd;
       host_device_interface->has_task = true;
       __threadfence_system();
       //__threadfence();
@@ -1383,27 +1282,88 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$
   return return_value;
 }
 
-// HamaPeer.sync
-// public static void sync()
 $$__device__$$
-void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sync($$__global$$ char * gc_info, 
-     int * exception) {
+int at_illecker_getLongResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, 
+    int * exception) {
 
+  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+  int count = 0;
+  int timeout = 0;
+  bool done = false;
+  long return_value = -1;
+
+  while (count < 100) {
+
+    if (++timeout > 100000) {
+      break;
+    }
+    __syncthreads();
+    
+    if (done) {
+      break;
+    }
+
+    // (lock_thread_id == -1 ? thread_id : lock_thread_id)
+    int old = atomicCAS((int *) &host_device_interface->lock_thread_id, -1, thread_id);
+
+    // printf("Thread %d old: %d\n", thread_id, old);
+
+    if (old == -1 || old == thread_id) {
+      //do critical section code
+      // thread won race condition
+
+      printf("gpu_Thread %d GOT LOCK lock_thread_id: %d\n", thread_id,
+             host_device_interface->lock_thread_id);
+
+      int inner_timeout = 0;
+      // wait for possible old task to end
+      while (host_device_interface->has_task) {
+        if (++inner_timeout > 10000) {
+	  break;
+	}
+      }
+		
+      // Setup command
+      host_device_interface->command = cmd;
+      host_device_interface->has_task = true;
+      __threadfence_system();
+      //__threadfence();
+
+      inner_timeout = 0;
+      // wait for socket communication to end
+      while (!host_device_interface->is_result_available) {
+        __threadfence_system();
+        //__threadfence();
+	      
+        if (++inner_timeout > 30000) {
+	  break;
+        }
+      }
+
+      return_value = host_device_interface->result_long;
+      
+      host_device_interface->is_result_available = false;
+      host_device_interface->lock_thread_id = -1;
+
+      __threadfence_system();
+      //__threadfence();
+
+      // exit infinite loop
+      done = true; // finished work
+
+    } else {
+      count++;
+      if (count > 50) {
+        count = 0;
+      }
+    }
+  }
+  return return_value;
 }
 
-// HamaPeer.getSuperstepCount
-// public static long getSuperstepCount()
 $$__device__$$
-long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getSuperstepCount($$__global$$ char * gc_info, 
-    int * exception) {
-  return 0;
-}
-
-// HamaPeer.getPeerName
-// public static String getPeerName()
-$$__device__$$
-int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * gc_info, 
-    int * exception) {
+int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, 
+    int int_parameter, bool use_int_parameter, int * exception) {
 
   int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
   int count = 0;
@@ -1435,8 +1395,6 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
              host_device_interface->lock_thread_id);
 
 
-      //int val = d_kernelWrapper->getValue(thread_id);
-      // do work
       int inner_timeout = 0;
       // wait for possible old task to end
       while (host_device_interface->has_task) {
@@ -1446,8 +1404,10 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
       }
 		
       // Setup command
-      host_device_interface->command = HostDeviceInterface::GET_PEERNAME;
-      host_device_interface->param1 = -1;
+      host_device_interface->command = cmd;
+      if (use_int_parameter) {
+        host_device_interface->param1 = int_parameter;
+      }
       host_device_interface->has_task = true;
       __threadfence_system();
       //__threadfence();
@@ -1463,13 +1423,12 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
         }
       }
 
-
       // make new String object
       edu_syr_pcpratts_gc_assign(gc_info, &return_value, 
         java_lang_String_initab850b60f96d11de8a390800200c9a660_9_(gc_info,
         edu_syr_pcpratts_string_constant(gc_info, host_device_interface->result_string, exception) , exception));
 
-      host_device_interface->is_result_available = false;      
+      host_device_interface->is_result_available = false;
       host_device_interface->lock_thread_id = -1;
       
       __threadfence_system();
@@ -1488,12 +1447,68 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
   return return_value;
 }
 
+
+// HamaPeer.send
+// public static void send(String peerName, String msg)
+$$__device__$$
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info, 
+     int peer_name_str_ref, int message_str_ref, int * exception) {
+
+  // TODO
+}
+
+// HamaPeer.getCurrentMessage
+// public static String getCurrentMessage()
+$$__device__$$
+int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentMessage($$__global$$ char * gc_info, 
+    int * exception) {
+
+  return at_illecker_getStringResult(gc_info, HostDeviceInterface::GET_MSG, 0, false, exception);
+}
+
+// HamaPeer.getNumCurrentMessages
+// public static int getNumCurrentMessages()
+$$__device__$$
+int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$$ char * gc_info, 
+    int * exception) {
+
+  return at_illecker_getIntResult(gc_info, HostDeviceInterface::GET_MSG_COUNT, exception);
+}
+
+// HamaPeer.sync
+// public static void sync()
+$$__device__$$
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sync($$__global$$ char * gc_info, 
+     int * exception) {
+
+  at_illecker_getIntResult(gc_info, HostDeviceInterface::SYNC, exception);
+}
+
+// HamaPeer.getSuperstepCount
+// public static long getSuperstepCount()
+$$__device__$$
+long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getSuperstepCount($$__global$$ char * gc_info, 
+    int * exception) {
+
+  return at_illecker_getLongResult(gc_info, HostDeviceInterface::GET_SUPERSTEP_COUNT, exception);
+}
+
+// HamaPeer.getPeerName
+// public static String getPeerName()
+$$__device__$$
+int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * gc_info, 
+    int * exception) {
+
+  return at_illecker_getStringResult(gc_info, HostDeviceInterface::GET_PEERNAME, -1, true, exception);
+}
+
 // HamaPeer.getPeerName
 // public static String getPeerName(int index)
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * gc_info, 
     int index, int * exception) {
-  return 0;
+
+  return at_illecker_getStringResult(gc_info, HostDeviceInterface::GET_PEERNAME, index, true, exception);
 }
 
 // HamaPeer.getPeerIndex
@@ -1501,7 +1516,8 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerIndex($$__global$$ char * gc_info, 
     int * exception) {
-  return 0;
+
+  return at_illecker_getIntResult(gc_info, HostDeviceInterface::GET_PEER_INDEX, exception);
 }
 
 // HamaPeer.getAllPeerNames
@@ -1509,6 +1525,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerIndex($$__global$$ char * 
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getAllPeerNames($$__global$$ char * gc_info, 
     int * exception) {
+  // TODO
   return 0;
 }
 
@@ -1518,82 +1535,7 @@ $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumPeers($$__global$$ char * gc_info, 
     int * exception) {
 
-  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
-  int count = 0;
-  int timeout = 0;
-  bool done = false;
-  int return_value = -1;
-
-  while (count < 100) {
-
-    if (++timeout > 100000) {
-      break;
-    }
-    __syncthreads();
-    
-    if (done) {
-      break;
-    }
-
-    // (lock_thread_id == -1 ? thread_id : lock_thread_id)
-    int old = atomicCAS((int *) &host_device_interface->lock_thread_id, -1, thread_id);
-
-    // printf("Thread %d old: %d\n", thread_id, old);
-
-    if (old == -1 || old == thread_id) {
-      //do critical section code
-      // thread won race condition
-
-      printf("gpu_Thread %d GOT LOCK lock_thread_id: %d\n", thread_id,
-             host_device_interface->lock_thread_id);
-
-
-      //int val = d_kernelWrapper->getValue(thread_id);
-      // do work
-      int inner_timeout = 0;
-      // wait for possible old task to end
-      while (host_device_interface->has_task) {
-        if (++inner_timeout > 10000) {
-	  break;
-	}
-      }
-		
-      // Setup command
-      host_device_interface->command = HostDeviceInterface::GET_PEER_COUNT;
-      host_device_interface->has_task = true;
-      __threadfence_system();
-      //__threadfence();
-
-      inner_timeout = 0;
-      // wait for socket communication to end
-      while (!host_device_interface->is_result_available) {
-        __threadfence_system();
-        //__threadfence();
-	      
-        if (++inner_timeout > 30000) {
-	  break;
-        }
-      }
-
-      return_value = host_device_interface->result_int;
-
-      host_device_interface->is_result_available = false;  
-      host_device_interface->lock_thread_id = -1;
-      
-      __threadfence_system();
-      //__threadfence();
-
-      // exit infinite loop
-      done = true; // finished work
-
-    } else {
-      count++;
-      if (count > 50) {
-        count = 0;
-      }
-    }
-  }
-  return return_value;
+  return at_illecker_getIntResult(gc_info, HostDeviceInterface::GET_PEER_COUNT, exception);
 }
 
 // HamaPeer.clear
@@ -1602,6 +1544,7 @@ $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_clear($$__global$$ char * gc_info, 
      int * exception) {
 
+  at_illecker_getIntResult(gc_info, HostDeviceInterface::CLEAR, exception);
 }
 
 // HamaPeer.write
@@ -1609,7 +1552,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_clear($$__global$$ char * gc_inf
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info, 
      int peer_name_str_ref, int message_str_ref, int * exception) {
-
+  // TODO
 }
 
 // HamaPeer.readNext
@@ -1617,6 +1560,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
 $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_info, 
      int peer_name_str_ref, int message_str_ref, int * exception) {
+  // TODO
   return true;
 }
 
@@ -1626,5 +1570,6 @@ $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_reopenInput($$__global$$ char * gc_info, 
      int * exception) {
 
+  at_illecker_getIntResult(gc_info, HostDeviceInterface::REOPEN_INPUT, exception);
 }
 

@@ -58,7 +58,6 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
 
   host_device_interface = h_d_interface;
 
-  printf("exceptions.ptr: %p\n", exceptions);
   printf("host_device_interface.ptr: %p\n", host_device_interface);
   printf("host_device_interface->lock_thread_id: %d\n", host_device_interface->lock_thread_id);
 

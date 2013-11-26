@@ -74,9 +74,9 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
 /*
  * Class:     edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
  * Method:    connect
- * Signature: (I)Z
+ * Signature: (I)V
  */
-JNIEXPORT jboolean JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2_connect
+JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2_connect
   (JNIEnv *, jobject, jint);
 
 #ifdef __cplusplus

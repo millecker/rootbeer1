@@ -110,6 +110,7 @@ public:
   // Response of HostMonitor
   volatile bool is_result_available;
   volatile int result_int;
+  volatile long result_long;
   volatile char result_string[STR_SIZE];
 
   HostDeviceInterface() {
@@ -864,7 +865,45 @@ public:
       }
 
       case HostDeviceInterface::GET_MSG_COUNT: {
+        socket_client_->sendCMD(HostDeviceInterface::GET_MSG_COUNT);
 
+        host_device_interface->result_int = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_MSG_COUNT);
+        host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %d result_available: %s\n",
+               host_device_interface->result_int,
+               (host_device_interface->is_result_available) ? "true" : "false");
+
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
+        printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
+        break;
+      }
+
+      case HostDeviceInterface::SYNC: {
+        socket_client_->sendCMD(HostDeviceInterface::SYNC);
+        printf("HostMonitor sent SYNC\n");
+
+        host_device_interface->result_int = 0;
+        host_device_interface->is_result_available = true;
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
+        break;
+      }
+
+      case HostDeviceInterface::GET_SUPERSTEP_COUNT: {
+        socket_client_->sendCMD(HostDeviceInterface::GET_SUPERSTEP_COUNT);
+
+        host_device_interface->result_long = socket_client_->getResult<int64_t>(HostDeviceInterface::GET_SUPERSTEP_COUNT);
+        host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %ld result_available: %s\n",
+               host_device_interface->result_long,
+               (host_device_interface->is_result_available) ? "true" : "false");
+
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
+        printf("HostMonitor consumed result: %ld\n", host_device_interface->result_long);
         break;
       }
 
@@ -887,6 +926,18 @@ public:
       }
 
       case HostDeviceInterface::GET_PEER_INDEX: {
+        socket_client_->sendCMD(HostDeviceInterface::GET_PEER_INDEX);
+
+        host_device_interface->result_int = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_PEER_INDEX);
+        host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %d result_available: %s\n",
+               host_device_interface->result_int,
+               (host_device_interface->is_result_available) ? "true" : "false");
+
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
+        printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
         break;
       }
 
@@ -906,10 +957,28 @@ public:
         break;
       }
 
-      case HostDeviceInterface::GET_SUPERSTEP_COUNT: {
+      case HostDeviceInterface::CLEAR: {
+        socket_client_->sendCMD(HostDeviceInterface::CLEAR);
+        printf("HostMonitor sent CLEAR\n");
+
+        host_device_interface->result_int = 0;
+        host_device_interface->is_result_available = true;
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
         break;
       }
-        
+
+      case HostDeviceInterface::REOPEN_INPUT: {
+        socket_client_->sendCMD(HostDeviceInterface::CLEAR);
+        printf("HostMonitor sent CLEAR\n");
+
+        host_device_interface->result_int = 0;
+        host_device_interface->is_result_available = true;
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
+        break;
+      }
+
       case HostDeviceInterface::SEQFILE_OPEN: {
         break;
       }
@@ -1544,9 +1613,6 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   CHECK_STATUS(env,"error in cuParamSetv gpuBufferSize",status)
   offset += sizeof(CUdeviceptr); 
 
-  printf("loadFunction - gpuExceptionsMemory: %p &gpuExceptionsMemory: %p\n", gpuExceptionsMemory, &gpuExceptionsMemory);
-  fflush(stdout);
-
   status = cuParamSetv(cuFunction, offset, (void *) &gpuExceptionsMemory, sizeof(CUdeviceptr)); 
   CHECK_STATUS(env,"error in cuParamSetv gpuExceptionsMemory",status)
   offset += sizeof(CUdeviceptr);
@@ -1673,20 +1739,11 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
 /*
  * Class:     edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
  * Method:    connect
- * Signature: (I)Z
+ * Signature: (I)V
  */
-JNIEXPORT jboolean JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2_connect
+JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2_connect
   (JNIEnv *env, jobject this_ref, jint port) {
 
-  printf("CudaRuntime2.connect started...\n");
-  //fprintf(stderr, "CudaRuntime2.connect started...\n");
-
-
-  // init HostMonitor
+  // init HostMonitor for Pinned Memory
   host_monitor = new HostMonitor(h_host_device_interface, port);
-
-  printf("CudaRuntime2.connect is_monitoring: %s\n",
-        (host_monitor->is_monitoring) ? "true" : "false");
-
-  return true;
 }

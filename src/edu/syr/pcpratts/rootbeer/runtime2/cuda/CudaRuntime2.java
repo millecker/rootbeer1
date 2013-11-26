@@ -633,6 +633,6 @@ public class CudaRuntime2 implements ParallelRuntime {
   *    
   * @param port of socket connection
   */
-  public native boolean connect(int port);
+  public native void connect(int port);
   
 }
