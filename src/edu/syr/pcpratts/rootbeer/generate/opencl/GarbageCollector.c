@@ -1200,7 +1200,6 @@ int java_lang_Float_toString9_7_(char * gc_info, float parameter0, int * excepti
 }
 
 // Hama Peer implementation
-
 $$__device__$$
 int at_illecker_strlen(volatile char * str_constant) {
   int ret = 0;
@@ -1215,10 +1214,14 @@ int at_illecker_strlen(volatile char * str_constant) {
 
 $$__device__$$
 int at_illecker_string_constant( char * gc_info, volatile char * str_constant, int * exception) {
+  if (str_constant == 0) {
+    return 0;
+  }
   int i;
   int len = at_illecker_strlen(str_constant);
   int characters = char__array_new(gc_info, len, exception);
   unsigned long long * addr = (unsigned long long *) (gc_info + TO_SPACE_FREE_POINTER_OFFSET);
+
   printf("at_illecker_string_constant str: '"); 
   for(i = 0; i < len; ++i) {
     char__array_set(gc_info, characters, i, str_constant[i], exception);
@@ -1226,6 +1229,7 @@ int at_illecker_string_constant( char * gc_info, volatile char * str_constant, i
   }
   printf("'\n");  
 
+  // make new String
   return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
 }
 
@@ -1272,6 +1276,7 @@ int at_illecker_getIntResult($$__global$$ char * gc_info, HostDeviceInterface::M
 		
       // Setup command
       host_device_interface->command = cmd;
+      // Activate task for HostMonitor
       host_device_interface->has_task = true;
       __threadfence_system();
       //__threadfence();
@@ -1287,7 +1292,8 @@ int at_illecker_getIntResult($$__global$$ char * gc_info, HostDeviceInterface::M
         }
       }
 
-      return_value = host_device_interface->result_int;
+      // Get result from host device interface
+      return_value = host_device_interface->int_val1;
       
       host_device_interface->is_result_available = false;
       host_device_interface->lock_thread_id = -1;
@@ -1309,7 +1315,7 @@ int at_illecker_getIntResult($$__global$$ char * gc_info, HostDeviceInterface::M
 }
 
 $$__device__$$
-int at_illecker_getLongResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, 
+long at_illecker_getLongResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, 
     int * exception) {
 
   int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
@@ -1351,6 +1357,7 @@ int at_illecker_getLongResult($$__global$$ char * gc_info, HostDeviceInterface::
 		
       // Setup command
       host_device_interface->command = cmd;
+      // Activate task for HostMonitor
       host_device_interface->has_task = true;
       __threadfence_system();
       //__threadfence();
@@ -1366,7 +1373,8 @@ int at_illecker_getLongResult($$__global$$ char * gc_info, HostDeviceInterface::
         }
       }
 
-      return_value = host_device_interface->result_long;
+      // Get result from host device interface
+      return_value = host_device_interface->long_val1;
       
       host_device_interface->is_result_available = false;
       host_device_interface->lock_thread_id = -1;
@@ -1389,12 +1397,20 @@ int at_illecker_getLongResult($$__global$$ char * gc_info, HostDeviceInterface::
 
 $$__device__$$
 int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, 
-    int int_parameter, bool use_int_parameter, int * exception) {
+    bool use_result, int int_param1, bool use_int_param1,
+    int str_param1, bool use_str_param1, int str_param2, bool use_str_param2, 
+    int * exception) {
 
   int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
   int count = 0;
   int timeout = 0;
   bool done = false;
+
+  int str_param1_value;
+  int str_param1_count;
+  int str_param2_value;
+  int str_param2_count;
+
   int return_value = 0;
 
   while (count < 100) {
@@ -1420,7 +1436,6 @@ int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface
       printf("gpu_Thread %d GOT LOCK lock_thread_id: %d\n", thread_id,
              host_device_interface->lock_thread_id);
 
-
       int inner_timeout = 0;
       // wait for possible old task to end
       while (host_device_interface->has_task) {
@@ -1431,9 +1446,38 @@ int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface
 		
       // Setup command
       host_device_interface->command = cmd;
-      if (use_int_parameter) {
-        host_device_interface->param1 = int_parameter;
+
+      // Setup parameter
+      if (use_int_param1) {
+        host_device_interface->use_int_val1 = true;
+        host_device_interface->int_val1 = int_param1;
       }
+      if (use_str_param1) {
+        str_param1_value = instance_getter_java_lang_String_value(gc_info, str_param1,
+                          exception);
+        str_param1_count = instance_getter_java_lang_String_count(gc_info, str_param1,
+                          exception);
+
+        for(int i = 0; i < str_param1_count; i++){
+          host_device_interface->str_val1[i] = char__array_get(gc_info, str_param1_value, i, exception);
+        }
+        host_device_interface->use_str_val1 = true;
+        host_device_interface->str_val1[str_param1_count] = '\0';
+      }
+      if (use_str_param2) {
+        str_param2_value = instance_getter_java_lang_String_value(gc_info, str_param2,
+                          exception);
+        str_param2_count = instance_getter_java_lang_String_count(gc_info, str_param2,
+                          exception);
+
+        for(int i = 0; i < str_param2_count; i++){
+          host_device_interface->str_val2[i] = char__array_get(gc_info, str_param2_value, i, exception);
+        }
+        host_device_interface->use_str_val2 = true;
+        host_device_interface->str_val2[str_param2_count] = '\0';
+      }
+
+      // Activate task for HostMonitor
       host_device_interface->has_task = true;
       __threadfence_system();
       //__threadfence();
@@ -1449,9 +1493,18 @@ int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface
         }
       }
 
-      // make new String object
-      edu_syr_pcpratts_gc_assign(gc_info, &return_value,
-        at_illecker_string_constant(gc_info, host_device_interface->result_string, exception));
+      // Get result from host device interface
+      if (use_result) {
+        // make new String object
+        edu_syr_pcpratts_gc_assign(gc_info, &return_value,
+          at_illecker_string_constant(gc_info, host_device_interface->str_val1, exception));
+
+        // make new String
+        // java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, new_str_value, exception);
+
+        // new StringBuilder from String
+        // java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a6610_9_(gc_info, new_str, exception);
+      }
 
       host_device_interface->is_result_available = false;
       host_device_interface->lock_thread_id = -1;
@@ -1472,6 +1525,20 @@ int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface
   return return_value;
 }
 
+$$__device__$$
+int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, 
+    int int_parameter, bool use_int_parameter, int * exception) {
+  at_illecker_string_constant(gc_info, 0, exception); // TODO
+  return at_illecker_getStringResult(gc_info, cmd, true, int_parameter, use_int_parameter, 
+           0, false, 0, false, exception);
+}
+
+$$__device__$$
+int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, int * exception) {
+  at_illecker_string_constant(gc_info, 0, exception); // TODO
+  return at_illecker_getStringResult(gc_info, cmd, 0, false, exception);
+}
+
 
 // HamaPeer.send
 // public static void send(String peerName, String msg)
@@ -1479,7 +1546,8 @@ $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info, 
      int peer_name_str_ref, int message_str_ref, int * exception) {
 
-  // TODO
+  at_illecker_getStringResult(gc_info, HostDeviceInterface::SEND_MSG, false, 0, false,
+    peer_name_str_ref, true, message_str_ref, true, exception);
 }
 
 // HamaPeer.getCurrentMessage
@@ -1488,7 +1556,7 @@ $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentMessage($$__global$$ char * gc_info, 
     int * exception) {
 
-  return at_illecker_getStringResult(gc_info, HostDeviceInterface::GET_MSG, 0, false, exception);
+  return at_illecker_getStringResult(gc_info, HostDeviceInterface::GET_MSG, exception);
 }
 
 // HamaPeer.getNumCurrentMessages
@@ -1586,7 +1654,7 @@ $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_info, 
      int peer_name_str_ref, int message_str_ref, int * exception) {
   // TODO
-  return true;
+  return false;
 }
 
 // HamaPeer.reopenInput

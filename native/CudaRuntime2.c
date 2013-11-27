@@ -105,13 +105,20 @@ public:
     UNDEFINED
   };
   volatile MESSAGE_TYPE command;
-  volatile int param1;
+
+  // Command parameter
+  volatile bool use_int_val1; // in int_val1
+  volatile bool use_str_val1; // in str_val1
+  volatile bool use_str_val2; // in str_val2
+
+  // Transfer variables (used in sendCommand and getResult)
+  volatile int int_val1;
+  volatile long long_val1;
+  volatile char str_val1[STR_SIZE];
+  volatile char str_val2[STR_SIZE];
 
   // Response of HostMonitor
   volatile bool is_result_available;
-  volatile int result_int;
-  volatile long result_long;
-  volatile char result_string[STR_SIZE];
 
   HostDeviceInterface() {
     init();
@@ -122,8 +129,12 @@ public:
     has_task = false;
     done = false;
     command = UNDEFINED;
+    use_int_val1 = false;
+    use_str_val1 = false;
+    use_str_val2 = false;
+    int_val1 = 0;
+    long_val1 = 0;
     is_result_available = false;
-    result_int = 0;
   }
 
   ~HostDeviceInterface() {}
@@ -621,22 +632,27 @@ public:
     printf("SocketClient sent CMD %s\n", messageTypeNames[cmd]);
   }
   
-  void sendCMD(int32_t cmd, int32_t value) volatile {
+  template<class T>
+  void sendCMD(int32_t cmd, T value) volatile {
     serialize<int32_t>(cmd, *file_out_stream_);
-    serialize<int32_t>(value, *file_out_stream_);
+    serialize<T>(value, *file_out_stream_);
     file_out_stream_->flush();
-    printf("SocketClient sent CMD: %s with Value: %d\n", messageTypeNames[cmd],
-           value);
+    printf("SocketClient sent CMD: %s with Value: '%s'\n", messageTypeNames[cmd],
+           toString<T>(value).c_str());
   }
-  
-  void sendCMD(int32_t cmd, const string& value) volatile {
+
+  template<class T1, class T2>
+  void sendCMD(int32_t cmd, T1 value1, T2 value2) volatile {
     serialize<int32_t>(cmd, *file_out_stream_);
-    serialize<string>(value, *file_out_stream_);
+    serialize<T1>(value1, *file_out_stream_);
+    serialize<T2>(value2, *file_out_stream_);
     file_out_stream_->flush();
-    printf("SocketClient sent CMD: %s with Value: %s\n", messageTypeNames[cmd],
-           value.c_str());
+    printf("SocketClient sent CMD: %s with Value1: '%s' and Value2: '%s'\n", messageTypeNames[cmd],
+           toString<T1>(value1).c_str(), toString<T2>(value2).c_str());
   }
-  
+
+/*
+// TODO
   void sendCMD(int32_t cmd, const string values[], int size) volatile {
     serialize<int32_t>(cmd, *file_out_stream_);
     for (int i = 0; i < size; i++) {
@@ -658,7 +674,7 @@ public:
     }
     file_out_stream_->flush();
   }
-  
+*/
   /**
    * Wait for next event, which should be a response for
    * a previously sent command (expected_response_cmd)
@@ -859,24 +875,41 @@ public:
 
     switch (host_device_interface->command) {
       
-      case HostDeviceInterface::GET_MSG: {
+      case HostDeviceInterface::SEND_MSG: {
+        socket_client_->sendCMD(HostDeviceInterface::SEND_MSG, 
+                                string(const_cast<char *>(host_device_interface->str_val1)), 
+                                string(const_cast<char *>(host_device_interface->str_val2)));
 
+        host_device_interface->str_val1[0] = '\0';
+        host_device_interface->use_str_val1 = false;
+
+        host_device_interface->str_val2[0] = '\0';
+        host_device_interface->use_str_val2 = false;
+
+        host_device_interface->is_result_available = true;
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
+        break;
+      }
+
+      case HostDeviceInterface::GET_MSG: {
+        // TODO
         break;
       }
 
       case HostDeviceInterface::GET_MSG_COUNT: {
         socket_client_->sendCMD(HostDeviceInterface::GET_MSG_COUNT);
 
-        host_device_interface->result_int = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_MSG_COUNT);
+        host_device_interface->int_val1 = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_MSG_COUNT);
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %d result_available: %s\n",
-               host_device_interface->result_int,
+               host_device_interface->int_val1,
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
-        printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
+        printf("HostMonitor consumed result: %d\n", host_device_interface->int_val1);
         break;
       }
 
@@ -884,7 +917,7 @@ public:
         socket_client_->sendCMD(HostDeviceInterface::SYNC);
         printf("HostMonitor sent SYNC\n");
 
-        host_device_interface->result_int = 0;
+        host_device_interface->int_val1 = 0;
         host_device_interface->is_result_available = true;
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
@@ -894,66 +927,66 @@ public:
       case HostDeviceInterface::GET_SUPERSTEP_COUNT: {
         socket_client_->sendCMD(HostDeviceInterface::GET_SUPERSTEP_COUNT);
 
-        host_device_interface->result_long = socket_client_->getResult<int64_t>(HostDeviceInterface::GET_SUPERSTEP_COUNT);
+        host_device_interface->long_val1 = socket_client_->getResult<int64_t>(HostDeviceInterface::GET_SUPERSTEP_COUNT);
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %ld result_available: %s\n",
-               host_device_interface->result_long,
+               host_device_interface->long_val1,
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
-        printf("HostMonitor consumed result: %ld\n", host_device_interface->result_long);
+        printf("HostMonitor consumed result: %ld\n", host_device_interface->long_val1);
         break;
       }
 
       case HostDeviceInterface::GET_PEERNAME: {
-        socket_client_->sendCMD(HostDeviceInterface::GET_PEERNAME, host_device_interface->param1);
+        socket_client_->sendCMD(HostDeviceInterface::GET_PEERNAME, host_device_interface->int_val1);
         
         string result = socket_client_->getResult<string>(HostDeviceInterface::GET_PEERNAME);
 
-        strcpy(const_cast<char *>(host_device_interface->result_string), result.c_str());
+        strcpy(const_cast<char *>(host_device_interface->str_val1), result.c_str());
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %s result_available: %s\n",
-               host_device_interface->result_string,
+               host_device_interface->str_val1,
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
-        printf("HostMonitor consumed result: %s\n", host_device_interface->result_string);
+        printf("HostMonitor consumed result: %s\n", host_device_interface->str_val1);
         break;
       }
 
       case HostDeviceInterface::GET_PEER_INDEX: {
         socket_client_->sendCMD(HostDeviceInterface::GET_PEER_INDEX);
 
-        host_device_interface->result_int = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_PEER_INDEX);
+        host_device_interface->int_val1 = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_PEER_INDEX);
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %d result_available: %s\n",
-               host_device_interface->result_int,
+               host_device_interface->int_val1,
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
-        printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
+        printf("HostMonitor consumed result: %d\n", host_device_interface->int_val1);
         break;
       }
 
       case HostDeviceInterface::GET_PEER_COUNT: {
         socket_client_->sendCMD(HostDeviceInterface::GET_PEER_COUNT);
         
-        host_device_interface->result_int = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_PEER_COUNT);
+        host_device_interface->int_val1 = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_PEER_COUNT);
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %d result_available: %s\n",
-               host_device_interface->result_int,
+               host_device_interface->int_val1,
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
-        printf("HostMonitor consumed result: %d\n", host_device_interface->result_int);
+        printf("HostMonitor consumed result: %d\n", host_device_interface->int_val1);
         break;
       }
 
@@ -961,7 +994,7 @@ public:
         socket_client_->sendCMD(HostDeviceInterface::CLEAR);
         printf("HostMonitor sent CLEAR\n");
 
-        host_device_interface->result_int = 0;
+        host_device_interface->int_val1 = 0;
         host_device_interface->is_result_available = true;
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
@@ -972,7 +1005,7 @@ public:
         socket_client_->sendCMD(HostDeviceInterface::CLEAR);
         printf("HostMonitor sent CLEAR\n");
 
-        host_device_interface->result_int = 0;
+        host_device_interface->int_val1 = 0;
         host_device_interface->is_result_available = true;
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
@@ -980,12 +1013,15 @@ public:
       }
 
       case HostDeviceInterface::SEQFILE_OPEN: {
+        // TODO
         break;
       }
       case HostDeviceInterface::SEQFILE_APPEND: {
+        // TODO
         break;
       }
       case HostDeviceInterface::SEQFILE_CLOSE: {
+        // TODO
         break;
       }
     }

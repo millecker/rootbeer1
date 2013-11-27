@@ -120,13 +120,20 @@ public:
     UNDEFINED
   };
   volatile MESSAGE_TYPE command;
-  volatile int param1;
+
+  // Command parameter
+  volatile bool use_int_val1; // in int_val1
+  volatile bool use_str_val1; // in str_val1
+  volatile bool use_str_val2; // in str_val2
+
+  // Transfer variables (used in sendCommand and getResult)
+  volatile int int_val1;
+  volatile long long_val1;
+  volatile char str_val1[STR_SIZE];
+  volatile char str_val2[STR_SIZE];
 
   // Response of HostMonitor
   volatile bool is_result_available;
-  volatile int result_int;
-  volatile long result_long;
-  volatile char result_string[STR_SIZE];
 
   HostDeviceInterface() {
     init();
@@ -137,8 +144,12 @@ public:
     has_task = false;
     done = false;
     command = UNDEFINED;
+    use_int_val1 = false;
+    use_str_val1 = false;
+    use_str_val2 = false;
+    int_val1 = 0;
+    long_val1 = 0;
     is_result_available = false;
-    result_int = 0;
   }
 
   ~HostDeviceInterface() {}
