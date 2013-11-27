@@ -27,16 +27,87 @@ public class HamaPeer {
    * order.
    * 
    * @param peerName
-   * @param msg
+   * @param int message
    */
-  public static void send(String peerName, String msg) {
+  public static void sendInt(String peerName, int msg) {
   }
-
   
   /**
-   * @return A message from the peer's received messages queue (a FIFO).
+   * Send a data with a tag to another BSPSlave corresponding to hostname.
+   * Messages sent by this method are not guaranteed to be received in a sent
+   * order.
+   * 
+   * @param peerName
+   * @param long message
    */
-  public static String getCurrentMessage() {
+  public static void sendLong(String peerName, long msg) {
+  }
+  
+  /**
+   * Send a data with a tag to another BSPSlave corresponding to hostname.
+   * Messages sent by this method are not guaranteed to be received in a sent
+   * order.
+   * 
+   * @param peerName
+   * @param float message
+   */
+  public static void sendFloat(String peerName, float msg) {
+  }
+  
+  /**
+   * Send a data with a tag to another BSPSlave corresponding to hostname.
+   * Messages sent by this method are not guaranteed to be received in a sent
+   * order.
+   * 
+   * @param peerName
+   * @param double message
+   */
+  public static void sendDouble(String peerName, double msg) {
+  }
+  
+  /**
+   * Send a data with a tag to another BSPSlave corresponding to hostname.
+   * Messages sent by this method are not guaranteed to be received in a sent
+   * order.
+   * 
+   * @param peerName
+   * @param string message
+   */
+  public static void sendString(String peerName, String msg) {
+  }
+
+  /**
+   * @return A int message from the peer's received messages queue (a FIFO).
+   */
+  public static int getCurrentIntMessage() {
+    return 0;
+  }
+  
+  /**
+   * @return A long message from the peer's received messages queue (a FIFO).
+   */
+  public static long getCurrentLongMessage() {
+    return 0;
+  }
+  
+  /**
+   * @return A float message from the peer's received messages queue (a FIFO).
+   */
+  public static float getCurrentFloatMessage() {
+    return 0;
+  }
+  
+  /**
+   * @return A double message from the peer's received messages queue (a FIFO).
+   */
+  public static double getCurrentDoubleMessage() {
+    return 0;
+  }
+  
+  /**
+   * @return A string message from the peer's received messages queue (a FIFO).
+   */
+  public static String getCurrentStringMessage() {
     return null;
   }
 

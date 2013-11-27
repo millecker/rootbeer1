@@ -123,12 +123,17 @@ public:
 
   // Command parameter
   volatile bool use_int_val1; // in int_val1
+  volatile bool use_long_val1; // in long_val1
+  volatile bool use_float_val1; // in float_val1
+  volatile bool use_double_val1; // in double_val1
   volatile bool use_str_val1; // in str_val1
   volatile bool use_str_val2; // in str_val2
 
   // Transfer variables (used in sendCommand and getResult)
   volatile int int_val1;
   volatile long long_val1;
+  volatile float float_val1;
+  volatile double double_val1;
   volatile char str_val1[STR_SIZE];
   volatile char str_val2[STR_SIZE];
 
@@ -145,10 +150,15 @@ public:
     done = false;
     command = UNDEFINED;
     use_int_val1 = false;
+    use_long_val1 = false;
+    use_float_val1 = false;
+    use_double_val1 = false;
     use_str_val1 = false;
     use_str_val2 = false;
     int_val1 = 0;
     long_val1 = 0;
+    float_val1 = 0;
+    double_val1 = 0;
     is_result_available = false;
   }
 

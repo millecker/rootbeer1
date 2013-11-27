@@ -1294,7 +1294,11 @@ int at_illecker_getIntResult($$__global$$ char * gc_info, HostDeviceInterface::M
 
       // Get result from host device interface
       return_value = host_device_interface->int_val1;
-      
+
+      // Reset transfer variable
+      host_device_interface->int_val1 = 0;
+      host_device_interface->use_int_val1 = false;
+
       host_device_interface->is_result_available = false;
       host_device_interface->lock_thread_id = -1;
 
@@ -1376,6 +1380,10 @@ long at_illecker_getLongResult($$__global$$ char * gc_info, HostDeviceInterface:
       // Get result from host device interface
       return_value = host_device_interface->long_val1;
       
+      // Reset transfer variable
+      host_device_interface->long_val1 = 0;
+      host_device_interface->use_long_val1 = false;
+
       host_device_interface->is_result_available = false;
       host_device_interface->lock_thread_id = -1;
 
@@ -1397,8 +1405,13 @@ long at_illecker_getLongResult($$__global$$ char * gc_info, HostDeviceInterface:
 
 $$__device__$$
 int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, 
-    bool use_result, int int_param1, bool use_int_param1,
-    int str_param1, bool use_str_param1, int str_param2, bool use_str_param2, 
+    bool use_result,
+    int str_param1, bool use_str_param1, 
+    int str_param2, bool use_str_param2, 
+    int int_param1, bool use_int_param1,
+    long long_param1, bool use_long_param1,
+    float float_param1, bool use_float_param1,
+    double double_param1, bool use_double_param1,
     int * exception) {
 
   int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
@@ -1448,10 +1461,6 @@ int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface
       host_device_interface->command = cmd;
 
       // Setup parameter
-      if (use_int_param1) {
-        host_device_interface->use_int_val1 = true;
-        host_device_interface->int_val1 = int_param1;
-      }
       if (use_str_param1) {
         str_param1_value = instance_getter_java_lang_String_value(gc_info, str_param1,
                           exception);
@@ -1475,6 +1484,22 @@ int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface
         }
         host_device_interface->use_str_val2 = true;
         host_device_interface->str_val2[str_param2_count] = '\0';
+      }
+      if (use_int_param1) {
+        host_device_interface->use_int_val1 = true;
+        host_device_interface->int_val1 = int_param1;
+      }
+      if (use_long_param1) {
+        host_device_interface->use_long_val1 = true;
+        host_device_interface->long_val1 = long_param1;
+      }
+      if (use_float_param1) {
+        host_device_interface->use_float_val1 = true;
+        host_device_interface->float_val1 = float_param1;
+      }
+      if (use_double_param1) {
+        host_device_interface->use_double_val1 = true;
+        host_device_interface->double_val1 = double_param1;
       }
 
       // Activate task for HostMonitor
@@ -1525,38 +1550,96 @@ int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface
   return return_value;
 }
 
-$$__device__$$
-int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, 
-    int int_parameter, bool use_int_parameter, int * exception) {
-  at_illecker_string_constant(gc_info, 0, exception); // TODO
-  return at_illecker_getStringResult(gc_info, cmd, true, int_parameter, use_int_parameter, 
-           0, false, 0, false, exception);
-}
-
-$$__device__$$
-int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface::MESSAGE_TYPE cmd, int * exception) {
-  at_illecker_string_constant(gc_info, 0, exception); // TODO
-  return at_illecker_getStringResult(gc_info, cmd, 0, false, exception);
-}
-
+// Hama Peer methods
 
 // HamaPeer.send
-// public static void send(String peerName, String msg)
+// public static void sendInt(String peerName, int msg)
 $$__device__$$
-void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info, 
-     int peer_name_str_ref, int message_str_ref, int * exception) {
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sendInt($$__global$$ char * gc_info, 
+     int peer_name_str_ref, int int_message, int * exception) {
 
-  at_illecker_getStringResult(gc_info, HostDeviceInterface::SEND_MSG, false, 0, false,
-    peer_name_str_ref, true, message_str_ref, true, exception);
+  at_illecker_getStringResult(gc_info, HostDeviceInterface::SEND_MSG, false,
+    peer_name_str_ref, true,
+    0, false,
+    int_message, true,
+    0, false,
+    0, false,
+    0, false, exception);
+}
+
+// HamaPeer.send
+// public static void sendLong(String peerName, long msg)
+$$__device__$$
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sendLong($$__global$$ char * gc_info, 
+     int peer_name_str_ref, long long_message, int * exception) {
+
+  at_illecker_getStringResult(gc_info, HostDeviceInterface::SEND_MSG, false,
+    peer_name_str_ref, true,
+    0, false,
+    0, false,
+    long_message, true,
+    0, false,
+    0, false, exception);
+}
+
+// HamaPeer.send
+// public static void sendFloat(String peerName, float msg)
+$$__device__$$
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sendFloat($$__global$$ char * gc_info, 
+     int peer_name_str_ref, float float_message, int * exception) {
+
+  at_illecker_getStringResult(gc_info, HostDeviceInterface::SEND_MSG, false,
+    peer_name_str_ref, true,
+    0, false,
+    0, false,
+    0, false,
+    float_message, true,
+    0, false, exception);
+}
+
+// HamaPeer.send
+// public static void sendDouble(String peerName, double msg)
+$$__device__$$
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sendDouble($$__global$$ char * gc_info, 
+     int peer_name_str_ref, double double_message, int * exception) {
+
+  at_illecker_getStringResult(gc_info, HostDeviceInterface::SEND_MSG, false,
+    peer_name_str_ref, true,
+    0, false,
+    0, false,
+    0, false,
+    0, false,
+    double_message, true, exception);
+}
+
+// HamaPeer.send
+// public static void sendString(String peerName, String msg)
+$$__device__$$
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sendString($$__global$$ char * gc_info, 
+     int peer_name_str_ref, int string_message_ref, int * exception) {
+
+  at_illecker_getStringResult(gc_info, HostDeviceInterface::SEND_MSG, false,
+    peer_name_str_ref, true,
+    string_message_ref, true,
+    0, false,
+    0, false,
+    0, false,
+    0, false, exception);
 }
 
 // HamaPeer.getCurrentMessage
-// public static String getCurrentMessage()
+// public static String getCurrentStringMessage()
 $$__device__$$
-int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentMessage($$__global$$ char * gc_info, 
+int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentStringMessage($$__global$$ char * gc_info, 
     int * exception) {
 
-  return at_illecker_getStringResult(gc_info, HostDeviceInterface::GET_MSG, exception);
+  return at_illecker_getStringResult(gc_info, HostDeviceInterface::GET_MSG, true,
+    0, false,
+    0, false,
+    0, false,
+    0, false,
+    0, false,
+    0, false, exception);
 }
 
 // HamaPeer.getNumCurrentMessages
@@ -1592,7 +1675,13 @@ $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * gc_info, 
     int * exception) {
 
-  return at_illecker_getStringResult(gc_info, HostDeviceInterface::GET_PEERNAME, -1, true, exception);
+  return at_illecker_getStringResult(gc_info, HostDeviceInterface::GET_PEERNAME, true,
+    0, false,
+    0, false,
+    -1, true,
+    0, false,
+    0, false,
+    0, false, exception);
 }
 
 // HamaPeer.getPeerName
@@ -1601,7 +1690,13 @@ $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * gc_info, 
     int index, int * exception) {
 
-  return at_illecker_getStringResult(gc_info, HostDeviceInterface::GET_PEERNAME, index, true, exception);
+  return at_illecker_getStringResult(gc_info, HostDeviceInterface::GET_PEERNAME, true,
+    0, false,
+    0, false,
+    index, true,
+    0, false,
+    0, false,
+    0, false, exception);
 }
 
 // HamaPeer.getPeerIndex

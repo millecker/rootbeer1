@@ -108,12 +108,17 @@ public:
 
   // Command parameter
   volatile bool use_int_val1; // in int_val1
+  volatile bool use_long_val1; // in long_val1
+  volatile bool use_float_val1; // in float_val1
+  volatile bool use_double_val1; // in double_val1
   volatile bool use_str_val1; // in str_val1
   volatile bool use_str_val2; // in str_val2
 
   // Transfer variables (used in sendCommand and getResult)
   volatile int int_val1;
   volatile long long_val1;
+  volatile float float_val1;
+  volatile double double_val1;
   volatile char str_val1[STR_SIZE];
   volatile char str_val2[STR_SIZE];
 
@@ -130,10 +135,15 @@ public:
     done = false;
     command = UNDEFINED;
     use_int_val1 = false;
+    use_long_val1 = false;
+    use_float_val1 = false;
+    use_double_val1 = false;
     use_str_val1 = false;
     use_str_val2 = false;
     int_val1 = 0;
     long_val1 = 0;
+    float_val1 = 0;
+    double_val1 = 0;
     is_result_available = false;
   }
 
@@ -876,16 +886,52 @@ public:
     switch (host_device_interface->command) {
       
       case HostDeviceInterface::SEND_MSG: {
-        socket_client_->sendCMD(HostDeviceInterface::SEND_MSG, 
-                                string(const_cast<char *>(host_device_interface->str_val1)), 
-                                string(const_cast<char *>(host_device_interface->str_val2)));
+
+        if (host_device_interface->use_str_val2) {
+          socket_client_->sendCMD(HostDeviceInterface::SEND_MSG, 
+                                  string(const_cast<char *>(host_device_interface->str_val1)), 
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+
+          host_device_interface->str_val2[0] = '\0';
+          host_device_interface->use_str_val2 = false;
+
+        } else if (host_device_interface->use_int_val1) {
+          socket_client_->sendCMD(HostDeviceInterface::SEND_MSG, 
+                                  string(const_cast<char *>(host_device_interface->str_val1)), 
+                                  host_device_interface->int_val1);
+
+          host_device_interface->int_val1 = 0;
+          host_device_interface->use_int_val1 = false;
+
+        } else if (host_device_interface->use_long_val1) {
+          socket_client_->sendCMD(HostDeviceInterface::SEND_MSG, 
+                                  string(const_cast<char *>(host_device_interface->str_val1)), 
+                                  host_device_interface->long_val1);
+
+          host_device_interface->long_val1 = 0;
+          host_device_interface->use_long_val1 = false;
+
+        } else if (host_device_interface->use_float_val1) {
+          socket_client_->sendCMD(HostDeviceInterface::SEND_MSG, 
+                                  string(const_cast<char *>(host_device_interface->str_val1)), 
+                                  host_device_interface->float_val1);
+
+          host_device_interface->float_val1 = 0;
+          host_device_interface->use_float_val1 = false;
+
+        } else if (host_device_interface->use_double_val1) {
+          socket_client_->sendCMD(HostDeviceInterface::SEND_MSG, 
+                                  string(const_cast<char *>(host_device_interface->str_val1)), 
+                                  host_device_interface->double_val1);
+
+          host_device_interface->double_val1 = 0;
+          host_device_interface->use_double_val1 = false;
+        }
 
         host_device_interface->str_val1[0] = '\0';
         host_device_interface->use_str_val1 = false;
 
-        host_device_interface->str_val2[0] = '\0';
-        host_device_interface->use_str_val2 = false;
-
+        // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
@@ -901,6 +947,7 @@ public:
         socket_client_->sendCMD(HostDeviceInterface::GET_MSG_COUNT);
 
         host_device_interface->int_val1 = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_MSG_COUNT);
+        // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %d result_available: %s\n",
@@ -918,6 +965,7 @@ public:
         printf("HostMonitor sent SYNC\n");
 
         host_device_interface->int_val1 = 0;
+        // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
@@ -928,6 +976,7 @@ public:
         socket_client_->sendCMD(HostDeviceInterface::GET_SUPERSTEP_COUNT);
 
         host_device_interface->long_val1 = socket_client_->getResult<int64_t>(HostDeviceInterface::GET_SUPERSTEP_COUNT);
+        // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %ld result_available: %s\n",
@@ -946,6 +995,7 @@ public:
         string result = socket_client_->getResult<string>(HostDeviceInterface::GET_PEERNAME);
 
         strcpy(const_cast<char *>(host_device_interface->str_val1), result.c_str());
+        // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %s result_available: %s\n",
@@ -962,6 +1012,7 @@ public:
         socket_client_->sendCMD(HostDeviceInterface::GET_PEER_INDEX);
 
         host_device_interface->int_val1 = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_PEER_INDEX);
+        // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %d result_available: %s\n",
@@ -978,6 +1029,7 @@ public:
         socket_client_->sendCMD(HostDeviceInterface::GET_PEER_COUNT);
         
         host_device_interface->int_val1 = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_PEER_COUNT);
+        // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
         printf("HostMonitor got result: %d result_available: %s\n",
@@ -995,6 +1047,7 @@ public:
         printf("HostMonitor sent CLEAR\n");
 
         host_device_interface->int_val1 = 0;
+        // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
@@ -1006,6 +1059,7 @@ public:
         printf("HostMonitor sent CLEAR\n");
 
         host_device_interface->int_val1 = 0;
+        // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
