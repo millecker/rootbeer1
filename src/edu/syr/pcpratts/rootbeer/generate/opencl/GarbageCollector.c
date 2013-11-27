@@ -1299,6 +1299,7 @@ int at_illecker_getIntResult($$__global$$ char * gc_info, HostDeviceInterface::M
       host_device_interface->int_val1 = 0;
       host_device_interface->use_int_val1 = false;
 
+      // Notify HostMonitor that result was received
       host_device_interface->is_result_available = false;
       host_device_interface->lock_thread_id = -1;
 
@@ -1384,6 +1385,7 @@ long at_illecker_getLongResult($$__global$$ char * gc_info, HostDeviceInterface:
       host_device_interface->long_val1 = 0;
       host_device_interface->use_long_val1 = false;
 
+      // Notify HostMonitor that result was received
       host_device_interface->is_result_available = false;
       host_device_interface->lock_thread_id = -1;
 
@@ -1460,7 +1462,7 @@ int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface
       // Setup command
       host_device_interface->command = cmd;
 
-      // Setup parameter
+      // Setup transfer variable as parameters
       if (use_str_param1) {
         str_param1_value = instance_getter_java_lang_String_value(gc_info, str_param1,
                           exception);
@@ -1523,7 +1525,8 @@ int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface
         // make new String object
         edu_syr_pcpratts_gc_assign(gc_info, &return_value,
           at_illecker_string_constant(gc_info, host_device_interface->str_val1, exception));
-
+        // TODO Missing StringBuilder?
+ 
         // make new String
         // java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, new_str_value, exception);
 
@@ -1531,6 +1534,33 @@ int at_illecker_getStringResult($$__global$$ char * gc_info, HostDeviceInterface
         // java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a6610_9_(gc_info, new_str, exception);
       }
 
+      // Reset transfer variables
+      if (use_str_param1) {
+        host_device_interface->str_val1[0] = '\0';
+        host_device_interface->use_str_val1 = false;
+      }
+      if (use_str_param2) {
+        host_device_interface->str_val2[0] = '\0';
+        host_device_interface->use_str_val2 = false;
+      }
+      if (use_int_param1) {
+        host_device_interface->int_val1 = 0;
+        host_device_interface->use_int_val1 = false;
+      }
+      if (use_long_param1) {
+        host_device_interface->long_val1 = 0;
+        host_device_interface->use_long_val1 = false;
+      }
+      if (use_float_param1) {
+        host_device_interface->float_val1 = 0;
+        host_device_interface->use_float_val1 = false;
+      }
+      if (use_double_param1) {
+        host_device_interface->double_val1 = 0;
+        host_device_interface->use_double_val1 = false;
+      }
+
+      // Notify HostMonitor that result was received
       host_device_interface->is_result_available = false;
       host_device_interface->lock_thread_id = -1;
       
