@@ -83,22 +83,26 @@ public class CudaTweaks extends Tweaks {
       writer.flush();
       writer.close();
 
+      // Ignore custom code, because template kernel functions are not supported
       // Check for custom Hama Pipes code and remove before tweaks (DeadMethod check)
-      String start_str = "/*HAMA_PIPES_CODE_START*/";
-      String end_str = "/*HAMA_PIPES_CODE_END*/";
-      String template_str = "/*HAMA_PIPES_CODE*/";
+      
+      // Check custom Header Code in CudaHeader.c
+      String start_str = "/*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_START*/";
+      String end_str = "/*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_END*/";
+      String template_header_str = "/*HAMA_PIPES_HEADER_CODE*/";
       int start_pos = cuda_code.indexOf(start_str);
       int end_pos = cuda_code.indexOf(end_str);
-      String hama_custom_code = "";
+      String hama_custom_header_code = "";
       if ( (start_pos>0) && (end_pos>0) ) {
-        hama_custom_code = cuda_code.substring(start_pos, 
+        hama_custom_header_code = cuda_code.substring(start_pos, 
             end_pos + end_str.length());
         
         cuda_code = cuda_code.substring(0, start_pos) 
-            + template_str + "\n"
+            + template_header_str + "\n"
             + cuda_code.substring(end_pos + end_str.length());
       }
-        
+      
+      // Do tweaks
       DeadMethods dead_methods = new DeadMethods();
       dead_methods.parseString(cuda_code);
       cuda_code = dead_methods.getResult();
@@ -107,8 +111,8 @@ public class CudaTweaks extends Tweaks {
       //cuda_code = compressor.compress(cuda_code);
 
       // Add custom Hama Pipes code after tweaks (DeadMethod check)
-      if (cuda_code.indexOf(template_str)>0) {
-        cuda_code = cuda_code.replace(template_str, hama_custom_code);
+      if (cuda_code.indexOf(template_header_str)>0) {
+        cuda_code = cuda_code.replace(template_header_str, hama_custom_header_code);
       }
       
       File generated = new File(RootbeerPaths.v().getRootbeerHome() + "generated.cu");

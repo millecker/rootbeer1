@@ -55,7 +55,7 @@ void edu_syr_pcpratts_threadfence_block(){
 
 __device__ clock_t global_now;
 
-/*HAMA_PIPES_CODE_START*/
+/*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_START*/
 
 /* before HostDeviceInterface
 nvcc generated.cu --ptxas-options=-v
@@ -137,6 +137,11 @@ public:
   volatile char str_val1[STR_SIZE];
   volatile char str_val2[STR_SIZE];
 
+  enum RETURN_TYPE {
+    INT, LONG, FLOAT, DOUBLE, STRING
+  };
+  volatile RETURN_TYPE return_type;
+
   // Response of HostMonitor
   volatile bool is_result_available;
 
@@ -167,4 +172,4 @@ public:
 
 __device__ HostDeviceInterface *host_device_interface;
 
-/*HAMA_PIPES_CODE_END*/
+/*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_END*/

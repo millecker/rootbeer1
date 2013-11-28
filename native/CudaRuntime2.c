@@ -122,6 +122,11 @@ public:
   volatile char str_val1[STR_SIZE];
   volatile char str_val2[STR_SIZE];
 
+  enum RETURN_TYPE {
+    INT, LONG, FLOAT, DOUBLE, STRING
+  };
+  volatile RETURN_TYPE return_type;
+
   // Response of HostMonitor
   volatile bool is_result_available;
 
@@ -949,7 +954,37 @@ public:
       }
 
       case HostDeviceInterface::GET_MSG: {
-        // TODO
+        socket_client_->sendCMD(HostDeviceInterface::GET_MSG, false);
+
+        // Check return type
+        if (host_device_interface->return_type == HostDeviceInterface::INT) {
+          host_device_interface->int_val1 = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_MSG);
+          printf("HostMonitor got result: '%d' \n", host_device_interface->int_val1);
+
+        } else if (host_device_interface->return_type == HostDeviceInterface::LONG) {
+          host_device_interface->long_val1 = socket_client_->getResult<int64_t>(HostDeviceInterface::GET_MSG);
+          printf("HostMonitor got result: '%ld' \n", host_device_interface->long_val1);
+
+        } else if (host_device_interface->return_type == HostDeviceInterface::FLOAT) {
+          host_device_interface->float_val1 = socket_client_->getResult<float>(HostDeviceInterface::GET_MSG);
+          printf("HostMonitor got result: '%f' \n", host_device_interface->float_val1);
+
+        } else if (host_device_interface->return_type == HostDeviceInterface::DOUBLE) {
+          host_device_interface->double_val1 = socket_client_->getResult<double>(HostDeviceInterface::GET_MSG);
+          printf("HostMonitor got result: '%f' \n", host_device_interface->double_val1);
+
+        } else if (host_device_interface->return_type == HostDeviceInterface::STRING) {
+          string result = socket_client_->getResult<string>(HostDeviceInterface::GET_MSG);
+          strcpy(const_cast<char *>(host_device_interface->str_val1), result.c_str());
+          printf("HostMonitor got result: '%s' \n", host_device_interface->str_val1);
+        }
+        
+        // Set result available for GPU Kernel
+        host_device_interface->is_result_available = true;
+
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
+        printf("HostMonitor result was consumed\n");
         break;
       }
 
