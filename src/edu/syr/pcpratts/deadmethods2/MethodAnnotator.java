@@ -49,7 +49,7 @@ public class MethodAnnotator {
           if(c2 == ' ' || c2 == '\n'){
             pos++;
             continue;
-          } else if(c2 == '('){
+          } else if ((c2 == '(') || (c2 == '<')){
             invoked.add(method_name);
             break outer_while;
           } else {
