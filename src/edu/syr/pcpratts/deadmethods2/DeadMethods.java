@@ -45,6 +45,12 @@ public class DeadMethods {
     
     MethodNameParser name_parser = new MethodNameParser();
     List<String> method_names = name_parser.parse(blocks);
+    //for(Block block : blocks){
+    //  if(block.isMethod()){
+    //    Method method = block.getMethod();
+    //    System.out.println(method.getName());
+    //  }
+    //}
     
     MethodAnnotator annotator = new MethodAnnotator();
     annotator.parse(blocks, method_names);
