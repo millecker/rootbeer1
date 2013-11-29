@@ -61,9 +61,9 @@ public class OpenCLTypeof {
     int i=0;
     for(NumberedType ntype : m_numberedTypes){
       if (i==0) {
-        ret += "  if((edu_syr_pcpratts_cmpstr(\""+ntype.getType()+"\",type_name)) && ("+ntype.getNumber()+"==type)==0) {\n";
+        ret += "  if((edu_syr_pcpratts_cmpstr(\""+ntype.getType()+"\",type_name)==0) && ("+ntype.getNumber()+"==type)) {\n";
       } else {
-        ret += "  else if((edu_syr_pcpratts_cmpstr(\""+ntype.getType()+"\",type_name)) && ("+ntype.getNumber()+"==type)==0) {\n";
+        ret += "  else if((edu_syr_pcpratts_cmpstr(\""+ntype.getType()+"\",type_name)==0) && ("+ntype.getNumber()+"==type)) {\n";
       }
       ret += "    return true;\n";
       ret += "  }\n";
