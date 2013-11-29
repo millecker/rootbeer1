@@ -1295,6 +1295,8 @@ void initDevice(JNIEnv * env, jobject this_ref, jint max_blocks_per_proc, jint m
   to_space_size -= gc_space_size;
   to_space_size -= free_space;
   to_space_size -= classMemSize;
+  // substract Pinned Memory HostDeviceInterface object
+  to_space_size -= sizeof(HostDeviceInterface);
   //leave 10MB for module
   to_space_size -= 10L*1024L*1024L;
 

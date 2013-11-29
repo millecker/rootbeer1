@@ -1739,13 +1739,46 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
 }
 
 // HamaPeer.readNext
-// public static boolean readNext(String key, String value)
+// public static boolean readNext(int key, int value)
 $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_info, 
-     int peer_name_str_ref, int message_str_ref, int * exception) {
-  // TODO
+     int key_obj_ref, int value_obj_ref, int * exception) {
+
+  if (edu_syr_pcpratts_rootbeer_typeof_Integer(gc_info, key_obj_ref)) {
+    printf("key is Integer!\n");
+
+  } else if (edu_syr_pcpratts_rootbeer_typeof_Long(gc_info, key_obj_ref)) {
+    printf("key is Long!\n");
+
+  } else if (edu_syr_pcpratts_rootbeer_typeof_Float(gc_info, key_obj_ref)) {
+    printf("key is Float!\n");
+
+  } else if (edu_syr_pcpratts_rootbeer_typeof_Double(gc_info, key_obj_ref)) {
+    printf("key is Double!\n");
+
+  } else if (edu_syr_pcpratts_rootbeer_typeof_String(gc_info, key_obj_ref)) {
+    printf("key is String!\n");
+  }
+
+  if (edu_syr_pcpratts_rootbeer_typeof_Integer(gc_info, value_obj_ref)) {
+    printf("value is Integer!\n");
+
+  } else if (edu_syr_pcpratts_rootbeer_typeof_Long(gc_info, value_obj_ref)) {
+    printf("value is Long!\n");
+
+  } else if (edu_syr_pcpratts_rootbeer_typeof_Float(gc_info, value_obj_ref)) {
+    printf("value is Float!\n");
+
+  } else if (edu_syr_pcpratts_rootbeer_typeof_Double(gc_info, value_obj_ref)) {
+    printf("value is Double!\n");
+
+  } else if (edu_syr_pcpratts_rootbeer_typeof_String(gc_info, key_obj_ref)) {
+    printf("value is String!\n");
+  }
+
   return false;
 }
+
 
 // HamaPeer.reopenInput
 // public static void reopenInput() {

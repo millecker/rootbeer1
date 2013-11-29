@@ -58,6 +58,7 @@ public class OpenCLScene {
   private List<CompositeField> m_compositeFields;
   private List<SootMethod> m_methods;
   private ClassConstantNumbers m_constantNumbers;
+  private Set<OpenCLTypeof> m_typeOfs;
   
   static {
     m_curentIdent = 0;
@@ -74,6 +75,7 @@ public class OpenCLScene {
     m_instanceOfs = new HashSet<OpenCLInstanceof>();
     m_methods = new ArrayList<SootMethod>();
     m_constantNumbers = new ClassConstantNumbers();
+    m_typeOfs = new HashSet<OpenCLTypeof>();
     loadTypes(); 
   }
 
@@ -226,6 +228,13 @@ public class OpenCLScene {
     Set<SootField> fields = RootbeerClassLoader.v().getDfsInfo().getFields();
     for(SootField field : fields){
       addField(field);
+      if (field.isPrivate()) {
+        OpenCLTypeof to_add = new OpenCLTypeof(field.getDeclaringClass());
+        if(m_typeOfs.contains(to_add) == false){
+          m_typeOfs.add(to_add);
+          System.out.println("field: "+field.getDeclaration()+" declaring_class: "+field.getDeclaringClass().getShortName());
+        }
+      }
     }
     FieldSignatureUtil futil = new FieldSignatureUtil();
     ExtraFields extra_fields = new ExtraFields();
@@ -433,6 +442,9 @@ public class OpenCLScene {
     for(OpenCLInstanceof type : m_instanceOfs){
       protos.add(type.getPrototype());
     }
+    for(OpenCLTypeof type : m_typeOfs){
+      protos.add(type.getPrototype());
+    }
     Iterator<String> iter = protos.iterator();
     while(iter.hasNext()){
       ret.append(iter.next());
@@ -475,8 +487,13 @@ public class OpenCLScene {
     for(OpenCLInstanceof type : m_instanceOfs){
       bodies.add(type.getBody());
     }
-    Iterator<String> iter = bodies.iterator();
+    for(OpenCLTypeof type : m_typeOfs){
+      bodies.add(type.getBody());
+    }
+    
     ret.append(type_switch.getFunctions());
+    
+    Iterator<String> iter = bodies.iterator();
     while(iter.hasNext()){
       ret.append(iter.next());
     }

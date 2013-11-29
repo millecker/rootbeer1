@@ -192,10 +192,28 @@ public class HamaPeer {
    * @param value
    * @return false if there are no records to read anymore
    */
-  public static boolean readNext(String key, String value) {
+  public static boolean readNext(Object key, Object value) {
+    return false;
+  }
+  /*
+  public static boolean readNext(int key, long value) {
+    return false;
+  }
+  public static boolean readNext(int key, float value) {
+    return false;
+  }
+  public static boolean readNext(int key, double value) {
+    return false;
+  }
+  public static boolean readNext(int key, String value) {
     return false;
   }
 
+  public static boolean readNext(String key, String value) {
+    return false;
+  }
+  */
+  
   /**
    * Closes the input and opens it right away, so that the file pointer is at
    * the beginning again.
