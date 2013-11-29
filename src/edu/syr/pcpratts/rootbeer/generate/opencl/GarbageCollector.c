@@ -583,6 +583,18 @@ edu_syr_pcpratts_cmpg(double lhs, double rhs){
   return 1;
 }
 
+$$__device__$$ char
+edu_syr_pcpratts_cmpstr(const char *s1, const char *s2) {
+  char ret = 0;
+  while (!(ret = *(unsigned char *) s1 - *(unsigned char *) s2) && *s2) ++s1, ++s2;
+
+  if (ret < 0) {
+    ret = -1;
+  } else if (ret > 0) {
+    ret = 1;
+  }
+  return ret;
+}
 
 $$__device__$$ void
 edu_syr_pcpratts_gc_memcpy($$__global$$ char * dest, $$__global$$ char * src, int len) {
@@ -1744,35 +1756,37 @@ $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_info, 
      int key_obj_ref, int value_obj_ref, int * exception) {
 
-  if (edu_syr_pcpratts_rootbeer_typeof_Integer(gc_info, key_obj_ref)) {
+  // check key type
+  if (edu_syr_pcpratts_rootbeer_typeof(gc_info, key_obj_ref, "java.lang.Integer")) {
     printf("key is Integer!\n");
 
-  } else if (edu_syr_pcpratts_rootbeer_typeof_Long(gc_info, key_obj_ref)) {
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, key_obj_ref, "java.lang.Long")) {
     printf("key is Long!\n");
 
-  } else if (edu_syr_pcpratts_rootbeer_typeof_Float(gc_info, key_obj_ref)) {
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, key_obj_ref, "java.lang.Float")) {
     printf("key is Float!\n");
 
-  } else if (edu_syr_pcpratts_rootbeer_typeof_Double(gc_info, key_obj_ref)) {
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, key_obj_ref, "java.lang.Double")) {
     printf("key is Double!\n");
 
-  } else if (edu_syr_pcpratts_rootbeer_typeof_String(gc_info, key_obj_ref)) {
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, key_obj_ref, "java.lang.String")) {
     printf("key is String!\n");
   }
 
-  if (edu_syr_pcpratts_rootbeer_typeof_Integer(gc_info, value_obj_ref)) {
+  // check value type
+  if (edu_syr_pcpratts_rootbeer_typeof(gc_info, value_obj_ref, "java.lang.Integer")) {
     printf("value is Integer!\n");
 
-  } else if (edu_syr_pcpratts_rootbeer_typeof_Long(gc_info, value_obj_ref)) {
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, value_obj_ref, "java.lang.Long")) {
     printf("value is Long!\n");
 
-  } else if (edu_syr_pcpratts_rootbeer_typeof_Float(gc_info, value_obj_ref)) {
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, value_obj_ref, "java.lang.Float")) {
     printf("value is Float!\n");
 
-  } else if (edu_syr_pcpratts_rootbeer_typeof_Double(gc_info, value_obj_ref)) {
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, value_obj_ref, "java.lang.Double")) {
     printf("value is Double!\n");
 
-  } else if (edu_syr_pcpratts_rootbeer_typeof_String(gc_info, key_obj_ref)) {
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, value_obj_ref, "java.lang.String")) {
     printf("value is String!\n");
   }
 

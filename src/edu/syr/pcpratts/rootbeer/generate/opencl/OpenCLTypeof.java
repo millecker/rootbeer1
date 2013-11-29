@@ -7,16 +7,28 @@
 
 package edu.syr.pcpratts.rootbeer.generate.opencl;
 
-import soot.SootClass;
-import soot.jimple.InstanceOfExpr;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import soot.rbclassload.NumberedType;
 import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.Tweaks;
 
 public class OpenCLTypeof {
-    
-  private SootClass m_class;
   
-  public OpenCLTypeof(SootClass soot_class) {
-    m_class = soot_class;
+  private Set<NumberedType> m_numberedTypes;
+  
+  public OpenCLTypeof() {
+    m_numberedTypes = new HashSet<NumberedType>();
+  }
+  
+  public void addNumberedType(List<NumberedType> numberedTypes) {
+    for (NumberedType type : numberedTypes) {
+      if(m_numberedTypes.contains(type) == false){
+        m_numberedTypes.add(type);
+        // System.out.println("type: "+type.getType()+" number: "+type.getNumber());
+      }
+    }
   }
 
   public String getPrototype() {
@@ -28,12 +40,12 @@ public class OpenCLTypeof {
     String global = Tweaks.v().getGlobalAddressSpaceQualifier();
     
     String ret = device+" bool "+getMethodName();
-    ret += "("+global+" char * gc_info, int thisref)";
+    ret += "("+global+" char * gc_info, int thisref,  char * type_name)";
     return ret;
   }
   
   private String getMethodName(){
-    return "edu_syr_pcpratts_rootbeer_typeof_"+m_class.getShortName();
+    return "edu_syr_pcpratts_rootbeer_typeof";
   }
 
   public String getBody() {
@@ -46,37 +58,19 @@ public class OpenCLTypeof {
     ret += "  }\n";
     ret += "  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);\n";
     ret += "  type = edu_syr_pcpratts_gc_get_type(thisref_deref);\n";
-    ret += "  if(type=="+OpenCLScene.v().getClassType(m_class)+"){\n";
-    ret += "      return true;\n";
-    ret += "  }\n";
+    int i=0;
+    for(NumberedType ntype : m_numberedTypes){
+      if (i==0) {
+        ret += "  if((edu_syr_pcpratts_cmpstr(\""+ntype.getType()+"\",type_name)) && ("+ntype.getNumber()+"==type)==0) {\n";
+      } else {
+        ret += "  else if((edu_syr_pcpratts_cmpstr(\""+ntype.getType()+"\",type_name)) && ("+ntype.getNumber()+"==type)==0) {\n";
+      }
+      ret += "    return true;\n";
+      ret += "  }\n";
+      i++;
+    }
     ret += "  return false;\n";
     ret += "}\n";
     return ret;
-  }
-  
-  public String invokeExpr(InstanceOfExpr arg0){
-    String ret = getMethodName();
-    ret += "(gc_info, "+arg0.getOp().toString()+")";
-    return ret;
-  }
-  
-  @Override
-  public boolean equals(Object other){
-    if(other == null){
-      return false;
-    }
-    if(other instanceof OpenCLTypeof){
-      OpenCLTypeof rhs = (OpenCLTypeof) other;
-      return m_class.equals(rhs.m_class);
-    } else {
-      return false;
-    }
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 5;
-    hash = 29 * hash + (this.m_class != null ? this.m_class.hashCode() : 0);
-    return hash;
   }
 }
