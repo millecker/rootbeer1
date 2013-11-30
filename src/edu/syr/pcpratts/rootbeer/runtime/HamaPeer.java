@@ -27,88 +27,15 @@ public class HamaPeer {
    * order.
    * 
    * @param peerName
-   * @param int message
+   * @param Object message
    */
-  public static void sendInt(String peerName, int msg) {
-  }
-  
-  /**
-   * Send a data with a tag to another BSPSlave corresponding to hostname.
-   * Messages sent by this method are not guaranteed to be received in a sent
-   * order.
-   * 
-   * @param peerName
-   * @param long message
-   */
-  public static void sendLong(String peerName, long msg) {
-  }
-  
-  /**
-   * Send a data with a tag to another BSPSlave corresponding to hostname.
-   * Messages sent by this method are not guaranteed to be received in a sent
-   * order.
-   * 
-   * @param peerName
-   * @param float message
-   */
-  public static void sendFloat(String peerName, float msg) {
-  }
-  
-  /**
-   * Send a data with a tag to another BSPSlave corresponding to hostname.
-   * Messages sent by this method are not guaranteed to be received in a sent
-   * order.
-   * 
-   * @param peerName
-   * @param double message
-   */
-  public static void sendDouble(String peerName, double msg) {
-  }
-  
-  /**
-   * Send a data with a tag to another BSPSlave corresponding to hostname.
-   * Messages sent by this method are not guaranteed to be received in a sent
-   * order.
-   * 
-   * @param peerName
-   * @param string message
-   */
-  public static void sendString(String peerName, String msg) {
+  public static void send(String peerName, Object message) {
   }
 
   /**
-   * @return A int message from the peer's received messages queue (a FIFO).
+   * Returns a message from the peer's received messages queue (a FIFO).
    */
-  public static int getCurrentIntMessage() {
-    return 0;
-  }
-  
-  /**
-   * @return A long message from the peer's received messages queue (a FIFO).
-   */
-  public static long getCurrentLongMessage() {
-    return 0;
-  }
-  
-  /**
-   * @return A float message from the peer's received messages queue (a FIFO).
-   */
-  public static float getCurrentFloatMessage() {
-    return 0;
-  }
-  
-  /**
-   * @return A double message from the peer's received messages queue (a FIFO).
-   */
-  public static double getCurrentDoubleMessage() {
-    return 0;
-  }
-  
-  /**
-   * @return A string message from the peer's received messages queue (a FIFO).
-   */
-  public static String getCurrentStringMessage() {
-    return null;
+  public static void getCurrentMessage(Object message) {
   }
 
   /**
@@ -182,7 +109,7 @@ public class HamaPeer {
    * @param key your key object
    * @param value your value object
    */
-  public static void write(String key, String value) {
+  public static void write(Object key, Object value) {
   }
 
   /**
@@ -195,24 +122,6 @@ public class HamaPeer {
   public static boolean readNext(Object key, Object value) {
     return false;
   }
-  /*
-  public static boolean readNext(int key, long value) {
-    return false;
-  }
-  public static boolean readNext(int key, float value) {
-    return false;
-  }
-  public static boolean readNext(int key, double value) {
-    return false;
-  }
-  public static boolean readNext(int key, String value) {
-    return false;
-  }
-
-  public static boolean readNext(String key, String value) {
-    return false;
-  }
-  */
   
   /**
    * Closes the input and opens it right away, so that the file pointer is at

@@ -1234,8 +1234,7 @@ int at_illecker_string_constant( char * gc_info, volatile char * str_constant, i
   int i;
   int len = at_illecker_strlen(str_constant);
   int characters = char__array_new(gc_info, len, exception);
-  unsigned long long * addr = (unsigned long long *) (gc_info + TO_SPACE_FREE_POINTER_OFFSET);
-
+  
   printf("at_illecker_string_constant str: '"); 
   for(i = 0; i < len; ++i) {
     char__array_set(gc_info, characters, i, str_constant[i], exception);
@@ -1252,10 +1251,10 @@ template<class T>
 $$__device__$$
 T at_illecker_getResult($$__global$$ char * gc_info, 
     HostDeviceInterface::MESSAGE_TYPE cmd, 
-    HostDeviceInterface::RETURN_TYPE return_type, 
-    bool use_result,
+    HostDeviceInterface::RETURN_TYPE return_type, bool use_return_value,
+    int result_obj_ref, bool use_result_object,
     int int_param1, bool use_int_param1,
-    long long_param1, bool use_long_param1,
+    long long long_param1, bool use_long_param1,
     float float_param1, bool use_float_param1,
     double double_param1, bool use_double_param1,
     int str_param1, bool use_str_param1,
@@ -1271,9 +1270,10 @@ T at_illecker_getResult($$__global$$ char * gc_info,
   int str_param1_count;
   int str_param2_value;
   int str_param2_count;
-
+  
   T return_value = 0;
-
+  char * result_obj_deref;
+  
   while (count < 100) {
 
     if (++timeout > 100000) {
@@ -1301,8 +1301,8 @@ T at_illecker_getResult($$__global$$ char * gc_info,
       // wait for possible old task to end
       while (host_device_interface->has_task) {
         if (++inner_timeout > 10000) {
-	  break;
-	}
+          break;
+        }
       }
 		
       // Setup command
@@ -1332,6 +1332,7 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         str_param1_count = instance_getter_java_lang_String_count(gc_info, str_param1,
                           exception);
 
+        // TODO - check for max str_val1 size
         for(int i = 0; i < str_param1_count; i++){
           host_device_interface->str_val1[i] = char__array_get(gc_info, str_param1_value, i, exception);
         }
@@ -1344,6 +1345,7 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         str_param2_count = instance_getter_java_lang_String_count(gc_info, str_param2,
                           exception);
 
+        // TODO - check for max str_val2 size
         for(int i = 0; i < str_param2_count; i++){
           host_device_interface->str_val2[i] = char__array_get(gc_info, str_param2_value, i, exception);
         }
@@ -1363,12 +1365,12 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         //__threadfence();
 	      
         if (++inner_timeout > 30000) {
-	  break;
+          break;
         }
       }
 
       // Get result from host device interface
-      if (use_result) {
+      if (use_return_value) {
 
         // Get right return type
         if (return_type == HostDeviceInterface::INT) {
@@ -1394,6 +1396,39 @@ T at_illecker_getResult($$__global$$ char * gc_info,
 
           // new StringBuilder from String
           // java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a6610_9_(gc_info, new_str, exception);
+        }
+      
+      } else if (use_result_object) {
+        // Update given result object
+        result_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, result_obj_ref);
+        
+        if (return_type == HostDeviceInterface::INT) {
+          *(( int *) &result_obj_deref[32]) = host_device_interface->int_val1;
+          
+        } else if (return_type == HostDeviceInterface::LONG) {
+          *(( long long *) &result_obj_deref[32]) = host_device_interface->long_val1;
+          
+        } else if (return_type == HostDeviceInterface::FLOAT) {
+          *(( float *) &result_obj_deref[32]) = host_device_interface->float_val1;
+          
+        } else if (return_type == HostDeviceInterface::DOUBLE) {
+          *(( double *) &result_obj_deref[32]) = host_device_interface->double_val1;
+          
+        } else if (return_type == HostDeviceInterface::STRING) {
+          
+          int i;
+          int len = at_illecker_strlen(host_device_interface->str_val1);
+          int characters = char__array_new(gc_info, len, exception);
+          for(i = 0; i < len; ++i) {
+            char__array_set(gc_info, characters, i, host_device_interface->str_val1[i], exception);
+          }
+          
+          // Set new value
+          *(( int *) &result_obj_deref[32]) = characters;
+          // Set new length
+          *(( int *) &result_obj_deref[40]) = len;
+          // Set new offset to 0
+          *(( int *) &result_obj_deref[44]) = 0;
         }
       }
 
@@ -1446,163 +1481,105 @@ T at_illecker_getResult($$__global$$ char * gc_info,
 /* Hama Peer public methods */
 
 // HamaPeer.send
-// public static void sendInt(String peerName, int msg)
+// public static void send(String peerName, Object message)
 $$__device__$$
-void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sendInt($$__global$$ char * gc_info, 
-     int peer_name_str_ref, int int_message, int * exception) {
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info,
+     int peer_name_str_ref, int message_obj_ref, int * exception) {
 
-  at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEND_MSG, 
-    HostDeviceInterface::STRING, false,
-    int_message, true,
-    0, false,
-    0, false,
-    0, false,
-    peer_name_str_ref, true,
-    0, false, exception);
-}
+  int int_value = 0;
+  bool use_int_value = false;
+  long long long_value = 0;
+  bool use_long_value = false;
+  float float_value = 0;
+  bool use_float_value = false;
+  double double_value = 0;
+  bool use_double_value = false;
+  int string_value = 0;
+  bool use_string_value = false;
+  char * message_obj_deref;
+  
+  // check message type
+  if (edu_syr_pcpratts_rootbeer_typeof(gc_info, message_obj_ref, "java.lang.Integer")) {
+    message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
+    int_value = *(( int *) &message_obj_deref[32]);
+    use_int_value = true;
+    
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, message_obj_ref, "java.lang.Long")) {
+    message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
+    long_value = *(( long long *) &message_obj_deref[32]);
+    use_long_value = true;
+    
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, message_obj_ref, "java.lang.Float")) {
+    message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
+    float_value = *(( float *) &message_obj_deref[32]);
+    use_float_value = true;
+    
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, message_obj_ref, "java.lang.Double")) {
+    message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
+    double_value = *(( double *) &message_obj_deref[32]);
+    use_double_value = true;
+    
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, message_obj_ref, "java.lang.String")) {
+    string_value = message_obj_ref;
+    use_string_value = true;
 
-// HamaPeer.send
-// public static void sendLong(String peerName, long msg)
-$$__device__$$
-void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sendLong($$__global$$ char * gc_info, 
-     int peer_name_str_ref, long long_message, int * exception) {
-
+  } else {
+    // TODO throw CudaException unsupported Type
+    printf("HamaPeer.send Exception: unsupported Type\n");
+    return;
+  }
+  
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEND_MSG,
-    HostDeviceInterface::STRING, false,
+    HostDeviceInterface::STRING, false, // do not use return value
     0, false,
-    long_message, true,
-    0, false,
-    0, false,
+    int_value, use_int_value,
+    long_value, use_long_value,
+    float_value, use_float_value,
+    double_value, use_double_value,
     peer_name_str_ref, true,
+    string_value, use_string_value,
+    exception);
+}
+
+// HamaPeer.getCurrentMessage
+// public static void getCurrentMessage(Object message)
+$$__device__$$
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentMessage($$__global$$ char * gc_info,
+    int message_obj_ref, int * exception) {
+
+  HostDeviceInterface::RETURN_TYPE object_type;
+  
+  // check message type
+  if (edu_syr_pcpratts_rootbeer_typeof(gc_info, message_obj_ref, "java.lang.Integer")) {
+    object_type = HostDeviceInterface::INT;
+    
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, message_obj_ref, "java.lang.Long")) {
+    object_type = HostDeviceInterface::LONG;
+    
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, message_obj_ref, "java.lang.Float")) {
+    object_type = HostDeviceInterface::FLOAT;
+    
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, message_obj_ref, "java.lang.Double")) {
+    object_type = HostDeviceInterface::DOUBLE;
+    
+  } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, message_obj_ref, "java.lang.String")) {
+    object_type = HostDeviceInterface::STRING;
+    
+  } else {
+    // TODO throw CudaException unsupported Type
+    printf("HamaPeer.send Exception: unsupported Type\n");
+    return;
+  }
+  
+  at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_MSG,
+    object_type, false,
+    message_obj_ref, true,
+    0, false,
+    0, false,
+    0, false,
+    0, false,
+    0, false,
     0, false, exception);
-}
-
-// HamaPeer.send
-// public static void sendFloat(String peerName, float msg)
-$$__device__$$
-void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sendFloat($$__global$$ char * gc_info, 
-     int peer_name_str_ref, float float_message, int * exception) {
-
-  at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEND_MSG,
-    HostDeviceInterface::STRING, false,
-    0, false,
-    0, false,
-    float_message, true,
-    0, false,
-    peer_name_str_ref, true,
-    0, false, exception);
-}
-
-// HamaPeer.send
-// public static void sendDouble(String peerName, double msg)
-$$__device__$$
-void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sendDouble($$__global$$ char * gc_info, 
-     int peer_name_str_ref, double double_message, int * exception) {
-
-  at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEND_MSG,
-    HostDeviceInterface::STRING, false,
-    0, false,
-    0, false,
-    0, false,
-    double_message, true, 
-    peer_name_str_ref, true,
-    0, false, exception);
-}
-
-// HamaPeer.send
-// public static void sendString(String peerName, String msg)
-$$__device__$$
-void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sendString($$__global$$ char * gc_info, 
-     int peer_name_str_ref, int string_message_ref, int * exception) {
-
-  at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEND_MSG,
-    HostDeviceInterface::STRING, false,
-    0, false,
-    0, false,
-    0, false,
-    0, false,
-    peer_name_str_ref, true,
-    string_message_ref, true, exception);
-}
-
-// HamaPeer.getCurrentMessage
-// public static String getCurrentIntMessage()
-$$__device__$$
-int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentIntMessage($$__global$$ char * gc_info, 
-    int * exception) {
-
-  return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_MSG,
-           HostDeviceInterface::INT, true,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false, exception);
-}
-
-// HamaPeer.getCurrentMessage
-// public static String getCurrentLongMessage()
-$$__device__$$
-long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentLongMessage($$__global$$ char * gc_info, 
-    int * exception) {
-
-  return at_illecker_getResult<long>(gc_info, HostDeviceInterface::GET_MSG,
-           HostDeviceInterface::LONG, true,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false, exception);
-}
-
-// HamaPeer.getCurrentMessage
-// public static String getCurrentFloatMessage()
-$$__device__$$
-float edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentFloatMessage($$__global$$ char * gc_info, 
-    int * exception) {
-
-  return at_illecker_getResult<float>(gc_info, HostDeviceInterface::GET_MSG,
-           HostDeviceInterface::FLOAT, true,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false, exception);
-}
-
-// HamaPeer.getCurrentMessage
-// public static String getCurrentDoubleMessage()
-$$__device__$$
-double edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentDoubleMessage($$__global$$ char * gc_info, 
-    int * exception) {
-
-  return at_illecker_getResult<double>(gc_info, HostDeviceInterface::GET_MSG,
-           HostDeviceInterface::DOUBLE, true,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false, exception);
-}
-
-// HamaPeer.getCurrentMessage
-// public static String getCurrentStringMessage()
-$$__device__$$
-int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentStringMessage($$__global$$ char * gc_info, 
-    int * exception) {
-
-  return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_MSG,
-           HostDeviceInterface::STRING, true,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false, exception);
 }
 
 // HamaPeer.getNumCurrentMessages
@@ -1613,6 +1590,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$
 
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_MSG_COUNT,
            HostDeviceInterface::INT, true,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -1634,6 +1612,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sync($$__global$$ char * gc_info
     0, false,
     0, false,
     0, false,
+    0, false,
     0, false, exception);
 }
 
@@ -1644,7 +1623,8 @@ long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getSuperstepCount($$__global$$ c
     int * exception) {
 
   return at_illecker_getResult<long>(gc_info, HostDeviceInterface::GET_SUPERSTEP_COUNT,
-           HostDeviceInterface::INT, true,
+           HostDeviceInterface::LONG, true,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -1661,6 +1641,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
 
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_PEERNAME, 
            HostDeviceInterface::STRING, true,
+           0, false,
            -1, true,
            0, false,
            0, false,
@@ -1677,6 +1658,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
 
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_PEERNAME,
            HostDeviceInterface::STRING, true,
+           0, false,
            index, true,
            0, false,
            0, false,
@@ -1693,6 +1675,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerIndex($$__global$$ char * 
 
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_PEER_INDEX,
            HostDeviceInterface::INT, true,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -1723,6 +1706,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumPeers($$__global$$ char * g
            0, false,
            0, false,
            0, false,
+           0, false,
            0, false, exception);
 }
 
@@ -1739,6 +1723,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_clear($$__global$$ char * gc_inf
            0, false,
            0, false,
            0, false,
+           0, false,
            0, false, exception);
 }
 
@@ -1750,12 +1735,14 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
   // TODO
 }
 
+
 // HamaPeer.readNext
-// public static boolean readNext(int key, int value)
+// public static boolean readNext(Object key, Object value)
 $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_info, 
      int key_obj_ref, int value_obj_ref, int * exception) {
 
+  
   // check key type
   if (edu_syr_pcpratts_rootbeer_typeof(gc_info, key_obj_ref, "java.lang.Integer")) {
     printf("key is Integer!\n");
@@ -1765,12 +1752,13 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_
 
   } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, key_obj_ref, "java.lang.Float")) {
     printf("key is Float!\n");
-
+    
   } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, key_obj_ref, "java.lang.Double")) {
     printf("key is Double!\n");
-
+    
   } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, key_obj_ref, "java.lang.String")) {
     printf("key is String!\n");
+    
   }
 
   // check value type
@@ -1802,6 +1790,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_reopenInput($$__global$$ char * 
 
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::REOPEN_INPUT,
            HostDeviceInterface::INT, false,
+           0, false,
            0, false,
            0, false,
            0, false,

@@ -94,22 +94,10 @@ public class DontDfsMethods {
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: java.lang.String[] getAllPeerNames()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getNumPeers()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void clear()>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void reopenInput()>");
-    
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void sendInt(java.lang.String,int)>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void sendLong(java.lang.String,long)>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void sendFloat(java.lang.String,float)>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void sendDouble(java.lang.String,double)>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void sendString(java.lang.String,java.lang.String)>");
-    
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getCurrentIntMessage()>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: long getCurrentLongMessage()>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: float getCurrentFloatMessage()>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: double getCurrentDoubleMessage()>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: java.lang.String getCurrentStringMessage()>");
-    
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void write(java.lang.String,java.lang.String)>");
-
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void reopenInput()>");    
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void send(java.lang.String,java.lang.Object)>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void getCurrentMessage(java.lang.Object)>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void write(java.lang.Object,java.lang.Object)>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean readNext(java.lang.Object,java.lang.Object)>");
   }
   
