@@ -344,6 +344,22 @@ public class OpenCLScene {
     int string_number = RootbeerClassLoader.v().getClassNumber("java.lang.String");
     String string_str = "" + string_number;
     cuda_code = cuda_code.replaceAll("%%java_lang_String_TypeNumber%%", string_str);
+
+    int integer_number = RootbeerClassLoader.v().getClassNumber("java.lang.Integer");
+    String integer_str = "" + integer_number;
+    cuda_code = cuda_code.replaceAll("%%java_lang_Integer_TypeNumber%%", integer_str);
+    
+    int long_number = RootbeerClassLoader.v().getClassNumber("java.lang.Long");
+    String long_str = "" + long_number;
+    cuda_code = cuda_code.replaceAll("%%java_lang_Long_TypeNumber%%", long_str);
+    
+    int float_number = RootbeerClassLoader.v().getClassNumber("java.lang.Float");
+    String float_str = "" + float_number;
+    cuda_code = cuda_code.replaceAll("%%java_lang_Float_TypeNumber%%", float_str);
+    
+    int double_number = RootbeerClassLoader.v().getClassNumber("java.lang.Double");
+    String double_str = "" + double_number;
+    cuda_code = cuda_code.replaceAll("%%java_lang_Double_TypeNumber%%", double_str);
     
     return cuda_code;
   }

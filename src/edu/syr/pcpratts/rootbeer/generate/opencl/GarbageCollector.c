@@ -1257,7 +1257,7 @@ int at_illecker_strlen(volatile char * str_constant) {
 
 // char* to String
 $$__device__$$
-int at_illecker_string_constant( char * gc_info, volatile char * str_constant, int * exception) {
+int at_illecker_string_constant(char * gc_info, volatile char * str_constant, int * exception) {
   if (str_constant == 0) {
     return 0;
   }
@@ -1274,6 +1274,80 @@ int at_illecker_string_constant( char * gc_info, volatile char * str_constant, i
 
   // make new String
   return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
+}
+
+// typeof_Integer
+__device__ bool at_illecker_typeof_Integer(char * gc_info, int thisref){
+  char * thisref_deref;
+  GC_OBJ_TYPE_TYPE type;
+  if(thisref == -1){
+    return false;
+  }
+  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
+  type = edu_syr_pcpratts_gc_get_type(thisref_deref);
+  if(type==%%java_lang_Integer_TypeNumber%%) {
+    return true;
+  }
+  return false;
+}
+
+// typeof_Long
+__device__ bool at_illecker_typeof_Long(char * gc_info, int thisref){
+  char * thisref_deref;
+  GC_OBJ_TYPE_TYPE type;
+  if(thisref == -1){
+    return false;
+  }
+  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
+  type = edu_syr_pcpratts_gc_get_type(thisref_deref);
+  if(type==%%java_lang_Long_TypeNumber%%) {
+    return true;
+  }
+  return false;
+}
+// typeof_Float
+__device__ bool at_illecker_typeof_Float(char * gc_info, int thisref){
+  char * thisref_deref;
+  GC_OBJ_TYPE_TYPE type;
+  if(thisref == -1){
+    return false;
+  }
+  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
+  type = edu_syr_pcpratts_gc_get_type(thisref_deref);
+  if(type==%%java_lang_Float_TypeNumber%%) {
+    return true;
+  }
+  return false;
+}
+
+// typeof_Double
+__device__ bool at_illecker_typeof_Double(char * gc_info, int thisref){
+  char * thisref_deref;
+  GC_OBJ_TYPE_TYPE type;
+  if(thisref == -1){
+    return false;
+  }
+  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
+  type = edu_syr_pcpratts_gc_get_type(thisref_deref);
+  if(type==%%java_lang_Double_TypeNumber%%) {
+    return true;
+  }
+  return false;
+}
+
+// typeof_String
+__device__ bool at_illecker_typeof_String(char * gc_info, int thisref){
+  char * thisref_deref;
+  GC_OBJ_TYPE_TYPE type;
+  if(thisref == -1){
+    return false;
+  }
+  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
+  type = edu_syr_pcpratts_gc_get_type(thisref_deref);
+  if(type==%%java_lang_String_TypeNumber%%) {
+    return true;
+  }
+  return false;
 }
 
 // getResult
@@ -1442,8 +1516,11 @@ T at_illecker_getResult($$__global$$ char * gc_info,
           *(( float *) &result_obj_deref[32]) = host_device_interface->float_val1;
           
         } else if (return_type == HostDeviceInterface::DOUBLE) {
+          printf("getResult: old Double value: %e\n", *(( double *) &result_obj_deref[32]));
+          printf("getResult: update Double value: %e\n", host_device_interface->double_val1);
           *(( double *) &result_obj_deref[32]) = host_device_interface->double_val1;
-          
+          printf("getResult: new Double value: %e\n", *(( double *) &result_obj_deref[32]));
+
         } else if (return_type == HostDeviceInterface::STRING) {
           
           int i;
@@ -1460,6 +1537,8 @@ T at_illecker_getResult($$__global$$ char * gc_info,
           // Set new offset to 0
           *(( int *) &result_obj_deref[44]) = 0;
         }
+
+        edu_syr_pcpratts_gc_assign(gc_info, (int*)&result_obj_ref, result_obj_deref);
       }
 
       // Reset transfer variables
@@ -1788,7 +1867,22 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_
     
   } else if (edu_syr_pcpratts_rootbeer_typeof(gc_info, key_obj_ref, "java.lang.String")) {
     printf("key is String!\n");
+  }
+
+  if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
+    printf("key is Integer!\n");
+
+  } else if (at_illecker_typeof_Long(gc_info, key_obj_ref)) {
+    printf("key is Long!\n");
+
+  } else if (at_illecker_typeof_Float(gc_info, key_obj_ref)) {
+    printf("key is Float!\n");
     
+  } else if (at_illecker_typeof_Double(gc_info, key_obj_ref)) {
+    printf("key is Double!\n");
+    
+  } else if (at_illecker_typeof_String(gc_info, key_obj_ref)) {
+    printf("key is String!\n");
   }
 
   // check value type
