@@ -501,6 +501,7 @@ public class OpenCLMethod {
     m_dontEmitMethods.add("<java.lang.Float: java.lang.String toString(float)>");
     
     m_emitUnmangled.add("<edu.syr.pcpratts.rootbeer.runtimegpu.GpuException: edu.syr.pcpratts.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
+    m_emitUnmangled.add("<edu.syr.pcpratts.rootbeer.runtime.KeyValuePair: void <init>(java.lang.Object,java.lang.Object)>");
   }
 
   public String getSignature() {

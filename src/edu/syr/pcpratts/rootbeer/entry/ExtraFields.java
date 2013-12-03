@@ -28,6 +28,8 @@ public class ExtraFields {
     m_fields.add("<java.lang.StringBuilder: int count>");
     m_fields.add("<edu.syr.pcpratts.rootbeer.runtime.GpuStopwatch: long m_start>");
     m_fields.add("<edu.syr.pcpratts.rootbeer.runtime.GpuStopwatch: long m_stop>");
+    m_fields.add("<edu.syr.pcpratts.rootbeer.runtime.KeyValuePair: java.lang.Object m_key>");
+    m_fields.add("<edu.syr.pcpratts.rootbeer.runtime.KeyValuePair: java.lang.Object m_value>");
   }
   
   public List<String> get(){
