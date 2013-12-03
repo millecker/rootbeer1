@@ -145,7 +145,7 @@ public class HamaPeer {
    * @param KeyValuePair
    * @return false if there are no records to read anymore
    */
-  public static <K, V> boolean readNext(KeyValuePair<K, V> keyValuePair) {
+  public static boolean readNext(KeyValuePair keyValuePair) {
     return false;
   }
 

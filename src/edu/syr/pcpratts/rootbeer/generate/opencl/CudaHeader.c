@@ -131,16 +131,24 @@ public:
 
   // Transfer variables (used in sendCommand and getResult)
   volatile int int_val1;
+  volatile int int_val2;
   volatile long long_val1;
+  volatile long long_val2;
   volatile float float_val1;
+  volatile float float_val2;
   volatile double double_val1;
+  volatile double double_val2;
   volatile char str_val1[STR_SIZE];
   volatile char str_val2[STR_SIZE];
 
-  enum RETURN_TYPE {
-    INT, LONG, FLOAT, DOUBLE, STRING
+  enum TYPE {
+    INT, LONG, FLOAT, DOUBLE, STRING, KEY_VALUE_PAIR, NOT_AVAILABLE
   };
-  volatile RETURN_TYPE return_type;
+  volatile TYPE return_type;
+  volatile TYPE key_type;
+  volatile TYPE value_type;
+
+  volatile bool end_of_data;
 
   // Response of HostMonitor
   volatile bool is_result_available;
@@ -161,9 +169,16 @@ public:
     use_str_val1 = false;
     use_str_val2 = false;
     int_val1 = 0;
+    int_val2 = 0;
     long_val1 = 0;
+    long_val2 = 0;
     float_val1 = 0;
+    float_val2 = 0;
     double_val1 = 0;
+    double_val2 = 0;
+    key_type = NOT_AVAILABLE;
+    value_type = NOT_AVAILABLE;
+    end_of_data = true;
     is_result_available = false;
   }
 

@@ -69,6 +69,7 @@ static size_t gc_space_size;
 #define STR_SIZE 1024
 
 using std::string;
+using std::pair;
 
 /*****************************************************************************/
 // HostDeviceInterface
@@ -116,16 +117,24 @@ public:
 
   // Transfer variables (used in sendCommand and getResult)
   volatile int int_val1;
+  volatile int int_val2;
   volatile long long_val1;
+  volatile long long_val2;
   volatile float float_val1;
+  volatile float float_val2;
   volatile double double_val1;
+  volatile double double_val2;
   volatile char str_val1[STR_SIZE];
   volatile char str_val2[STR_SIZE];
 
-  enum RETURN_TYPE {
-    INT, LONG, FLOAT, DOUBLE, STRING
+  enum TYPE {
+    INT, LONG, FLOAT, DOUBLE, STRING, KEY_VALUE_PAIR, NOT_AVAILABLE
   };
-  volatile RETURN_TYPE return_type;
+  volatile TYPE return_type;
+  volatile TYPE key_type;
+  volatile TYPE value_type;
+
+  volatile bool end_of_data;
 
   // Response of HostMonitor
   volatile bool is_result_available;
@@ -146,9 +155,16 @@ public:
     use_str_val1 = false;
     use_str_val2 = false;
     int_val1 = 0;
+    int_val2 = 0;
     long_val1 = 0;
+    long_val2 = 0;
     float_val1 = 0;
+    float_val2 = 0;
     double_val1 = 0;
+    double_val2 = 0;
+    key_type = NOT_AVAILABLE;
+    value_type = NOT_AVAILABLE;
+    end_of_data = true;
     is_result_available = false;
   }
 
@@ -174,6 +190,43 @@ const char* messageTypeNames[] = {
   stringify( LOG ), stringify( END_OF_DATA ),
   stringify( UNDEFINED )
 };
+
+/*****************************************************************************/
+// KeyValuePair
+/*****************************************************************************/
+/**
+ * Generic KeyValuePair including is_empty
+ */
+template <typename K, typename V>
+struct KeyValuePair : pair<K, V> {
+  typedef pair<K, V> base_t;
+  bool is_empty;
+    
+  KeyValuePair() : is_empty(false) {}
+  explicit KeyValuePair(bool x) : is_empty(x) {}
+  KeyValuePair(const K& k, const V& v) : base_t(k, v), is_empty(false) {}
+    
+  template <class X, class Y>
+  KeyValuePair(const pair<X,Y> &p) : base_t(p), is_empty(false) {}
+    
+  template <class X, class Y>
+  KeyValuePair(const KeyValuePair<X,Y> &p) : base_t(p), is_empty(p.is_empty) {}
+};
+  
+/**
+ * Override Generic KeyValuePair << operator
+ */
+template <typename OS, typename K, typename V>
+OS &operator<<(OS &os, const KeyValuePair<K, V>& p) {
+  os << "<KeyValuePair: ";
+  if (!p.is_empty) {
+    os << p.first << ", " << p.second;
+  } else {
+    os << "empty";
+  }
+  os << ">";
+  return os;
+}
 
 /*****************************************************************************/
 // Hadoop Utils
@@ -711,6 +764,7 @@ public:
     file_out_stream_->flush();
   }
 */
+
   /**
    * Wait for next event, which should be a response for
    * a previously sent command (expected_response_cmd)
@@ -790,7 +844,97 @@ public:
     }
     return result;
   }
+
+  /**
+   * Wait for next event, which should be a response for
+   * a previously sent command (expected_response_cmd)
+   * and return the generic vector result list
+   */
+  /*
+  template<class T>
+  vector<T> getVectorResult(int32_t expected_response_cmd) {
+    
+    vector<T> results;
+    
+    // read response command
+    int32_t cmd;
+    cmd = deserializeInt(*in_stream_);
+    
+    // check if response is expected
+    if (expected_response_cmd == cmd) {
+      
+      switch (cmd) {
+        case GET_ALL_PEERNAME: {
+          vector<T> peernames;
+          T peername;
+          int32_t peername_count = deserialize<int32_t>(*in_stream_);
+          if(logging) {
+            fprintf(stderr,"HamaPipes::BinaryProtocol::nextEvent - got GET_ALL_PEERNAME peername_count: %d\n",
+                    peername_count);
+          }
+          for (int i=0; i<peername_count; i++)  {
+            peername = deserialize<T>(*in_stream_);
+            peernames.push_back(peername);
+            if(logging) {
+              fprintf(stderr,"HamaPipes::BinaryProtocol::nextEvent - got GET_ALL_PEERNAME peername: '%s'\n",
+                      toString<T>(peername).c_str());
+            }
+          }
+          return peernames;
+        }
+      }
+    } else {
+      HADOOP_ASSERT(false, "Unknown binary command " + toString(cmd));
+      fprintf(stderr,"HamaPipes::BinaryProtocol::nextEvent(%d) - Unknown binary command: %d\n",
+              expected_response_cmd, cmd);
+    }
+    return results;
+  }
+  */
+
+  /**
+   * Wait for next event, which should be a response for
+   * a previously sent command (expected_response_cmd)
+   * and return the generic KeyValuePair or an empty one
+   * if no data is available
+   */
+  template <class K, class V>
+  KeyValuePair<K,V> getKeyValueResult(int32_t expected_response_cmd) {
+    
+    KeyValuePair<K,V> key_value_pair;
+    
+    // read response command
+    int32_t cmd;
+    cmd = deserialize<int32_t>(*file_in_stream_);
+    
+    // check if response is expected or END_OF_DATA
+    if ((expected_response_cmd == cmd) || (cmd == HostDeviceInterface::END_OF_DATA) ) {
+      
+      switch (cmd) {
+        
+        case HostDeviceInterface::READ_KEYVALUE:
+        case HostDeviceInterface::SEQFILE_READNEXT: {
+          K key = deserialize<K>(*file_in_stream_);
+          V value = deserialize<V>(*file_in_stream_);          
+          key_value_pair = pair<K,V>(key, value);
+          break;
+        }
+        case HostDeviceInterface::END_OF_DATA: {
+          key_value_pair = KeyValuePair<K,V>(true);
+          fprintf(stderr,"getKeyValueResult - got END_OF_DATA\n");
+        }
+      }
+    } else {
+      key_value_pair = KeyValuePair<K,V>(true);
+      fprintf(stderr,"getKeyValueResult(expected_cmd = %d) - Unknown binary command: %d\n",
+              expected_response_cmd, cmd);
+      fprintf(stderr,"ERORR: Please verfiy serialization! The key or value type could possibly not be deserialized!\n");
+      HADOOP_ASSERT(false, "Unknown binary command " + toString(cmd));
+    }
+    return key_value_pair;
+  }
 };
+
 
 /*****************************************************************************/
 // HostMonitor
@@ -1125,6 +1269,409 @@ public:
 	while (host_device_interface->is_result_available) {}
         break;
       }
+
+      case HostDeviceInterface::READ_KEYVALUE:
+      case HostDeviceInterface::SEQFILE_READNEXT: {
+        socket_client_->sendCMD(HostDeviceInterface::READ_KEYVALUE, false);
+
+        // Check key and value type
+        // Variation with repetition (n=5,k=2) -> 5^2 variations
+        /***********************************************************************/
+        // (int,int)
+        if ( (host_device_interface->key_type == HostDeviceInterface::INT) &&
+             (host_device_interface->value_type == HostDeviceInterface::INT) ) {
+          KeyValuePair<int32_t,int32_t> key_value_pair = socket_client_->getKeyValueResult<int32_t,int32_t>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->int_val1 = key_value_pair.first;
+            host_device_interface->int_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%d' value: '%d' \n", host_device_interface->int_val1, 
+                   host_device_interface->int_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (int,long)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::INT) &&
+             (host_device_interface->value_type == HostDeviceInterface::LONG) ) {
+          KeyValuePair<int32_t,int64_t> key_value_pair = socket_client_->getKeyValueResult<int32_t,int64_t>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->int_val1 = key_value_pair.first;
+            host_device_interface->long_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%d' value: '%ld' \n", host_device_interface->int_val1, 
+                   host_device_interface->long_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (int,float)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::INT) &&
+             (host_device_interface->value_type == HostDeviceInterface::FLOAT) ) {
+          KeyValuePair<int32_t,float> key_value_pair = socket_client_->getKeyValueResult<int32_t,float>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->int_val1 = key_value_pair.first;
+            host_device_interface->float_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%d' value: '%f' \n", host_device_interface->int_val1, 
+                   host_device_interface->float_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (int,double)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::INT) &&
+             (host_device_interface->value_type == HostDeviceInterface::DOUBLE) ) {
+          KeyValuePair<int32_t,double> key_value_pair = socket_client_->getKeyValueResult<int32_t,double>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->int_val1 = key_value_pair.first;
+            host_device_interface->double_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%d' value: '%f' \n", host_device_interface->int_val1, 
+                   host_device_interface->double_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (int,string)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::INT) &&
+             (host_device_interface->value_type == HostDeviceInterface::STRING) ) {
+          KeyValuePair<int32_t,string> key_value_pair = socket_client_->getKeyValueResult<int32_t,string>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->int_val1 = key_value_pair.first;
+            strcpy(const_cast<char *>(host_device_interface->str_val2), key_value_pair.second.c_str());
+            printf("HostMonitor got key: '%d' value: '%s' \n", host_device_interface->int_val1, 
+                   host_device_interface->str_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        }
+        /***********************************************************************/
+        // (long,int)
+        else if ( (host_device_interface->key_type == HostDeviceInterface::LONG) &&
+             (host_device_interface->value_type == HostDeviceInterface::INT) ) {
+          KeyValuePair<int64_t,int32_t> key_value_pair = socket_client_->getKeyValueResult<int64_t,int32_t>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->long_val1 = key_value_pair.first;
+            host_device_interface->int_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%ld' value: '%d' \n", host_device_interface->long_val1, 
+                   host_device_interface->int_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (long,long)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::LONG) &&
+             (host_device_interface->value_type == HostDeviceInterface::LONG) ) {
+          KeyValuePair<int64_t,int64_t> key_value_pair = socket_client_->getKeyValueResult<int64_t,int64_t>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->long_val1 = key_value_pair.first;
+            host_device_interface->long_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%ld' value: '%ld' \n", host_device_interface->long_val1, 
+                   host_device_interface->long_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (long,float)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::LONG) &&
+             (host_device_interface->value_type == HostDeviceInterface::FLOAT) ) {
+          KeyValuePair<int64_t,float> key_value_pair = socket_client_->getKeyValueResult<int64_t,float>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->long_val1 = key_value_pair.first;
+            host_device_interface->float_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%ld' value: '%f' \n", host_device_interface->long_val1, 
+                   host_device_interface->float_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (long,double)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::LONG) &&
+             (host_device_interface->value_type == HostDeviceInterface::DOUBLE) ) {
+          KeyValuePair<int64_t,double> key_value_pair = socket_client_->getKeyValueResult<int64_t,double>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->long_val1 = key_value_pair.first;
+            host_device_interface->double_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%ld' value: '%f' \n", host_device_interface->long_val1, 
+                   host_device_interface->double_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (long,string)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::LONG) &&
+             (host_device_interface->value_type == HostDeviceInterface::STRING) ) {
+          KeyValuePair<int64_t,string> key_value_pair = socket_client_->getKeyValueResult<int64_t,string>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->long_val1 = key_value_pair.first;
+            strcpy(const_cast<char *>(host_device_interface->str_val2), key_value_pair.second.c_str());
+            printf("HostMonitor got key: '%ld' value: '%s' \n", host_device_interface->long_val1,
+                   host_device_interface->str_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        }
+        /***********************************************************************/
+        // (float,int)
+        else if ( (host_device_interface->key_type == HostDeviceInterface::FLOAT) &&
+             (host_device_interface->value_type == HostDeviceInterface::INT) ) {
+          KeyValuePair<float,int32_t> key_value_pair = socket_client_->getKeyValueResult<float,int32_t>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->float_val1 = key_value_pair.first;
+            host_device_interface->int_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%f' value: '%d' \n", host_device_interface->float_val1, 
+                   host_device_interface->int_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (float,long)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::FLOAT) &&
+             (host_device_interface->value_type == HostDeviceInterface::LONG) ) {
+          KeyValuePair<float,int64_t> key_value_pair = socket_client_->getKeyValueResult<float,int64_t>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->float_val1 = key_value_pair.first;
+            host_device_interface->long_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%f' value: '%ld' \n", host_device_interface->float_val1, 
+                   host_device_interface->long_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (float,float)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::FLOAT) &&
+             (host_device_interface->value_type == HostDeviceInterface::FLOAT) ) {
+          KeyValuePair<float,float> key_value_pair = socket_client_->getKeyValueResult<float,float>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->float_val1 = key_value_pair.first;
+            host_device_interface->float_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->float_val1, 
+                   host_device_interface->float_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (float,double)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::FLOAT) &&
+             (host_device_interface->value_type == HostDeviceInterface::DOUBLE) ) {
+          KeyValuePair<float,double> key_value_pair = socket_client_->getKeyValueResult<float,double>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->float_val1 = key_value_pair.first;
+            host_device_interface->double_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->float_val1, 
+                   host_device_interface->double_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (float,string)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::FLOAT) &&
+             (host_device_interface->value_type == HostDeviceInterface::STRING) ) {
+          KeyValuePair<float,string> key_value_pair = socket_client_->getKeyValueResult<float,string>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->float_val1 = key_value_pair.first;
+            strcpy(const_cast<char *>(host_device_interface->str_val2), key_value_pair.second.c_str());
+            printf("HostMonitor got key: '%f' value: '%s' \n", host_device_interface->float_val1, 
+                   host_device_interface->str_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        }
+        /***********************************************************************/
+        // (double,int)
+        else if ( (host_device_interface->key_type == HostDeviceInterface::DOUBLE) &&
+             (host_device_interface->value_type == HostDeviceInterface::INT) ) {
+          KeyValuePair<double,int32_t> key_value_pair = socket_client_->getKeyValueResult<double,int32_t>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->double_val1 = key_value_pair.first;
+            host_device_interface->int_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%f' value: '%d' \n", host_device_interface->double_val1, 
+                   host_device_interface->int_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (double,long)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::DOUBLE) &&
+             (host_device_interface->value_type == HostDeviceInterface::LONG) ) {
+          KeyValuePair<double,int64_t> key_value_pair = socket_client_->getKeyValueResult<double,int64_t>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->double_val1 = key_value_pair.first;
+            host_device_interface->long_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%f' value: '%ld' \n", host_device_interface->double_val1, 
+                   host_device_interface->long_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (double,float)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::DOUBLE) &&
+             (host_device_interface->value_type == HostDeviceInterface::FLOAT) ) {
+          KeyValuePair<double,float> key_value_pair = socket_client_->getKeyValueResult<double,float>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->double_val1 = key_value_pair.first;
+            host_device_interface->float_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->double_val1, 
+                   host_device_interface->float_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (double,double)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::DOUBLE) &&
+             (host_device_interface->value_type == HostDeviceInterface::DOUBLE) ) {
+          KeyValuePair<double,double> key_value_pair = socket_client_->getKeyValueResult<double,double>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->double_val1 = key_value_pair.first;
+            host_device_interface->double_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->double_val1, 
+                   host_device_interface->double_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (double,string)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::DOUBLE) &&
+             (host_device_interface->value_type == HostDeviceInterface::STRING) ) {
+          KeyValuePair<double,string> key_value_pair = socket_client_->getKeyValueResult<double,string>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            host_device_interface->double_val1 = key_value_pair.first;
+            strcpy(const_cast<char *>(host_device_interface->str_val2), key_value_pair.second.c_str());
+            printf("HostMonitor got key: '%f' value: '%s' \n", host_device_interface->double_val1, 
+                   host_device_interface->str_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        }
+        /***********************************************************************/
+        // (string,int)
+        else if ( (host_device_interface->key_type == HostDeviceInterface::STRING) &&
+             (host_device_interface->value_type == HostDeviceInterface::INT) ) {
+          KeyValuePair<string,int32_t> key_value_pair = socket_client_->getKeyValueResult<string,int32_t>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            strcpy(const_cast<char *>(host_device_interface->str_val1), key_value_pair.first.c_str());
+            host_device_interface->int_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%s' value: '%d' \n", host_device_interface->str_val1, 
+                   host_device_interface->int_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (string,long)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::STRING) &&
+             (host_device_interface->value_type == HostDeviceInterface::LONG) ) {
+          KeyValuePair<string,int64_t> key_value_pair = socket_client_->getKeyValueResult<string,int64_t>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            strcpy(const_cast<char *>(host_device_interface->str_val1), key_value_pair.first.c_str());
+            host_device_interface->long_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%s' value: '%ld' \n", host_device_interface->str_val1, 
+                   host_device_interface->long_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (string,float)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::STRING) &&
+             (host_device_interface->value_type == HostDeviceInterface::FLOAT) ) {
+          KeyValuePair<string,float> key_value_pair = socket_client_->getKeyValueResult<string,float>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            strcpy(const_cast<char *>(host_device_interface->str_val1), key_value_pair.first.c_str());
+            host_device_interface->float_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%s' value: '%f' \n", host_device_interface->str_val1, 
+                   host_device_interface->float_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (string,double)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::STRING) &&
+             (host_device_interface->value_type == HostDeviceInterface::DOUBLE) ) {
+          KeyValuePair<string,double> key_value_pair = socket_client_->getKeyValueResult<string,double>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            strcpy(const_cast<char *>(host_device_interface->str_val1), key_value_pair.first.c_str());
+            host_device_interface->double_val2 = key_value_pair.second;
+            printf("HostMonitor got key: '%s' value: '%f' \n", host_device_interface->str_val1, 
+                   host_device_interface->double_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        // (string,string)
+        } else if ( (host_device_interface->key_type == HostDeviceInterface::STRING) &&
+             (host_device_interface->value_type == HostDeviceInterface::STRING) ) {
+          KeyValuePair<string,string> key_value_pair = socket_client_->getKeyValueResult<string,string>(
+                                                                         HostDeviceInterface::READ_KEYVALUE);
+          if (!key_value_pair.is_empty) {
+            host_device_interface->end_of_data = false;
+            strcpy(const_cast<char *>(host_device_interface->str_val1), key_value_pair.first.c_str());
+            strcpy(const_cast<char *>(host_device_interface->str_val2), key_value_pair.second.c_str());
+            printf("HostMonitor got key: '%s' value: '%s' \n", host_device_interface->str_val1, 
+                   host_device_interface->str_val2);
+          } else {
+            host_device_interface->end_of_data = true;
+            printf("HostMonitor got key_value_pair is empty!\n");
+          }
+        }
+        /***********************************************************************/
+        
+        // Set result available for GPU Kernel
+        host_device_interface->is_result_available = true;
+
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
+        printf("HostMonitor result was consumed\n");
+        break;
+      }
+
 
       case HostDeviceInterface::SEQFILE_OPEN: {
         // TODO
