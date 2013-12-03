@@ -15,9 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package edu.syr.pcpratts.rootbeer.runtime;
-
 
 public class HamaPeer {
 
@@ -33,9 +31,38 @@ public class HamaPeer {
   }
 
   /**
-   * Returns a message from the peer's received messages queue (a FIFO).
+   * @return A int message from the peer's received messages queue (a FIFO).
    */
-  public static void getCurrentMessage(Object message) {
+  public static int getCurrentIntMessage() {
+    return 0;
+  }
+
+  /**
+   * @return A long message from the peer's received messages queue (a FIFO).
+   */
+  public static long getCurrentLongMessage() {
+    return 0;
+  }
+
+  /**
+   * @return A float message from the peer's received messages queue (a FIFO).
+   */
+  public static float getCurrentFloatMessage() {
+    return 0;
+  }
+
+  /**
+   * @return A double message from the peer's received messages queue (a FIFO).
+   */
+  public static double getCurrentDoubleMessage() {
+    return 0;
+  }
+
+  /**
+   * @return A string message from the peer's received messages queue (a FIFO).
+   */
+  public static String getCurrentStringMessage() {
+    return null;
   }
 
   /**
@@ -44,7 +71,7 @@ public class HamaPeer {
   public static int getNumCurrentMessages() {
     return 0;
   }
-  
+
   /**
    * Barrier Synchronization.
    * 
@@ -115,14 +142,13 @@ public class HamaPeer {
   /**
    * Deserializes the next input key value into the given objects.
    * 
-   * @param key
-   * @param value
+   * @param KeyValuePair
    * @return false if there are no records to read anymore
    */
-  public static boolean readNext(Object key, Object value) {
+  public static <K, V> boolean readNext(KeyValuePair<K, V> keyValuePair) {
     return false;
   }
-  
+
   /**
    * Closes the input and opens it right away, so that the file pointer is at
    * the beginning again.
