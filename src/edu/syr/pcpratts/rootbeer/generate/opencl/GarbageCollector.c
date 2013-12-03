@@ -2188,3 +2188,45 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
     exception);
 }
 
+// HamaPeer.sequenceFileOpen
+// public static int sequenceFileOpen(String path, char option, String keyType, String valueType)
+$$__device__$$
+int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileOpen($$__global$$ char * gc_info, 
+     int path_str_ref, char option, 
+     int key_type_str_ref, int value_type_str_ref, 
+     int * exception) {
+
+  // TODO
+  return 0;
+}
+
+// HamaPeer.sequenceFileReadNext
+// public static boolean sequenceFileReadNext(int file_id, KeyValuePair key_value_pair)
+$$__device__$$
+bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$$ char * gc_info, 
+     int file_id, int key_value_pair_ref, int * exception) {
+
+  // TODO
+  return false;
+}
+
+// HamaPeer.sequenceFileAppend
+// public static boolean sequenceFileAppend(Object key, Object value)
+$$__device__$$
+bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char * gc_info, 
+     int key_obj_ref, int value_obj_ref, int * exception) {
+
+  // TODO
+  return false;
+}
+
+// HamaPeer.sequenceFileClose
+// public static boolean sequenceFileClose(int file_id)
+$$__device__$$
+bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileClose($$__global$$ char * gc_info, 
+     int file_id, int * exception) {
+
+  // TODO
+  return false;
+}
+

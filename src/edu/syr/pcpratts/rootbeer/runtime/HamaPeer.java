@@ -24,8 +24,8 @@ public class HamaPeer {
    * Messages sent by this method are not guaranteed to be received in a sent
    * order.
    * 
-   * @param peerName
-   * @param Object message
+   * @param peerName target peerName which will receive the message
+   * @param Object message to send
    */
   public static void send(String peerName, Object message) {
   }
@@ -76,7 +76,7 @@ public class HamaPeer {
    * Barrier Synchronization.
    * 
    * Sends all the messages in the outgoing message queues to the corresponding
-   * remote peers.
+   * remote peers. This method blocks.
    */
   public static void sync() {
   }
@@ -131,18 +131,16 @@ public class HamaPeer {
   }
 
   /**
-   * Writes a key/value pair to the output collector.
-   * 
-   * @param key your key object
-   * @param value your value object
+   * Closes the input and opens it right away, so that the file pointer is at
+   * the beginning again.
    */
-  public static void write(Object key, Object value) {
+  public static void reopenInput() {
   }
 
   /**
    * Deserializes the next input key value into the given objects.
    * 
-   * @param KeyValuePair
+   * @param KeyValuePair is an out parameter that contains key and value
    * @return false if there are no records to read anymore
    */
   public static boolean readNext(KeyValuePair keyValuePair) {
@@ -150,10 +148,61 @@ public class HamaPeer {
   }
 
   /**
-   * Closes the input and opens it right away, so that the file pointer is at
-   * the beginning again.
+   * Writes a key/value pair to the output collector.
+   * 
+   * @param key to write
+   * @param value to write
    */
-  public static void reopenInput() {
+  public static void write(Object key, Object value) {
+  }
+
+  /**
+   * Opens a SequenceFile with option "r" or "w", key/value type and returns the
+   * corresponding FileID.
+   * 
+   * @param path of the SequenceFile
+   * @param option "r" for read or "w" for write
+   * @param keyType Type of the key
+   * @param valueType Type of the value
+   * @return FileID of the SequencFile Reader or Writer
+   */
+  public static int sequenceFileOpen(String path, char option,
+      String keyType, String valueType) {
+    return 0;
+  }
+
+  /**
+   * Reads the next key/value pair from the SequenceFile.
+   * 
+   * @param fileID of the SequenceFile Reader
+   * @param keyValuePair is an out parameter that contains key and value
+   * @return false if there are no records to read anymore
+   */
+  public static boolean sequenceFileReadNext(int fileID,
+      KeyValuePair keyValuePair) {
+    return false;
+  }
+
+  /**
+   * Appends the next key/value pair to the SequenceFile.
+   * 
+   * @param fileID of the SequenceFile Writer
+   * @param key to write
+   * @param value to write
+   * @return true if the key/value pair was sucessfully added
+   */
+  public static boolean sequenceFileAppend(int fileID, Object key, Object value) {
+    return false;
+  }
+
+  /**
+   * Closes a SequenceFile.
+   * 
+   * @param fileID of the SequenceFile Reader or Writer
+   * @return true if the SequenceFile Reader or Writer was sucessfully closed
+   */
+  public static boolean sequenceFileClose(int fileID) {
+    return false;
   }
 
 }

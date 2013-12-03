@@ -85,6 +85,13 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.StringValue: char[] 'from'(char[])>");
     m_methods.add("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int)>");
     m_methods.add("<java.lang.String: void <init>(char[])>");
+    // HamaPeer methods
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void send(java.lang.String,java.lang.Object)>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getCurrentIntMessage()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: long getCurrentLongMessage()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: float getCurrentFloatMessage()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: double getCurrentDoubleMessage()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: java.lang.String getCurrentStringMessage()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getNumCurrentMessages()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void sync()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: long getSuperstepCount()>");
@@ -95,14 +102,12 @@ public class DontDfsMethods {
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getNumPeers()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void clear()>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void reopenInput()>");    
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void send(java.lang.String,java.lang.Object)>");    
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getCurrentIntMessage()>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: long getCurrentLongMessage()>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: float getCurrentFloatMessage()>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: double getCurrentDoubleMessage()>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: java.lang.String getCurrentStringMessage()>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean readNext(edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");  
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void write(java.lang.Object,java.lang.Object)>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean readNext(edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int sequenceFileOpen(java.lang.String,char,java.lang.String,java.lang.String)>");
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileReadNext(int,edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");    
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileAppend(java.lang.Object,java.lang.Object)>");  
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileClose(int)>");
   }
   
   public Set<String> get(){
