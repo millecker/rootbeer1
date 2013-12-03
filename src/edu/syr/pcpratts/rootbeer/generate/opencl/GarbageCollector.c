@@ -1346,9 +1346,13 @@ T at_illecker_getResult($$__global$$ char * gc_info,
     HostDeviceInterface::TYPE return_type, bool use_return_value,
     int key_value_pair_ref, HostDeviceInterface::TYPE key_type, HostDeviceInterface::TYPE value_type,
     int int_param1, bool use_int_param1,
+    int int_param2, bool use_int_param2,
     long long long_param1, bool use_long_param1,
+    long long long_param2, bool use_long_param2,
     float float_param1, bool use_float_param1,
+    float float_param2, bool use_float_param2,
     double double_param1, bool use_double_param1,
+    double double_param2, bool use_double_param2,
     int str_param1, bool use_str_param1,
     int str_param2, bool use_str_param2,
     int * exception) {
@@ -1415,17 +1419,33 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         host_device_interface->use_int_val1 = true;
         host_device_interface->int_val1 = int_param1;
       }
+      if (use_int_param2) {
+        host_device_interface->use_int_val2 = true;
+        host_device_interface->int_val2 = int_param2;
+      }
       if (use_long_param1) {
         host_device_interface->use_long_val1 = true;
         host_device_interface->long_val1 = long_param1;
+      }
+      if (use_long_param2) {
+        host_device_interface->use_long_val2 = true;
+        host_device_interface->long_val2 = long_param2;
       }
       if (use_float_param1) {
         host_device_interface->use_float_val1 = true;
         host_device_interface->float_val1 = float_param1;
       }
+      if (use_float_param2) {
+        host_device_interface->use_float_val2 = true;
+        host_device_interface->float_val2 = float_param2;
+      }
       if (use_double_param1) {
         host_device_interface->use_double_val1 = true;
         host_device_interface->double_val1 = double_param1;
+      }
+      if (use_double_param2) {
+        host_device_interface->use_double_val2 = true;
+        host_device_interface->double_val2 = double_param2;
       }
       if (use_str_param1) {
         str_param1_value = instance_getter_java_lang_String_value(gc_info, str_param1,
@@ -1570,17 +1590,33 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         host_device_interface->int_val1 = 0;
         host_device_interface->use_int_val1 = false;
       }
+      if (use_int_param2) {
+        host_device_interface->int_val2 = 0;
+        host_device_interface->use_int_val2 = false;
+      }
       if ( (use_long_param1) || (return_type == HostDeviceInterface::LONG) ) {
         host_device_interface->long_val1 = 0;
         host_device_interface->use_long_val1 = false;
+      }
+      if (use_long_param1) {
+        host_device_interface->long_val2 = 0;
+        host_device_interface->use_long_val2 = false;
       }
       if ( (use_float_param1) || (return_type == HostDeviceInterface::FLOAT) ) {
         host_device_interface->float_val1 = 0;
         host_device_interface->use_float_val1 = false;
       }
+      if (use_float_param2) {
+        host_device_interface->float_val2 = 0;
+        host_device_interface->use_float_val2 = false;
+      }
       if ( (use_double_param1) || (return_type == HostDeviceInterface::DOUBLE) ) {
         host_device_interface->double_val1 = 0;
         host_device_interface->use_double_val1 = false;
+      }
+      if (use_double_param2) {
+        host_device_interface->double_val2 = 0;
+        host_device_interface->use_double_val2 = false;
       }
       if ( (use_str_param1) || (return_type == HostDeviceInterface::STRING) ) {
         host_device_interface->str_val1[0] = '\0';
@@ -1675,9 +1711,13 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info
     HostDeviceInterface::NOT_AVAILABLE, false, // do not use the return value
     0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
     int_value, use_int_value,
+    0, false,
     long_value, use_long_value,
+    0, false,
     float_value, use_float_value,
+    0, false,
     double_value, use_double_value,
+    0, false,
     peer_name_str_ref, true,
     string_value, use_string_value,
     exception);
@@ -1692,6 +1732,10 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentIntMessage($$__global$$
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_MSG,
            HostDeviceInterface::INT, true, // expecting integer return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -1714,6 +1758,10 @@ long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentLongMessage($$__global
            0, false,
            0, false,
            0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false, exception);
 }
 
@@ -1726,6 +1774,10 @@ float edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentFloatMessage($$__glob
   return at_illecker_getResult<float>(gc_info, HostDeviceInterface::GET_MSG,
            HostDeviceInterface::FLOAT, true, // expecting float return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -1748,6 +1800,10 @@ double edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentDoubleMessage($$__gl
            0, false,
            0, false,
            0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false, exception);
 }
 
@@ -1760,6 +1816,10 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentStringMessage($$__globa
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_MSG,
            HostDeviceInterface::STRING, true, // expecting string return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -1782,6 +1842,10 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$
            0, false,
            0, false,
            0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false, exception);
 }
 
@@ -1794,6 +1858,10 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sync($$__global$$ char * gc_info
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::SYNC,
     HostDeviceInterface::NOT_AVAILABLE, false, // do not use return value
     0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+    0, false,
+    0, false,
+    0, false,
+    0, false,
     0, false,
     0, false,
     0, false,
@@ -1816,6 +1884,10 @@ long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getSuperstepCount($$__global$$ c
            0, false,
            0, false,
            0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false, exception);
 }
 
@@ -1832,6 +1904,10 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
            0, false,
            0, false,
            0, false, 
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false,
            0, false, exception);
 }
@@ -1850,6 +1926,10 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
            0, false,
            0, false, 
            0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false, exception);
 }
 
@@ -1862,6 +1942,10 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerIndex($$__global$$ char * 
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_PEER_INDEX,
            HostDeviceInterface::INT, true, // expecting integer return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -1894,6 +1978,10 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumPeers($$__global$$ char * g
            0, false,
            0, false,
            0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false, exception);
 }
 
@@ -1911,6 +1999,10 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_clear($$__global$$ char * gc_inf
            0, false,
            0, false,
            0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false, exception);
 }
 
@@ -1923,6 +2015,10 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_reopenInput($$__global$$ char * 
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::REOPEN_INPUT,
            HostDeviceInterface::NOT_AVAILABLE, false, // do not use return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -1989,48 +2085,106 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_
            0, false,
            0, false,
            0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
            0, false, exception);
 }
 
 // HamaPeer.write
-// public static void write(String key, String value)
+// public static void write(Object key, Object value)
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info, 
      int key_obj_ref, int value_obj_ref, int * exception) {
 
+  // key values
+  int int_val1 = 0;
+  bool use_int_val1 = false;
+  long long long_val1 = 0;
+  bool use_long_val1 = false;
+  float float_val1 = 0;
+  bool use_float_val1 = false;
+  double double_val1 = 0;
+  bool use_double_val1 = false;
+  int string_val1 = 0;
+  bool use_string_val1 = false;
+
+  // value values
+  int int_val2 = 0;
+  bool use_int_val2 = false;
+  long long long_val2 = 0;
+  bool use_long_val2 = false;
+  float float_val2 = 0;
+  bool use_float_val2 = false;
+  double double_val2 = 0;
+  bool use_double_val2 = false;
+  int string_val2 = 0;
+  bool use_string_val2 = false;
+
+  char * key_obj_deref;
+  char * value_obj_deref;
+
+  key_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, key_obj_ref);
+  value_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, value_obj_ref);
+
   // check key type
   if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
-    printf("write: key is Integer!\n");
-
+    int_val1 = *(( int *) &key_obj_deref[32]);
+    use_int_val1 = true;
   } else if (at_illecker_typeof_Long(gc_info, key_obj_ref)) {
-    printf("write: key is Long!\n");
-
+    long_val1 = *(( long long *) &key_obj_deref[32]);
+    use_long_val1 = true;
   } else if (at_illecker_typeof_Float(gc_info, key_obj_ref)) {
-    printf("write: key is Float!\n");
-    
+    float_val1 = *(( float *) &key_obj_deref[32]);
+    use_float_val1 = true;
   } else if (at_illecker_typeof_Double(gc_info, key_obj_ref)) {
-    printf("write: key is Double!\n");
-    
+    double_val1 = *(( double *) &key_obj_deref[32]);
+    use_double_val1 = true;
   } else if (at_illecker_typeof_String(gc_info, key_obj_ref)) {
-    printf("write: key is String!\n");
+    string_val1 = key_obj_ref;
+    use_string_val1 = true;
+  } else {
+    // TODO throw CudaException unsupported Type
+    printf("Exception: unsupported Key Type\n");
+    return;
   }
 
   // check value type
   if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
-    printf("write: value is Integer!\n");
-
+    int_val2 = *(( int *) &value_obj_deref[32]);
+    use_int_val2 = true;
   } else if (at_illecker_typeof_Long(gc_info, value_obj_ref)) {
-    printf("write: value is Long!\n");
-
+    long_val2 = *(( long long *) &value_obj_deref[32]);
+    use_long_val2 = true;
   } else if (at_illecker_typeof_Float(gc_info, value_obj_ref)) {
-    printf("write: value is Float!\n");
-    
+    float_val2 = *(( float *) &value_obj_deref[32]);
+    use_float_val2 = true;
   } else if (at_illecker_typeof_Double(gc_info, value_obj_ref)) {
-    printf("write: value is Double!\n");
-    
+    double_val2 = *(( double *) &value_obj_deref[32]);
+    use_double_val2 = true;
   } else if (at_illecker_typeof_String(gc_info, value_obj_ref)) {
-    printf("write: value is String!\n");
+    string_val2 = value_obj_ref;
+    use_string_val2 = true;
+  } else {
+    // TODO throw CudaException unsupported Type
+    printf("Exception: unsupported Value Type\n");
+    return;
   }
 
+  at_illecker_getResult<int>(gc_info, HostDeviceInterface::WRITE_KEYVALUE,
+    HostDeviceInterface::NOT_AVAILABLE, false, // do not use the return value
+    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+    int_val1, use_int_val1,
+    int_val2, use_int_val2,
+    long_val1, use_long_val1,
+    long_val2, use_long_val2,
+    float_val1, use_float_val1,
+    float_val2, use_float_val2,
+    double_val1, use_double_val1,
+    double_val2, use_double_val2,
+    string_val1, use_string_val1,
+    string_val2, use_string_val2,
+    exception);
 }
 

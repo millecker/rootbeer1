@@ -109,9 +109,13 @@ public:
 
   // Command parameter
   volatile bool use_int_val1; // in int_val1
+  volatile bool use_int_val2; // in int_val2
   volatile bool use_long_val1; // in long_val1
+  volatile bool use_long_val2; // in long_val2
   volatile bool use_float_val1; // in float_val1
+  volatile bool use_float_val2; // in float_val2
   volatile bool use_double_val1; // in double_val1
+  volatile bool use_double_val2; // in double_val2
   volatile bool use_str_val1; // in str_val1
   volatile bool use_str_val2; // in str_val2
 
@@ -149,9 +153,13 @@ public:
     done = false;
     command = UNDEFINED;
     use_int_val1 = false;
+    use_int_val2 = false;
     use_long_val1 = false;
+    use_long_val2 = false;
     use_float_val1 = false;
+    use_float_val2 = false;
     use_double_val1 = false;
+    use_double_val2 = false;
     use_str_val1 = false;
     use_str_val2 = false;
     int_val1 = 0;
@@ -1672,6 +1680,203 @@ public:
         break;
       }
 
+      case HostDeviceInterface::WRITE_KEYVALUE: {
+
+        bool response = false;
+        /***********************************************************************/
+        // (int,int)
+        if ( (host_device_interface->use_int_val1) &&
+             (host_device_interface->use_int_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->int_val1,
+                                  host_device_interface->int_val2);
+        } 
+        // (int,long)
+        else if ( (host_device_interface->use_int_val1) &&
+             (host_device_interface->use_long_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->int_val1,
+                                  host_device_interface->long_val2);
+        } 
+        // (int,float)
+        else if ( (host_device_interface->use_int_val1) &&
+             (host_device_interface->use_float_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->int_val1,
+                                  host_device_interface->float_val2);
+        } 
+        // (int,double)
+        else if ( (host_device_interface->use_int_val1) &&
+             (host_device_interface->use_double_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->int_val1,
+                                  host_device_interface->double_val2);
+        } 
+        // (int,string)
+        else if ( (host_device_interface->use_int_val1) &&
+             (host_device_interface->use_str_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->int_val1,
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+        }
+        /***********************************************************************/
+        // (long,int)
+        else if ( (host_device_interface->use_long_val1) &&
+             (host_device_interface->use_int_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->long_val1,
+                                  host_device_interface->int_val2);
+        } 
+        // (long,long)
+        else if ( (host_device_interface->use_long_val1) &&
+             (host_device_interface->use_long_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->long_val1,
+                                  host_device_interface->long_val2);
+        } 
+        // (long,float)
+        else if ( (host_device_interface->use_long_val1) &&
+             (host_device_interface->use_float_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->long_val1,
+                                  host_device_interface->float_val2);
+        } 
+        // (long,double)
+        else if ( (host_device_interface->use_long_val1) &&
+             (host_device_interface->use_double_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->long_val1,
+                                  host_device_interface->double_val2);
+        } 
+        // (long,string)
+        else if ( (host_device_interface->use_long_val1) &&
+             (host_device_interface->use_str_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->long_val1,
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+        }
+        /***********************************************************************/
+        // (float,int)
+        else if ( (host_device_interface->use_float_val1) &&
+             (host_device_interface->use_int_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->float_val1,
+                                  host_device_interface->int_val2);
+        } 
+        // (float,long)
+        else if ( (host_device_interface->use_float_val1) &&
+             (host_device_interface->use_long_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->float_val1,
+                                  host_device_interface->long_val2);
+        } 
+        // (float,float)
+        else if ( (host_device_interface->use_float_val1) &&
+             (host_device_interface->use_float_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->float_val1,
+                                  host_device_interface->float_val2);
+        } 
+        // (float,double)
+        else if ( (host_device_interface->use_float_val1) &&
+             (host_device_interface->use_double_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->float_val1,
+                                  host_device_interface->double_val2);
+        } 
+        // (float,string)
+        else if ( (host_device_interface->use_float_val1) &&
+             (host_device_interface->use_str_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->float_val1,
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+        }
+        /***********************************************************************/
+        // (double,int)
+        else if ( (host_device_interface->use_double_val1) &&
+             (host_device_interface->use_int_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->double_val1,
+                                  host_device_interface->int_val2);
+        } 
+        // (double,long)
+        else if ( (host_device_interface->use_double_val1) &&
+             (host_device_interface->use_long_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->double_val1,
+                                  host_device_interface->long_val2);
+        } 
+        // (double,float)
+        else if ( (host_device_interface->use_double_val1) &&
+             (host_device_interface->use_float_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->double_val1,
+                                  host_device_interface->float_val2);
+        } 
+        // (double,double)
+        else if ( (host_device_interface->use_double_val1) &&
+             (host_device_interface->use_double_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->double_val1,
+                                  host_device_interface->double_val2);
+        } 
+        // (double,string)
+        else if ( (host_device_interface->use_double_val1) &&
+             (host_device_interface->use_str_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->double_val1,
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+        }
+        /***********************************************************************/
+        // (string,int)
+        if ( (host_device_interface->use_str_val1) &&
+             (host_device_interface->use_int_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  string(const_cast<char *>(host_device_interface->str_val1)),
+                                  host_device_interface->int_val2);
+        } 
+        // (string,long)
+        else if ( (host_device_interface->use_str_val1) &&
+             (host_device_interface->use_long_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  string(const_cast<char *>(host_device_interface->str_val1)),
+                                  host_device_interface->long_val2);
+        } 
+        // (string,float)
+        else if ( (host_device_interface->use_str_val1) &&
+             (host_device_interface->use_float_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  string(const_cast<char *>(host_device_interface->str_val1)),
+                                  host_device_interface->float_val2);
+        } 
+        // (string,double)
+        else if ( (host_device_interface->use_str_val1) &&
+             (host_device_interface->use_double_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  string(const_cast<char *>(host_device_interface->str_val1)),
+                                  host_device_interface->double_val2);
+        } 
+        // (string,string)
+        else if ( (host_device_interface->use_str_val1) &&
+             (host_device_interface->use_str_val2) ) {
+          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  string(const_cast<char *>(host_device_interface->str_val1)),
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+        }
+        /***********************************************************************/
+
+        if (response == false) {
+          // TODO throw CudaException?
+          printf("HostDeviceInterface::WRITE_KEYVALUE got wrong response command!\n");
+        }
+
+        // Set result available for GPU Kernel
+        host_device_interface->is_result_available = true;
+
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
+        break;
+      }
 
       case HostDeviceInterface::SEQFILE_OPEN: {
         // TODO

@@ -123,9 +123,13 @@ public:
 
   // Command parameter
   volatile bool use_int_val1; // in int_val1
+  volatile bool use_int_val2; // in int_val2
   volatile bool use_long_val1; // in long_val1
+  volatile bool use_long_val2; // in long_val2
   volatile bool use_float_val1; // in float_val1
+  volatile bool use_float_val2; // in float_val2
   volatile bool use_double_val1; // in double_val1
+  volatile bool use_double_val2; // in double_val2
   volatile bool use_str_val1; // in str_val1
   volatile bool use_str_val2; // in str_val2
 
@@ -163,9 +167,13 @@ public:
     done = false;
     command = UNDEFINED;
     use_int_val1 = false;
+    use_int_val2 = false;
     use_long_val1 = false;
+    use_long_val2 = false;
     use_float_val1 = false;
+    use_float_val2 = false;
     use_double_val1 = false;
+    use_double_val2 = false;
     use_str_val1 = false;
     use_str_val2 = false;
     int_val1 = 0;
