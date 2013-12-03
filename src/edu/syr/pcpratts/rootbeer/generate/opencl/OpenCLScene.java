@@ -58,7 +58,6 @@ public class OpenCLScene {
   private List<CompositeField> m_compositeFields;
   private List<SootMethod> m_methods;
   private ClassConstantNumbers m_constantNumbers;
-  private OpenCLTypeof m_typeOf;
   
   static {
     m_curentIdent = 0;
@@ -75,7 +74,6 @@ public class OpenCLScene {
     m_instanceOfs = new HashSet<OpenCLInstanceof>();
     m_methods = new ArrayList<SootMethod>();
     m_constantNumbers = new ClassConstantNumbers();
-    m_typeOf = new OpenCLTypeof();
     loadTypes(); 
   }
 
@@ -267,7 +265,6 @@ public class OpenCLScene {
     
     List<NumberedType> types = RootbeerClassLoader.v().getDfsInfo().getNumberedTypes();
     writeTypesToFile(types);
-    m_typeOf.addNumberedType(types);
         
     StringBuilder unix_code = new StringBuilder();
     StringBuilder windows_code = new StringBuilder();
@@ -452,7 +449,6 @@ public class OpenCLScene {
     for(OpenCLInstanceof type : m_instanceOfs){
       protos.add(type.getPrototype());
     }
-    protos.add(m_typeOf.getPrototype());
 
     Iterator<String> iter = protos.iterator();
     while(iter.hasNext()){
@@ -496,7 +492,6 @@ public class OpenCLScene {
     for(OpenCLInstanceof type : m_instanceOfs){
       bodies.add(type.getBody());
     }
-    bodies.add(m_typeOf.getBody());
     
     ret.append(type_switch.getFunctions());
     
