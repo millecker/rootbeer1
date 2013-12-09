@@ -2240,6 +2240,171 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
     exception);
 }
 
+// HamaPeer.sequenceFileReadNext
+// public static boolean sequenceFileReadNext(int file_id, KeyValuePair key_value_pair)
+$$__device__$$
+bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$$ char * gc_info, 
+     int file_id, int key_value_pair_ref, int * exception) {
+
+  int key_obj_ref;
+  int value_obj_ref;
+  HostDeviceInterface::TYPE key_type;
+  HostDeviceInterface::TYPE value_type;
+
+  key_obj_ref = instance_getter_edu_syr_pcpratts_rootbeer_runtime_KeyValuePair_m_key(gc_info, 
+                key_value_pair_ref, exception);
+  value_obj_ref = instance_getter_edu_syr_pcpratts_rootbeer_runtime_KeyValuePair_m_value(gc_info, 
+                  key_value_pair_ref, exception);
+
+  // check key type
+  if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
+    key_type = HostDeviceInterface::INT;
+  } else if (at_illecker_typeof_Long(gc_info, key_obj_ref)) {
+    key_type = HostDeviceInterface::LONG;
+  } else if (at_illecker_typeof_Float(gc_info, key_obj_ref)) {
+    key_type = HostDeviceInterface::FLOAT;
+  } else if (at_illecker_typeof_Double(gc_info, key_obj_ref)) {
+    key_type = HostDeviceInterface::DOUBLE;
+  } else if (at_illecker_typeof_String(gc_info, key_obj_ref)) {
+    key_type = HostDeviceInterface::STRING;
+  } else {
+    // TODO throw CudaException unsupported Type
+    printf("Exception: unsupported Key Type\n");
+    return false;
+  }
+
+  // check value type
+  if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
+    value_type = HostDeviceInterface::INT;
+  } else if (at_illecker_typeof_Long(gc_info, value_obj_ref)) {
+    value_type = HostDeviceInterface::LONG;
+  } else if (at_illecker_typeof_Float(gc_info, value_obj_ref)) {
+    value_type = HostDeviceInterface::FLOAT;
+  } else if (at_illecker_typeof_Double(gc_info, value_obj_ref)) {
+    value_type = HostDeviceInterface::DOUBLE;
+  } else if (at_illecker_typeof_String(gc_info, value_obj_ref)) {
+    value_type = HostDeviceInterface::STRING;
+  } else {
+    // TODO throw CudaException unsupported Type
+    printf("Exception: unsupported Value Type\n");
+    return false;
+  }
+
+  return at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEQFILE_READNEXT,
+           HostDeviceInterface::KEY_VALUE_PAIR, false, // do not use return value, because obj is modified
+           key_value_pair_ref, key_type, value_type,
+           file_id, true,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           exception);
+}
+
+// HamaPeer.sequenceFileAppend
+// public static boolean sequenceFileAppend(int file_id, Object key, Object value)
+$$__device__$$
+bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char * gc_info, 
+     int file_id, int key_obj_ref, int value_obj_ref, int * exception) {
+
+  // key values
+  int int_val1 = 0;
+  bool use_int_val1 = false;
+  long long long_val1 = 0;
+  bool use_long_val1 = false;
+  float float_val1 = 0;
+  bool use_float_val1 = false;
+  double double_val1 = 0;
+  bool use_double_val1 = false;
+  int string_val1 = 0;
+  bool use_string_val1 = false;
+
+  // value values
+  int int_val2 = 0;
+  bool use_int_val2 = false;
+  long long long_val2 = 0;
+  bool use_long_val2 = false;
+  float float_val2 = 0;
+  bool use_float_val2 = false;
+  double double_val2 = 0;
+  bool use_double_val2 = false;
+  int string_val2 = 0;
+  bool use_string_val2 = false;
+
+  char * key_obj_deref;
+  char * value_obj_deref;
+
+  key_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, key_obj_ref);
+  value_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, value_obj_ref);
+
+  // check key type
+  if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
+    int_val1 = *(( int *) &key_obj_deref[32]);
+    use_int_val1 = true;
+  } else if (at_illecker_typeof_Long(gc_info, key_obj_ref)) {
+    long_val1 = *(( long long *) &key_obj_deref[32]);
+    use_long_val1 = true;
+  } else if (at_illecker_typeof_Float(gc_info, key_obj_ref)) {
+    float_val1 = *(( float *) &key_obj_deref[32]);
+    use_float_val1 = true;
+  } else if (at_illecker_typeof_Double(gc_info, key_obj_ref)) {
+    double_val1 = *(( double *) &key_obj_deref[32]);
+    use_double_val1 = true;
+  } else if (at_illecker_typeof_String(gc_info, key_obj_ref)) {
+    string_val1 = key_obj_ref;
+    use_string_val1 = true;
+  } else {
+    // TODO throw CudaException unsupported Type
+    printf("Exception: unsupported Key Type\n");
+    return;
+  }
+
+  // check value type
+  if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
+    int_val2 = *(( int *) &value_obj_deref[32]);
+    use_int_val2 = true;
+  } else if (at_illecker_typeof_Long(gc_info, value_obj_ref)) {
+    long_val2 = *(( long long *) &value_obj_deref[32]);
+    use_long_val2 = true;
+  } else if (at_illecker_typeof_Float(gc_info, value_obj_ref)) {
+    float_val2 = *(( float *) &value_obj_deref[32]);
+    use_float_val2 = true;
+  } else if (at_illecker_typeof_Double(gc_info, value_obj_ref)) {
+    double_val2 = *(( double *) &value_obj_deref[32]);
+    use_double_val2 = true;
+  } else if (at_illecker_typeof_String(gc_info, value_obj_ref)) {
+    string_val2 = value_obj_ref;
+    use_string_val2 = true;
+  } else {
+    // TODO throw CudaException unsupported Type
+    printf("Exception: unsupported Value Type\n");
+    return;
+  }
+
+  return at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEQFILE_APPEND,
+           HostDeviceInterface::INT, true, // expecting integer return value
+           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           int_val1, use_int_val1,
+           int_val2, use_int_val2,
+           long_val1, use_long_val1,
+           long_val2, use_long_val2,
+           float_val1, use_float_val1,
+           float_val2, use_float_val2,
+           double_val1, use_double_val1,
+           double_val2, use_double_val2,
+           string_val1, use_string_val1,
+           string_val2, use_string_val2,
+           0, false,
+           exception);
+  // TODO missing file_id
+}
+
 // HamaPeer.sequenceFileOpen
 // public static int sequenceFileOpen(String path, char option, String keyType, String valueType)
 $$__device__$$
@@ -2265,38 +2430,12 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileOpen($$__global$$ cha
            exception);
 }
 
-// HamaPeer.sequenceFileReadNext
-// public static boolean sequenceFileReadNext(int file_id, KeyValuePair key_value_pair)
-$$__device__$$
-bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$$ char * gc_info, 
-     int file_id, int key_value_pair_ref, int * exception) {
-
-  printf("sequenceFileReadNext\n");
-
-  // TODO
-  return false;
-}
-
-// HamaPeer.sequenceFileAppend
-// public static boolean sequenceFileAppend(int file_id, Object key, Object value)
-$$__device__$$
-bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char * gc_info, 
-     int file_id, int key_obj_ref, int value_obj_ref, int * exception) {
-
-  printf("sequenceFileAppend\n");
-
-  // TODO
-  return false;
-}
-
 // HamaPeer.sequenceFileClose
 // public static boolean sequenceFileClose(int file_id)
 $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileClose($$__global$$ char * gc_info, 
      int file_id, int * exception) {
   
-  printf("sequenceFileClose file_id: %d\n", file_id);
-
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEQFILE_CLOSE,
            HostDeviceInterface::INT, true, // expecting integer return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
