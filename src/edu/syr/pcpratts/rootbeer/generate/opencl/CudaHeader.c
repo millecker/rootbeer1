@@ -124,6 +124,7 @@ public:
   // Command parameter
   volatile bool use_int_val1; // in int_val1
   volatile bool use_int_val2; // in int_val2
+  volatile bool use_int_val3; // in int_val3
   volatile bool use_long_val1; // in long_val1
   volatile bool use_long_val2; // in long_val2
   volatile bool use_float_val1; // in float_val1
@@ -137,6 +138,7 @@ public:
   // Transfer variables (used in sendCommand and getResult)
   volatile int int_val1;
   volatile int int_val2;
+  volatile int int_val3;
   volatile long long_val1;
   volatile long long_val2;
   volatile float float_val1;
@@ -170,6 +172,7 @@ public:
     command = UNDEFINED;
     use_int_val1 = false;
     use_int_val2 = false;
+    use_int_val3 = false;
     use_long_val1 = false;
     use_long_val2 = false;
     use_float_val1 = false;
@@ -181,6 +184,7 @@ public:
     use_str_val3 = false;
     int_val1 = 0;
     int_val2 = 0;
+    int_val3 = 0;
     long_val1 = 0;
     long_val2 = 0;
     float_val1 = 0;

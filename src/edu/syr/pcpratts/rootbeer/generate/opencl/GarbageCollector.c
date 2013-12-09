@@ -1347,6 +1347,7 @@ T at_illecker_getResult($$__global$$ char * gc_info,
     int key_value_pair_ref, HostDeviceInterface::TYPE key_type, HostDeviceInterface::TYPE value_type,
     int int_param1, bool use_int_param1,
     int int_param2, bool use_int_param2,
+    int int_param3, bool use_int_param3,
     long long long_param1, bool use_long_param1,
     long long long_param2, bool use_long_param2,
     float float_param1, bool use_float_param1,
@@ -1425,6 +1426,10 @@ T at_illecker_getResult($$__global$$ char * gc_info,
       if (use_int_param2) {
         host_device_interface->use_int_val2 = true;
         host_device_interface->int_val2 = int_param2;
+      }
+      if (use_int_param3) {
+        host_device_interface->use_int_val3 = true;
+        host_device_interface->int_val3 = int_param3;
       }
       if (use_long_param1) {
         host_device_interface->use_long_val1 = true;
@@ -1610,6 +1615,10 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         host_device_interface->int_val2 = 0;
         host_device_interface->use_int_val2 = false;
       }
+      if (use_int_param3) {
+        host_device_interface->int_val3 = 0;
+        host_device_interface->use_int_val3 = false;
+      }
       if ( (use_long_param1) || (return_type == HostDeviceInterface::LONG) ) {
         host_device_interface->long_val1 = 0;
         host_device_interface->use_long_val1 = false;
@@ -1732,6 +1741,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info
     0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
     int_value, use_int_value,
     0, false,
+    0, false,
     long_value, use_long_value,
     0, false,
     float_value, use_float_value,
@@ -1753,6 +1763,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentIntMessage($$__global$$
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_MSG,
            HostDeviceInterface::INT, true, // expecting integer return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -1787,6 +1798,7 @@ long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentLongMessage($$__global
            0, false,
            0, false,
            0, false,
+           0, false,
            exception);
 }
 
@@ -1799,6 +1811,7 @@ float edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentFloatMessage($$__glob
   return at_illecker_getResult<float>(gc_info, HostDeviceInterface::GET_MSG,
            HostDeviceInterface::FLOAT, true, // expecting float return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -1833,6 +1846,7 @@ double edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentDoubleMessage($$__gl
            0, false,
            0, false,
            0, false,
+           0, false,
            exception);
 }
 
@@ -1845,6 +1859,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentStringMessage($$__globa
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_MSG,
            HostDeviceInterface::STRING, true, // expecting string return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -1879,6 +1894,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$
            0, false,
            0, false,
            0, false,
+           0, false,
            exception);
 }
 
@@ -1891,6 +1907,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sync($$__global$$ char * gc_info
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::SYNC,
     HostDeviceInterface::NOT_AVAILABLE, false, // do not use return value
     0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+    0, false,
     0, false,
     0, false,
     0, false,
@@ -1925,6 +1942,7 @@ long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getSuperstepCount($$__global$$ c
            0, false,
            0, false,
            0, false,
+           0, false,
            exception);
 }
 
@@ -1938,6 +1956,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
            HostDeviceInterface::STRING, true, // expecting string return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
            -1, true,
+           0, false,
            0, false,
            0, false,
            0, false, 
@@ -1963,6 +1982,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
            index, true,
            0, false,
            0, false,
+           0, false,
            0, false, 
            0, false,
            0, false,
@@ -1983,6 +2003,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerIndex($$__global$$ char * 
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_PEER_INDEX,
            HostDeviceInterface::INT, true, // expecting integer return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -2025,6 +2046,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumPeers($$__global$$ char * g
            0, false,
            0, false,
            0, false,
+           0, false,
            0, false, 
            0, false,
            exception);
@@ -2050,6 +2072,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_clear($$__global$$ char * gc_inf
            0, false,
            0, false,
            0, false,
+           0, false,
            exception);
 }
 
@@ -2062,6 +2085,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_reopenInput($$__global$$ char * 
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::REOPEN_INPUT,
            HostDeviceInterface::NOT_AVAILABLE, false, // do not use return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -2129,6 +2153,7 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::READ_KEYVALUE,
            HostDeviceInterface::KEY_VALUE_PAIR, false, // do not use return value, because obj is modified
            key_value_pair_ref, key_type, value_type,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -2228,6 +2253,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
     0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
     int_val1, use_int_val1,
     int_val2, use_int_val2,
+    0, false,
     long_val1, use_long_val1,
     long_val2, use_long_val2,
     float_val1, use_float_val1,
@@ -2304,6 +2330,7 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$
            0, false,
            0, false,
            0, false,
+           0, false,
            exception);
 }
 
@@ -2364,7 +2391,7 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ 
     printf("Exception: unsupported Key Type\n");
     return;
   }
-
+  
   // check value type
   if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
     int_val2 = *(( int *) &value_obj_deref[32]);
@@ -2386,12 +2413,13 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ 
     printf("Exception: unsupported Value Type\n");
     return;
   }
-
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEQFILE_APPEND,
            HostDeviceInterface::INT, true, // expecting integer return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
            int_val1, use_int_val1,
            int_val2, use_int_val2,
+           file_id, true,
            long_val1, use_long_val1,
            long_val2, use_long_val2,
            float_val1, use_float_val1,
@@ -2402,7 +2430,6 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ 
            string_val2, use_string_val2,
            0, false,
            exception);
-  // TODO missing file_id
 }
 
 // HamaPeer.sequenceFileOpen
@@ -2417,6 +2444,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileOpen($$__global$$ cha
            HostDeviceInterface::INT, true, // expecting integer return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
            option, true,
+           0, false,
            0, false,
            0, false,
            0, false,
@@ -2440,6 +2468,7 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileClose($$__global$$ c
            HostDeviceInterface::INT, true, // expecting integer return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
            file_id, true,
+           0, false,
            0, false,
            0, false,
            0, false,

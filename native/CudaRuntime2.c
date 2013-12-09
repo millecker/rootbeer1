@@ -110,6 +110,7 @@ public:
   // Command parameter
   volatile bool use_int_val1; // in int_val1
   volatile bool use_int_val2; // in int_val2
+  volatile bool use_int_val3; // in int_val3
   volatile bool use_long_val1; // in long_val1
   volatile bool use_long_val2; // in long_val2
   volatile bool use_float_val1; // in float_val1
@@ -123,6 +124,7 @@ public:
   // Transfer variables (used in sendCommand and getResult)
   volatile int int_val1;
   volatile int int_val2;
+  volatile int int_val3;
   volatile long long_val1;
   volatile long long_val2;
   volatile float float_val1;
@@ -156,6 +158,7 @@ public:
     command = UNDEFINED;
     use_int_val1 = false;
     use_int_val2 = false;
+    use_int_val3 = false;
     use_long_val1 = false;
     use_long_val2 = false;
     use_float_val1 = false;
@@ -167,6 +170,7 @@ public:
     use_str_val3 = false;
     int_val1 = 0;
     int_val2 = 0;
+    int_val3 = 0;
     long_val1 = 0;
     long_val2 = 0;
     float_val1 = 0;
@@ -751,6 +755,24 @@ public:
     return true;
   }
 
+  template<class T1, class T2, class T3>
+  bool sendCMD(int32_t cmd, bool verify_response, T1 value1, T2 value2, T3 value3) volatile {
+    serialize<int32_t>(cmd, *file_out_stream_);
+    serialize<T1>(value1, *file_out_stream_);
+    serialize<T2>(value2, *file_out_stream_);
+    serialize<T3>(value3, *file_out_stream_);
+    file_out_stream_->flush();
+    printf("SocketClient sent CMD: %s with Value1: '%s', Value2: '%s' and Value3: '%s'\n", messageTypeNames[cmd],
+           toString<T1>(value1).c_str(), toString<T2>(value2).c_str(), toString<T3>(value3).c_str());
+    if (verify_response) {
+      int32_t response = deserialize<int32_t>(*file_in_stream_);
+      if (response != cmd) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void sendCMD(int32_t cmd, const string values[], int size) volatile {
     serialize<int32_t>(cmd, *file_out_stream_);
     for (int i = 0; i < size; i++) {
@@ -914,8 +936,7 @@ public:
     KeyValuePair<K,V> key_value_pair;
     
     // read response command
-    int32_t cmd;
-    cmd = deserialize<int32_t>(*file_in_stream_);
+    int32_t cmd = deserialize<int32_t>(*file_in_stream_);
     
     // check if response is expected or END_OF_DATA
     if ((expected_response_cmd == cmd) || (cmd == HostDeviceInterface::END_OF_DATA) ) {
@@ -1058,8 +1079,8 @@ public:
 
   void processCommand() volatile {
 
-    printf("HostMonitor processCommand: %d, lock_thread_id: %d, result_available: %s\n",
-           host_device_interface->command, 
+    printf("HostMonitor processCommand: %s, lock_thread_id: %d, result_available: %s\n",
+           messageTypeNames[host_device_interface->command], 
            host_device_interface->lock_thread_id, 
            (host_device_interface->is_result_available) ? "true" : "false");
 
@@ -1296,7 +1317,8 @@ public:
         if (host_device_interface->command == HostDeviceInterface::READ_KEYVALUE) {
           socket_client_->sendCMD(HostDeviceInterface::READ_KEYVALUE, false);
         } else {
-          socket_client_->sendCMD(HostDeviceInterface::SEQFILE_READNEXT, false, host_device_interface->int_val1);
+          socket_client_->sendCMD(HostDeviceInterface::SEQFILE_READNEXT, false, 
+                                  host_device_interface->int_val1); // file_id
         }
 
         // Check key and value type
@@ -1700,200 +1722,406 @@ public:
       /***********************************************************************/
       case HostDeviceInterface::WRITE_KEYVALUE:
       case HostDeviceInterface::SEQFILE_APPEND: {
-        // TODO SEQFILE_APPEND
-        bool response = false;
+        int response = 0; // false
         /***********************************************************************/
         // (int,int)
         if ( (host_device_interface->use_int_val1) &&
              (host_device_interface->use_int_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true,
                                   host_device_interface->int_val1,
                                   host_device_interface->int_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->int_val1,
+                                  host_device_interface->int_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (int,long)
         else if ( (host_device_interface->use_int_val1) &&
              (host_device_interface->use_long_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->int_val1,
                                   host_device_interface->long_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->int_val1,
+                                  host_device_interface->long_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (int,float)
         else if ( (host_device_interface->use_int_val1) &&
              (host_device_interface->use_float_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->int_val1,
                                   host_device_interface->float_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->int_val1,
+                                  host_device_interface->float_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (int,double)
         else if ( (host_device_interface->use_int_val1) &&
              (host_device_interface->use_double_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->int_val1,
                                   host_device_interface->double_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->int_val1,
+                                  host_device_interface->double_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (int,string)
         else if ( (host_device_interface->use_int_val1) &&
              (host_device_interface->use_str_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->int_val1,
                                   string(const_cast<char *>(host_device_interface->str_val2)));
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->int_val1,
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         }
         /***********************************************************************/
         // (long,int)
         else if ( (host_device_interface->use_long_val1) &&
              (host_device_interface->use_int_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->long_val1,
                                   host_device_interface->int_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->long_val1,
+                                  host_device_interface->int_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (long,long)
         else if ( (host_device_interface->use_long_val1) &&
              (host_device_interface->use_long_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->long_val1,
                                   host_device_interface->long_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->long_val1,
+                                  host_device_interface->long_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (long,float)
         else if ( (host_device_interface->use_long_val1) &&
              (host_device_interface->use_float_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->long_val1,
                                   host_device_interface->float_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->long_val1,
+                                  host_device_interface->float_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (long,double)
         else if ( (host_device_interface->use_long_val1) &&
              (host_device_interface->use_double_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->long_val1,
                                   host_device_interface->double_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->long_val1,
+                                  host_device_interface->double_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (long,string)
         else if ( (host_device_interface->use_long_val1) &&
              (host_device_interface->use_str_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->long_val1,
                                   string(const_cast<char *>(host_device_interface->str_val2)));
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->long_val1,
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         }
         /***********************************************************************/
         // (float,int)
         else if ( (host_device_interface->use_float_val1) &&
              (host_device_interface->use_int_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->float_val1,
                                   host_device_interface->int_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->float_val1,
+                                  host_device_interface->int_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (float,long)
         else if ( (host_device_interface->use_float_val1) &&
              (host_device_interface->use_long_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->float_val1,
                                   host_device_interface->long_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->float_val1,
+                                  host_device_interface->long_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (float,float)
         else if ( (host_device_interface->use_float_val1) &&
              (host_device_interface->use_float_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->float_val1,
                                   host_device_interface->float_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->float_val1,
+                                  host_device_interface->float_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (float,double)
         else if ( (host_device_interface->use_float_val1) &&
              (host_device_interface->use_double_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->float_val1,
                                   host_device_interface->double_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->float_val1,
+                                  host_device_interface->double_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (float,string)
         else if ( (host_device_interface->use_float_val1) &&
              (host_device_interface->use_str_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->float_val1,
                                   string(const_cast<char *>(host_device_interface->str_val2)));
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->float_val1,
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         }
         /***********************************************************************/
         // (double,int)
         else if ( (host_device_interface->use_double_val1) &&
              (host_device_interface->use_int_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->double_val1,
                                   host_device_interface->int_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->double_val1,
+                                  host_device_interface->int_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (double,long)
         else if ( (host_device_interface->use_double_val1) &&
              (host_device_interface->use_long_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->double_val1,
                                   host_device_interface->long_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->double_val1,
+                                  host_device_interface->long_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (double,float)
         else if ( (host_device_interface->use_double_val1) &&
              (host_device_interface->use_float_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->double_val1,
                                   host_device_interface->float_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->double_val1,
+                                  host_device_interface->float_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (double,double)
         else if ( (host_device_interface->use_double_val1) &&
              (host_device_interface->use_double_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->double_val1,
                                   host_device_interface->double_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->double_val1,
+                                  host_device_interface->double_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (double,string)
         else if ( (host_device_interface->use_double_val1) &&
              (host_device_interface->use_str_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   host_device_interface->double_val1,
                                   string(const_cast<char *>(host_device_interface->str_val2)));
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->double_val1,
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         }
         /***********************************************************************/
         // (string,int)
         if ( (host_device_interface->use_str_val1) &&
              (host_device_interface->use_int_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   string(const_cast<char *>(host_device_interface->str_val1)),
                                   host_device_interface->int_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  string(const_cast<char *>(host_device_interface->str_val1)),
+                                  host_device_interface->int_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (string,long)
         else if ( (host_device_interface->use_str_val1) &&
              (host_device_interface->use_long_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   string(const_cast<char *>(host_device_interface->str_val1)),
                                   host_device_interface->long_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  string(const_cast<char *>(host_device_interface->str_val1)),
+                                  host_device_interface->long_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (string,float)
         else if ( (host_device_interface->use_str_val1) &&
              (host_device_interface->use_float_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   string(const_cast<char *>(host_device_interface->str_val1)),
                                   host_device_interface->float_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  string(const_cast<char *>(host_device_interface->str_val1)),
+                                  host_device_interface->float_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (string,double)
         else if ( (host_device_interface->use_str_val1) &&
              (host_device_interface->use_double_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   string(const_cast<char *>(host_device_interface->str_val1)),
                                   host_device_interface->double_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  string(const_cast<char *>(host_device_interface->str_val1)),
+                                  host_device_interface->double_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         } 
         // (string,string)
         else if ( (host_device_interface->use_str_val1) &&
              (host_device_interface->use_str_val2) ) {
-          response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
                                   string(const_cast<char *>(host_device_interface->str_val1)),
                                   string(const_cast<char *>(host_device_interface->str_val2)));
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  string(const_cast<char *>(host_device_interface->str_val1)),
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
         }
         /***********************************************************************/
 
-        if (response == false) {
+        if ( (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) && (response == 0) ) {
           // TODO throw CudaException?
           printf("HostDeviceInterface::WRITE_KEYVALUE got wrong response command!\n");
         }
 
+        host_device_interface->int_val1 = response;
         // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
+        printf("HostMonitor got result: %d result_available: %s\n",
+               host_device_interface->int_val1,
+               (host_device_interface->is_result_available) ? "true" : "false");
+
         // block until result was consumed
 	while (host_device_interface->is_result_available) {}
+        printf("HostMonitor result was consumed\n");
         break;
       }
 
