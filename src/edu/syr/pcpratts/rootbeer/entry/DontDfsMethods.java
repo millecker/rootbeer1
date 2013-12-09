@@ -106,7 +106,7 @@ public class DontDfsMethods {
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void write(java.lang.Object,java.lang.Object)>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int sequenceFileOpen(java.lang.String,char,java.lang.String,java.lang.String)>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileReadNext(int,edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");    
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileAppend(java.lang.Object,java.lang.Object)>");  
+    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileAppend(int,java.lang.Object,java.lang.Object)>");  
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileClose(int)>");
   }
   

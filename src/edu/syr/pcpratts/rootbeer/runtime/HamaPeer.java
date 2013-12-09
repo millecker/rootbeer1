@@ -166,8 +166,8 @@ public class HamaPeer {
    * @param valueType Type of the value
    * @return FileID of the SequencFile Reader or Writer
    */
-  public static int sequenceFileOpen(String path, char option,
-      String keyType, String valueType) {
+  public static int sequenceFileOpen(String path, char option, String keyType,
+      String valueType) {
     return 0;
   }
 

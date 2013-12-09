@@ -118,6 +118,7 @@ public:
   volatile bool use_double_val2; // in double_val2
   volatile bool use_str_val1; // in str_val1
   volatile bool use_str_val2; // in str_val2
+  volatile bool use_str_val3; // in str_val3
 
   // Transfer variables (used in sendCommand and getResult)
   volatile int int_val1;
@@ -130,6 +131,7 @@ public:
   volatile double double_val2;
   volatile char str_val1[STR_SIZE];
   volatile char str_val2[STR_SIZE];
+  volatile char str_val3[255];
 
   enum TYPE {
     INT, LONG, FLOAT, DOUBLE, STRING, KEY_VALUE_PAIR, NOT_AVAILABLE
@@ -162,6 +164,7 @@ public:
     use_double_val2 = false;
     use_str_val1 = false;
     use_str_val2 = false;
+    use_str_val3 = false;
     int_val1 = 0;
     int_val2 = 0;
     long_val1 = 0;
@@ -748,8 +751,6 @@ public:
     return true;
   }
 
-/*
-// TODO
   void sendCMD(int32_t cmd, const string values[], int size) volatile {
     serialize<int32_t>(cmd, *file_out_stream_);
     for (int i = 0; i < size; i++) {
@@ -759,7 +760,8 @@ public:
     }
     file_out_stream_->flush();
   }
-  
+
+/*  
   void sendCMD(int32_t cmd, int32_t value, const string values[],
                int size) volatile {
     serialize<int32_t>(cmd, *file_out_stream_);
@@ -1063,6 +1065,7 @@ public:
 
     switch (host_device_interface->command) {
       
+      /***********************************************************************/
       case HostDeviceInterface::SEND_MSG: {
 
         bool response = false;
@@ -1105,6 +1108,7 @@ public:
         break;
       }
 
+      /***********************************************************************/
       case HostDeviceInterface::GET_MSG: {
         socket_client_->sendCMD(HostDeviceInterface::GET_MSG, false);
 
@@ -1140,6 +1144,7 @@ public:
         break;
       }
 
+      /***********************************************************************/
       case HostDeviceInterface::GET_MSG_COUNT: {
         socket_client_->sendCMD(HostDeviceInterface::GET_MSG_COUNT, false);
 
@@ -1157,6 +1162,7 @@ public:
         break;
       }
 
+      /***********************************************************************/
       case HostDeviceInterface::SYNC: {
         bool response = socket_client_->sendCMD(HostDeviceInterface::SYNC, true);
         printf("HostMonitor sent SYNC\n");
@@ -1174,6 +1180,7 @@ public:
         break;
       }
 
+      /***********************************************************************/
       case HostDeviceInterface::GET_SUPERSTEP_COUNT: {
         socket_client_->sendCMD(HostDeviceInterface::GET_SUPERSTEP_COUNT, false);
 
@@ -1191,6 +1198,7 @@ public:
         break;
       }
 
+      /***********************************************************************/
       case HostDeviceInterface::GET_PEERNAME: {
         socket_client_->sendCMD(HostDeviceInterface::GET_PEERNAME, false, host_device_interface->int_val1);
         
@@ -1210,6 +1218,7 @@ public:
         break;
       }
 
+      /***********************************************************************/
       case HostDeviceInterface::GET_PEER_INDEX: {
         socket_client_->sendCMD(HostDeviceInterface::GET_PEER_INDEX, false);
 
@@ -1227,6 +1236,7 @@ public:
         break;
       }
 
+      /***********************************************************************/
       case HostDeviceInterface::GET_PEER_COUNT: {
         socket_client_->sendCMD(HostDeviceInterface::GET_PEER_COUNT, false);
         
@@ -1244,6 +1254,7 @@ public:
         break;
       }
 
+      /***********************************************************************/
       case HostDeviceInterface::CLEAR: {
         bool response = socket_client_->sendCMD(HostDeviceInterface::CLEAR, true);
         printf("HostMonitor sent CLEAR\n");
@@ -1261,6 +1272,7 @@ public:
         break;
       }
 
+      /***********************************************************************/
       case HostDeviceInterface::REOPEN_INPUT: {
        bool response = socket_client_->sendCMD(HostDeviceInterface::REOPEN_INPUT, true);
         printf("HostMonitor sent REOPEN_INPUT\n");
@@ -1278,8 +1290,10 @@ public:
         break;
       }
 
+      /***********************************************************************/
       case HostDeviceInterface::READ_KEYVALUE:
       case HostDeviceInterface::SEQFILE_READNEXT: {
+        // TODO SEQFILE_READNEXT
         socket_client_->sendCMD(HostDeviceInterface::READ_KEYVALUE, false);
 
         // Check key and value type
@@ -1680,8 +1694,10 @@ public:
         break;
       }
 
-      case HostDeviceInterface::WRITE_KEYVALUE: {
-
+      /***********************************************************************/
+      case HostDeviceInterface::WRITE_KEYVALUE:
+      case HostDeviceInterface::SEQFILE_APPEND: {
+        // TODO SEQFILE_APPEND
         bool response = false;
         /***********************************************************************/
         // (int,int)
@@ -1878,16 +1894,45 @@ public:
         break;
       }
 
+      /***********************************************************************/
       case HostDeviceInterface::SEQFILE_OPEN: {
-        // TODO
+        string values[] = {string(const_cast<char *>(host_device_interface->str_val1)), 
+                           string(1, (char) host_device_interface->int_val1),
+                           string(const_cast<char *>(host_device_interface->str_val2)),
+                           string(const_cast<char *>(host_device_interface->str_val3))
+                          };
+
+        socket_client_->sendCMD(HostDeviceInterface::SEQFILE_OPEN, values, 4);
+        
+        host_device_interface->int_val1 = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_OPEN);
+        // Set result available for GPU Kernel
+        host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %d result_available: %s\n",
+               host_device_interface->int_val1,
+               (host_device_interface->is_result_available) ? "true" : "false");
+
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
+        printf("HostMonitor result was consumed\n");
         break;
       }
-      case HostDeviceInterface::SEQFILE_APPEND: {
-        // TODO
-        break;
-      }
+
+      /***********************************************************************/
       case HostDeviceInterface::SEQFILE_CLOSE: {
-        // TODO
+        socket_client_->sendCMD(HostDeviceInterface::SEQFILE_CLOSE, false, host_device_interface->int_val1);
+        
+        host_device_interface->int_val1 = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_CLOSE);
+        // Set result available for GPU Kernel
+        host_device_interface->is_result_available = true;
+
+        printf("HostMonitor got result: %d result_available: %s\n",
+               host_device_interface->int_val1,
+               (host_device_interface->is_result_available) ? "true" : "false");
+
+        // block until result was consumed
+	while (host_device_interface->is_result_available) {}
+        printf("HostMonitor result was consumed\n");
         break;
       }
     }

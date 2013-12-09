@@ -1355,6 +1355,7 @@ T at_illecker_getResult($$__global$$ char * gc_info,
     double double_param2, bool use_double_param2,
     int str_param1, bool use_str_param1,
     int str_param2, bool use_str_param2,
+    int str_param3, bool use_str_param3,
     int * exception) {
 
   T return_value = 0;
@@ -1364,13 +1365,15 @@ T at_illecker_getResult($$__global$$ char * gc_info,
   int timeout = 0;
   bool done = false;
 
-  int str_param1_value;
-  int str_param1_count;
-  int str_param2_value;
-  int str_param2_count;
+  int str_param1_value = 0;
+  int str_param1_count = 0;
+  int str_param2_value = 0;
+  int str_param2_count = 0;
+  int str_param3_value = 0;
+  int str_param3_count = 0;
 
-  int key_obj_ref;
-  int value_obj_ref;
+  int key_obj_ref = 0;
+  int value_obj_ref = 0;
   char * key_obj_deref;
   char * value_obj_deref;
 
@@ -1472,6 +1475,19 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         }
         host_device_interface->use_str_val2 = true;
         host_device_interface->str_val2[str_param2_count] = '\0';
+      }
+      if (use_str_param3) {
+        str_param3_value = instance_getter_java_lang_String_value(gc_info, str_param3,
+                           exception);
+        str_param3_count = instance_getter_java_lang_String_count(gc_info, str_param3,
+                           exception);
+
+        // TODO - check for max str_val3 size(255)
+        for(int i = 0; i < str_param3_count; i++){
+          host_device_interface->str_val3[i] = char__array_get(gc_info, str_param3_value, i, exception);
+        }
+        host_device_interface->use_str_val3 = true;
+        host_device_interface->str_val3[str_param3_count] = '\0';
       }
 
       if (return_type == HostDeviceInterface::KEY_VALUE_PAIR) {
@@ -1626,6 +1642,10 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         host_device_interface->str_val2[0] = '\0';
         host_device_interface->use_str_val2 = false;
       }
+      if (use_str_param3) {
+        host_device_interface->str_val3[0] = '\0';
+        host_device_interface->use_str_val3 = false;
+      }
       if (return_type == HostDeviceInterface::KEY_VALUE_PAIR) {
         host_device_interface->key_type = HostDeviceInterface::NOT_AVAILABLE;
         host_device_interface->value_type = HostDeviceInterface::NOT_AVAILABLE;
@@ -1720,6 +1740,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info
     0, false,
     peer_name_str_ref, true,
     string_value, use_string_value,
+    0, false,
     exception);
 }
 
@@ -1741,7 +1762,9 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentIntMessage($$__global$$
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.getCurrentLongMessage
@@ -1762,7 +1785,9 @@ long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentLongMessage($$__global
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.getCurrentFloatMessage
@@ -1783,7 +1808,9 @@ float edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentFloatMessage($$__glob
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.getCurrentDoubleMessage
@@ -1804,7 +1831,9 @@ double edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentDoubleMessage($$__gl
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.getCurrentStringMessage
@@ -1825,7 +1854,9 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentStringMessage($$__globa
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.getNumCurrentMessages
@@ -1846,7 +1877,9 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.sync
@@ -1867,7 +1900,9 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sync($$__global$$ char * gc_info
     0, false,
     0, false,
     0, false,
-    0, false, exception);
+    0, false,
+    0, false,
+    exception);
 }
 
 // HamaPeer.getSuperstepCount
@@ -1888,7 +1923,9 @@ long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getSuperstepCount($$__global$$ c
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.getPeerName
@@ -1909,7 +1946,9 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false, 
+           0, false,
+           exception);
 }
 
 // HamaPeer.getPeerName
@@ -1930,7 +1969,9 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.getPeerIndex
@@ -1951,7 +1992,9 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerIndex($$__global$$ char * 
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.getAllPeerNames
@@ -1982,7 +2025,9 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumPeers($$__global$$ char * g
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false, 
+           0, false,
+           exception);
 }
 
 // HamaPeer.clear
@@ -2003,7 +2048,9 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_clear($$__global$$ char * gc_inf
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.reopenInput
@@ -2024,7 +2071,9 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_reopenInput($$__global$$ char * 
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.readNext
@@ -2089,7 +2138,9 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_
            0, false,
            0, false,
            0, false,
-           0, false, exception);
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.write
@@ -2185,6 +2236,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
     double_val2, use_double_val2,
     string_val1, use_string_val1,
     string_val2, use_string_val2,
+    0, false,
     exception);
 }
 
@@ -2196,8 +2248,21 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileOpen($$__global$$ cha
      int key_type_str_ref, int value_type_str_ref, 
      int * exception) {
 
-  // TODO
-  return 0;
+  return at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEQFILE_OPEN,
+           HostDeviceInterface::INT, true, // expecting integer return value
+           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           option, true,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           path_str_ref, true,
+           key_type_str_ref, true,
+           value_type_str_ref, true,
+           exception);
 }
 
 // HamaPeer.sequenceFileReadNext
@@ -2206,15 +2271,19 @@ $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$$ char * gc_info, 
      int file_id, int key_value_pair_ref, int * exception) {
 
+  printf("sequenceFileReadNext\n");
+
   // TODO
   return false;
 }
 
 // HamaPeer.sequenceFileAppend
-// public static boolean sequenceFileAppend(Object key, Object value)
+// public static boolean sequenceFileAppend(int file_id, Object key, Object value)
 $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char * gc_info, 
-     int key_obj_ref, int value_obj_ref, int * exception) {
+     int file_id, int key_obj_ref, int value_obj_ref, int * exception) {
+
+  printf("sequenceFileAppend\n");
 
   // TODO
   return false;
@@ -2225,8 +2294,23 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ 
 $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileClose($$__global$$ char * gc_info, 
      int file_id, int * exception) {
+  
+  printf("sequenceFileClose file_id: %d\n", file_id);
 
-  // TODO
-  return false;
+  return at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEQFILE_CLOSE,
+           HostDeviceInterface::INT, true, // expecting integer return value
+           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           file_id, true,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           exception);
 }
 

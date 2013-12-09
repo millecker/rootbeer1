@@ -132,6 +132,7 @@ public:
   volatile bool use_double_val2; // in double_val2
   volatile bool use_str_val1; // in str_val1
   volatile bool use_str_val2; // in str_val2
+  volatile bool use_str_val3; // in str_val3
 
   // Transfer variables (used in sendCommand and getResult)
   volatile int int_val1;
@@ -144,6 +145,7 @@ public:
   volatile double double_val2;
   volatile char str_val1[STR_SIZE];
   volatile char str_val2[STR_SIZE];
+  volatile char str_val3[255];
 
   enum TYPE {
     INT, LONG, FLOAT, DOUBLE, STRING, KEY_VALUE_PAIR, NOT_AVAILABLE
@@ -176,6 +178,7 @@ public:
     use_double_val2 = false;
     use_str_val1 = false;
     use_str_val2 = false;
+    use_str_val3 = false;
     int_val1 = 0;
     int_val2 = 0;
     long_val1 = 0;
