@@ -1229,6 +1229,207 @@ int java_lang_Float_toString9_7_(char * gc_info, float parameter0, int * excepti
   return java_lang_StringBuilder_toString9_(gc_info, string_builder, exception);
 }
 
+/* Parsing methods */
+$$__device__$$
+bool at_illecker_is_digit(unsigned char c) {
+  return ((c)>='0' && (c)<='9');
+}
+
+$$__device__$$
+bool at_illecker_is_space(unsigned char c) {
+  return ((c)==' ' || (c)=='\f' || (c)=='\n' || (c)=='\r' || (c)=='\t' || (c)=='\v');
+}
+
+// http://www.opensource.apple.com/source/tcl/tcl-14/tcl/compat/strtod.c
+$$__device__$$
+double at_illecker_string_to_double(const char *string) {
+  int sign = 0; // FALSE
+  int expSign = 0; // FALSE
+  double fraction, dblExp, *d;
+  register const char *p;
+  register int c;
+  int exp = 0;
+  int fracExp = 0;
+  int mantSize;
+  int decPt;
+  const char *pExp;
+
+  int maxExponent = 511;
+  double powersOf10[] = {
+    10.,
+    100.,
+    1.0e4,
+    1.0e8,
+    1.0e16,
+    1.0e32,
+    1.0e64,
+    1.0e128,
+    1.0e256
+  };
+
+  // Strip off leading blanks and check for a sign.
+  p = string;
+  while (at_illecker_is_space((unsigned char) (*p))) {
+    p += 1;
+  }
+  
+  if (*p == '-') {
+    sign = 1; // TRUE
+    p += 1;
+  } else {
+    if (*p == '+') {
+      p += 1;
+    }
+    sign = 0; // FALSE
+  }
+
+  // Count the number of digits in the mantissa (including the decimal
+  // point), and also locate the decimal point.
+  decPt = -1;
+  for (mantSize = 0; ; mantSize += 1) {
+    c = *p;
+    if (!at_illecker_is_digit(c)) {
+      if ((c != '.') || (decPt >= 0)) {
+        break;
+      }
+      decPt = mantSize;
+    }
+    p += 1;
+  }
+
+  // Now suck up the digits in the mantissa.  Use two integers to
+  // collect 9 digits each (this is faster than using floating-point).
+  // If the mantissa has more than 18 digits, ignore the extras, since
+  // they can't affect the value anyway.
+  pExp  = p;
+  p -= mantSize;
+  if (decPt < 0) {
+    decPt = mantSize;
+  } else {
+    mantSize -= 1;
+  }
+  if (mantSize > 18) {
+    fracExp = decPt - 18;
+    mantSize = 18;
+  } else {
+    fracExp = decPt - mantSize;
+  }
+  if (mantSize == 0) {
+    fraction = 0.0;
+    p = string;
+    goto done;
+  } else {
+    int frac1, frac2;
+    frac1 = 0;
+    for ( ; mantSize > 9; mantSize -= 1) {
+      c = *p;
+      p += 1;
+      if (c == '.') {
+        c = *p;
+        p += 1;
+      }
+      frac1 = 10*frac1 + (c - '0');
+    }
+    frac2 = 0;
+    for (; mantSize > 0; mantSize -= 1) {
+      c = *p;
+      p += 1;
+      if (c == '.') {
+        c = *p;
+        p += 1;
+      }
+      frac2 = 10*frac2 + (c - '0');
+    }
+    fraction = (1.0e9 * frac1) + frac2;
+  }
+
+  // Skim off the exponent.
+  p = pExp;
+  if ((*p == 'E') || (*p == 'e')) {
+    p += 1;
+    if (*p == '-') {
+      expSign = 1; // TRUE
+      p += 1;
+    } else {
+      if (*p == '+') {
+        p += 1;
+      }
+      expSign = 0; // FALSE
+    }
+    if (!at_illecker_is_digit((unsigned char) (*p))) {
+      p = pExp;
+      goto done;
+    }
+    while (at_illecker_is_digit((unsigned char) (*p))) {
+      exp = exp * 10 + (*p - '0');
+      p += 1;
+    }
+  }
+  if (expSign) {
+    exp = fracExp - exp;
+  } else {
+    exp = fracExp + exp;
+  }
+
+  // Generate a floating-point number that represents the exponent.
+  // Do this by processing the exponent one bit at a time to combine
+  // many powers of 2 of 10. Then combine the exponent with the
+  // fraction.
+  if (exp < 0) {
+    expSign = 1; // TRUE
+    exp = -exp;
+  } else {
+    expSign = 0; // FALSE
+  }
+  if (exp > maxExponent) {
+    exp = maxExponent;
+    // TODO 
+    // errno = ERANGE;
+  }
+  dblExp = 1.0;
+  for (d = powersOf10; exp != 0; exp >>= 1, d += 1) {
+    if (exp & 01) {
+      dblExp *= *d;
+    }
+  }
+  if (expSign) {
+    fraction /= dblExp;
+  } else {
+    fraction *= dblExp;
+  }
+
+done:
+  if (sign) {
+    return -fraction;
+  }
+  return fraction;
+}
+
+
+$$__device__$$
+double java_lang_Double_parseDouble(char * gc_info,  int str_obj_ref, int * exception) {
+
+  int str_value = 0;
+  int str_count = 0;
+  char str_val[255];
+
+  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
+  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+
+  // TODO check if str_count > 255
+
+  for(int i = 0; i < str_count; i++){
+    str_val[i] = char__array_get(gc_info, str_value, i, exception);
+  }
+  str_val[str_count] = '\0';
+
+  // printf("java_lang_Double_parseDouble str: '%s'\n", str_val);
+  double double_val = at_illecker_string_to_double(str_val);
+  // printf("java_lang_Double_parseDouble double: '%f'\n", double_val);
+
+  return double_val;
+}
+
 /* Hama Peer private methods */
 // stringLength
 $$__device__$$
