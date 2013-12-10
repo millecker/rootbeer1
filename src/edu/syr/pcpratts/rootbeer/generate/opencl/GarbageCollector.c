@@ -1229,7 +1229,192 @@ int java_lang_Float_toString9_7_(char * gc_info, float parameter0, int * excepti
   return java_lang_StringBuilder_toString9_(gc_info, string_builder, exception);
 }
 
-/* Parsing methods */
+/*****************************************************************************/
+/* valueOf methods */
+$$__device__$$
+int java_lang_Integer_valueOf(char * gc_info, int int_value, int * exception) {
+  int return_obj = -1;
+  
+  edu_syr_pcpratts_gc_assign (gc_info, 
+    &return_obj, java_lang_Integer_initab850b60f96d11de8a390800200c9a660_5_(gc_info,
+    int_value , exception));
+  
+  if(*exception != 0) {
+    return 0; 
+  }
+  return return_obj;
+}
+
+/*****************************************************************************/
+// Returns the amount of occurrences of substring in string
+// If no matches were found, the function returns 0
+$$__device__$$
+int at_illecker_strcnt(char * gc_info, int str_value, int str_count, 
+                       int sub_str_value, int sub_str_count, int * exception) {
+  int occurrences = 0;
+
+  if ( (str_count == 0) || (sub_str_count == 0) ) {
+    return 0;
+  }
+
+  for (int i = 0; i < str_count; i++) {
+    if (char__array_get(gc_info, str_value, i, exception) != 
+        char__array_get(gc_info, sub_str_value, 0, exception)) {
+      continue;
+    }
+    bool found_sub_string = true;
+    for (int j = 1; j < sub_str_count; j++) {
+      i++;
+      if (char__array_get(gc_info, str_value, i, exception) != 
+          char__array_get(gc_info, sub_str_value, j, exception)) {
+        found_sub_string = false;
+        break;
+      }
+    }
+    if (found_sub_string) {
+      occurrences++;
+    }
+  }
+  return occurrences;
+}
+
+// Returns the position of the first character of the first match.
+// If no matches were found, the function returns -1
+$$__device__$$
+int at_illecker_strpos(char * gc_info, int str_value, int str_count, 
+                       int sub_str_value, int sub_str_count, 
+                       int start_pos, int * exception) {
+
+  if ( (str_count == 0) || (sub_str_count == 0) || 
+       (start_pos > str_count)) {
+    return -1;
+  }
+
+  for (int i = start_pos; i < str_count; i++) {
+    if (char__array_get(gc_info, str_value, i, exception) != 
+        char__array_get(gc_info, sub_str_value, 0, exception)) {
+      continue;
+    }
+    int found_pos = i;
+    int found_sub_string = true;
+    for (int j = 1; j < sub_str_count; j++) {
+      i++;
+      if (char__array_get(gc_info, str_value, i, exception) != 
+          char__array_get(gc_info, sub_str_value, j, exception)) {
+        found_sub_string = false;
+        break;
+      }
+    }
+    if (found_sub_string) {
+      return found_pos;
+    }
+  }
+  return -1;
+}
+
+// Returns String[] of splits
+$$__device__$$
+int at_illecker_split(char * gc_info, int str_value, int str_count, 
+                      int delim_str_value, int delim_str_count,
+                      int delim_occurrences, int * exception) {
+  int return_obj = -1;
+  int start = 0;
+  int end = 0;
+  int len = 0;
+  int substring_pos = 0;
+  int new_string = -1;
+
+  printf("at_illecker_split: delim_occurrences: %d\n", delim_occurrences);
+
+  return_obj = java_lang_String__array_new(gc_info, delim_occurrences+1, exception);
+
+  for (int i = 0; i < delim_occurrences; i++) {
+    end = at_illecker_strpos(gc_info, str_value, str_count, 
+                  delim_str_value, delim_str_count, start, exception);
+
+    if (end == -1) {
+      break;
+    }
+
+    // add token
+    // substring(start, end - start)
+    len = end - start;
+    substring_pos = start;
+    
+    new_string = char__array_new(gc_info, len, exception);
+    for(int j = 0; j < len; j++) {      
+      char__array_set(gc_info, new_string, j, char__array_get(gc_info, str_value, substring_pos, exception), exception);
+      substring_pos++;
+    }
+    java_lang_String__array_set(gc_info, return_obj, i,
+      java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, new_string, exception), exception);
+
+    // Exclude the delimiter in the next search
+    start = end + delim_str_count;
+  }
+
+  // add last token
+  if ( (delim_occurrences > 0) && (end != -1) ) {
+
+    //substring(start, END_OF_STRING)
+    len = str_count - start;
+    substring_pos = start;
+
+    new_string = char__array_new(gc_info, len, exception);
+    for(int j = 0; j < len; j++) {      
+      char__array_set(gc_info, new_string, j, char__array_get(gc_info, str_value, substring_pos, exception), exception);
+      substring_pos++;
+    }
+    java_lang_String__array_set(gc_info, return_obj, delim_occurrences,
+      java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, new_string, exception), exception);
+  }
+
+  return return_obj;
+}
+
+/* java_lang_String_split(String,int) method */
+$$__device__$$
+int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_ref, int limit, int * exception) {
+
+  int str_value = 0;
+  int str_count = 0;
+  int delim_str_value = 0;
+  int delim_str_count = 0;
+  
+  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
+  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+  delim_str_value = instance_getter_java_lang_String_value(gc_info, delim_str_obj_ref, exception);
+  delim_str_count = instance_getter_java_lang_String_count(gc_info, delim_str_obj_ref, exception);
+
+  printf("java_lang_String_split: limit: %d\n", limit);
+
+  return at_illecker_split(gc_info, str_value, str_count, delim_str_value, delim_str_count, limit-1, exception);
+}
+
+/* java_lang_String_split(String) method */
+$$__device__$$
+int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_ref, int * exception) {
+  int occurrences = 0;
+  int str_value = 0;
+  int str_count = 0;
+  int delim_str_value = 0;
+  int delim_str_count = 0;
+  
+  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
+  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+  delim_str_value = instance_getter_java_lang_String_value(gc_info, delim_str_obj_ref, exception);
+  delim_str_count = instance_getter_java_lang_String_count(gc_info, delim_str_obj_ref, exception);
+ 
+  occurrences = at_illecker_strcnt(gc_info, str_value, str_count, 
+                  delim_str_value, delim_str_count, exception);
+
+  printf("java_lang_String_split: occurrences: %d\n", occurrences);
+
+  return at_illecker_split(gc_info, str_value, str_count, delim_str_value, delim_str_count, occurrences, exception);
+}
+
+/*****************************************************************************/
+/* parsing methods */
 $$__device__$$
 bool at_illecker_is_digit(unsigned char c) {
   return ((c)>='0' && (c)<='9');
@@ -1242,7 +1427,7 @@ bool at_illecker_is_space(unsigned char c) {
 
 // http://www.opensource.apple.com/source/tcl/tcl-14/tcl/compat/strtod.c
 $$__device__$$
-double at_illecker_string_to_double(const char *string) {
+double at_illecker_strtod(const char *string) {
   int sign = 0; // FALSE
   int expSign = 0; // FALSE
   double fraction, dblExp, *d;
@@ -1424,12 +1609,13 @@ double java_lang_Double_parseDouble(char * gc_info,  int str_obj_ref, int * exce
   str_val[str_count] = '\0';
 
   // printf("java_lang_Double_parseDouble str: '%s'\n", str_val);
-  double double_val = at_illecker_string_to_double(str_val);
+  double double_val = at_illecker_strtod(str_val);
   // printf("java_lang_Double_parseDouble double: '%f'\n", double_val);
 
   return double_val;
 }
 
+/*****************************************************************************/
 /* Hama Peer private methods */
 // stringLength
 $$__device__$$

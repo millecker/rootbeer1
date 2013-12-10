@@ -110,6 +110,10 @@ public class DontDfsMethods {
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileClose(int)>");
     // parsing methods
     m_methods.add("<java.lang.Double: double parseDouble(java.lang.String)>");
+    //m_methods.add("<java.lang.Integer: java.lang.Integer valueOf(int)>");
+    // split methods
+    m_methods.add("<java.lang.String: java.lang.String[] split(java.lang.String)>");
+    m_methods.add("<java.lang.String: java.lang.String[] split(java.lang.String,int)>");
   }
   
   public Set<String> get(){
