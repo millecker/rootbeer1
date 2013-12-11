@@ -1125,7 +1125,7 @@ public:
         host_device_interface->is_result_available = true;
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         break;
       }
 
@@ -1160,7 +1160,7 @@ public:
         host_device_interface->is_result_available = true;
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         printf("HostMonitor result was consumed\n");
         break;
       }
@@ -1178,7 +1178,7 @@ public:
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         printf("HostMonitor result was consumed\n");
         break;
       }
@@ -1197,7 +1197,7 @@ public:
         host_device_interface->is_result_available = true;
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         break;
       }
 
@@ -1214,7 +1214,7 @@ public:
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         printf("HostMonitor result was consumed\n");
         break;
       }
@@ -1252,7 +1252,7 @@ public:
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         printf("HostMonitor result was consumed\n");
         break;
       }
@@ -1270,7 +1270,7 @@ public:
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         printf("HostMonitor result was consumed\n");
         break;
       }
@@ -1289,7 +1289,7 @@ public:
         host_device_interface->is_result_available = true;
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         break;
       }
 
@@ -1307,7 +1307,7 @@ public:
         host_device_interface->is_result_available = true;
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         break;
       }
 
@@ -1714,7 +1714,7 @@ public:
         host_device_interface->is_result_available = true;
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         printf("HostMonitor result was consumed\n");
         break;
       }
@@ -2120,7 +2120,7 @@ public:
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         printf("HostMonitor result was consumed\n");
         break;
       }
@@ -2144,7 +2144,7 @@ public:
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         printf("HostMonitor result was consumed\n");
         break;
       }
@@ -2162,7 +2162,7 @@ public:
                (host_device_interface->is_result_available) ? "true" : "false");
 
         // block until result was consumed
-	while (host_device_interface->is_result_available) {}
+        while (host_device_interface->is_result_available) {}
         printf("HostMonitor result was consumed\n");
         break;
       }
