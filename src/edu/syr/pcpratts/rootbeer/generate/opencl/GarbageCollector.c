@@ -1174,8 +1174,44 @@ int java_lang_StringBuilder_toString9_(char * gc_info, int thisref,
 }
 
 /*****************************************************************************/
+/* local methods */
+
+// string length using volatile argument
+$$__device__$$
+int at_illecker_strlen(volatile char * str_constant) {
+  int ret = 0;
+  while(1) {
+    if(str_constant[ret] != '\0') {
+      ret++;
+    } else {
+      return ret;
+    }
+  }
+}
+
+// char* to String using volatile argument
+$$__device__$$
+int at_illecker_string_constant(char * gc_info, volatile char * str_constant, int * exception) {
+  if (str_constant == 0) {
+    return 0;
+  }
+  int i;
+  int len = at_illecker_strlen(str_constant);
+  int characters = char__array_new(gc_info, len, exception);
+  
+  printf("at_illecker_string_constant str: '"); 
+  for(i = 0; i < len; ++i) {
+    char__array_set(gc_info, characters, i, str_constant[i], exception);
+    printf("%c",str_constant[i]);
+  }
+  printf("'\n");  
+
+  // make new String
+  return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
+}
+
+/*****************************************************************************/
 /* toString methods */
-// http://www.opensource.apple.com/source/srm/srm-6/srm/lib/snprintf.c
 
 $$__device__$$
 double at_illecker_abs_val(double value) {
@@ -1208,14 +1244,16 @@ long at_illecker_round(double value) {
 }
 
 $$__device__$$
-void at_illecker_setChar(char * gc_info, int str_obj, int *currlen, int maxlen, char c, int * exception) {
+void at_illecker_set_char(char *buffer, int *currlen, int maxlen, char c) {
   if (*currlen < maxlen) {
-    char__array_set(gc_info, str_obj, (*currlen)++, c, exception);
+    buffer[(*currlen)++] = c;
   }
 }
 
+// local double to string method
+// http://www.opensource.apple.com/source/srm/srm-6/srm/lib/snprintf.c
 $$__device__$$
-int at_illecker_doubleToString(char * gc_info, double fvalue, int max, int * exception) {
+int at_illecker_double_to_string(char * gc_info, double fvalue, int max, int * exception) {
   int signvalue = 0;
   double ufvalue;
   long intpart;
@@ -1226,14 +1264,12 @@ int at_illecker_doubleToString(char * gc_info, double fvalue, int max, int * exc
   int fplace = 0;
   int zpadlen = 0; // lasting zeros
 
-  int new_string = -1;
-  int currlen = 0;
+  char buffer[64];
   int maxlen = 64;
+  int currlen = 0;
 
   // DEBUG
   // printf("at_illecker_doubleToString: fvalue: %f max: %d\n", fvalue, max);
-
-  new_string = char__array_new(gc_info, maxlen, exception);
 
   // Max digits after decimal point, default is 6
   if (max < 0) {
@@ -1298,12 +1334,12 @@ int at_illecker_doubleToString(char * gc_info, double fvalue, int max, int * exc
 
   // Set sign
   if (signvalue) {
-    at_illecker_setChar(gc_info, new_string, &currlen, maxlen, signvalue, exception);
+    at_illecker_set_char(buffer, &currlen, maxlen, signvalue);
   }
 
   // Set integer part
   while (iplace > 0) {
-    at_illecker_setChar(gc_info, new_string, &currlen, maxlen, iconvert[--iplace], exception);
+    at_illecker_set_char(buffer, &currlen, maxlen, iconvert[--iplace]);
   }
 
   // Check if decimal point is needed
@@ -1311,27 +1347,27 @@ int at_illecker_doubleToString(char * gc_info, double fvalue, int max, int * exc
     // Set decimal point
     // This should probably use locale to find the correct
     // char to print out.
-    at_illecker_setChar(gc_info, new_string, &currlen, maxlen, '.', exception);
+    at_illecker_set_char(buffer, &currlen, maxlen, '.');
 
     while (fplace > 0) {
-      at_illecker_setChar(gc_info, new_string, &currlen, maxlen, fconvert[--fplace], exception);
+      at_illecker_set_char(buffer, &currlen, maxlen, fconvert[--fplace]);
     }
   }
 
   // Add lasting zeros
   while (zpadlen > 0) {
-    at_illecker_setChar(gc_info, new_string, &currlen, maxlen, '0', exception);
+    at_illecker_set_char(buffer, &currlen, maxlen, '0');
     --zpadlen;
   }
 
   // Terminate string
-  if (currlen < maxlen - 1) { 
-    char__array_set(gc_info, new_string, (currlen), '\0', exception);
+  if (currlen < maxlen - 1) {
+    buffer[currlen] = '\0';
   } else {
-    char__array_set(gc_info, new_string, (maxlen - 1), '\0', exception);
+    buffer[maxlen - 1] = '\0';
   }
 
-  return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, new_string, exception);
+  return at_illecker_string_constant(gc_info, buffer, exception);
 }
 
 //<java.lang.Double: java.lang.String toString(double)>
@@ -1339,7 +1375,7 @@ $$__device__$$
 int java_lang_Double_toString9_8_(char * gc_info, double double_val, int * exception) {
 
   // Default is 6 digits after decimal point
-  return at_illecker_doubleToString(gc_info, double_val, 6, exception);
+  return at_illecker_double_to_string(gc_info, double_val, 6, exception);
 }
 
 //<java.lang.Float: java.lang.String toString(float)>
@@ -1347,10 +1383,12 @@ $$__device__$$
 int java_lang_Float_toString9_7_(char * gc_info, float float_val, int * exception){
 
   // Default is 6 digits after decimal point
-  return at_illecker_doubleToString(gc_info, (double)float_val, 6, exception);
+  return at_illecker_double_to_string(gc_info, (double)float_val, 6, exception);
 }
 /*****************************************************************************/
 /* valueOf methods */
+
+//<java.lang.Integer: java.lang.Integer valueOf(int)>
 $$__device__$$
 int java_lang_Integer_valueOf(char * gc_info, int int_value, int * exception) {
   int return_obj = -1;
@@ -1366,6 +1404,8 @@ int java_lang_Integer_valueOf(char * gc_info, int int_value, int * exception) {
 }
 
 /*****************************************************************************/
+/* String.split methods */
+
 // Returns the amount of occurrences of substring in string
 // If no matches were found, the function returns 0
 $$__device__$$
@@ -1495,7 +1535,7 @@ int at_illecker_split(char * gc_info, int str_value, int str_count,
   return return_obj;
 }
 
-/* java_lang_String_split(String,int) method */
+//<java.lang.String: java.lang.String[] split(java.lang.String,int)>
 $$__device__$$
 int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_ref, int limit, int * exception) {
 
@@ -1514,7 +1554,7 @@ int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_re
   return at_illecker_split(gc_info, str_value, str_count, delim_str_value, delim_str_count, limit-1, exception);
 }
 
-/* java_lang_String_split(String) method */
+//<java.lang.String: java.lang.String[] split(java.lang.String)>
 $$__device__$$
 int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_ref, int * exception) {
   int occurrences = 0;
@@ -1548,6 +1588,7 @@ bool at_illecker_is_space(unsigned char c) {
   return ((c)==' ' || (c)=='\f' || (c)=='\n' || (c)=='\r' || (c)=='\t' || (c)=='\v');
 }
 
+// local string to double method
 // http://www.opensource.apple.com/source/tcl/tcl-14/tcl/compat/strtod.c
 $$__device__$$
 double at_illecker_strtod(const char *string) {
@@ -1714,8 +1755,9 @@ done:
 }
 
 
+//<java.lang.Double: double parseDouble(java.lang.String)>
 $$__device__$$
-double java_lang_Double_parseDouble(char * gc_info,  int str_obj_ref, int * exception) {
+double java_lang_Double_parseDouble(char * gc_info, int str_obj_ref, int * exception) {
 
   int str_value = 0;
   int str_count = 0;
@@ -1739,40 +1781,7 @@ double java_lang_Double_parseDouble(char * gc_info,  int str_obj_ref, int * exce
 }
 
 /*****************************************************************************/
-/* Hama Peer private methods */
-// stringLength
-$$__device__$$
-int at_illecker_strlen(volatile char * str_constant) {
-  int ret = 0;
-  while(1) {
-    if(str_constant[ret] != '\0') {
-      ret++;
-    } else {
-      return ret;
-    }
-  }
-}
-
-// char* to String
-$$__device__$$
-int at_illecker_string_constant(char * gc_info, volatile char * str_constant, int * exception) {
-  if (str_constant == 0) {
-    return 0;
-  }
-  int i;
-  int len = at_illecker_strlen(str_constant);
-  int characters = char__array_new(gc_info, len, exception);
-  
-  printf("at_illecker_string_constant str: '"); 
-  for(i = 0; i < len; ++i) {
-    char__array_set(gc_info, characters, i, str_constant[i], exception);
-    printf("%c",str_constant[i]);
-  }
-  printf("'\n");  
-
-  // make new String
-  return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
-}
+/* local typeof methods */
 
 // typeof_Integer
 __device__ bool at_illecker_typeof_Integer(char * gc_info, int thisref){
@@ -1848,7 +1857,10 @@ __device__ bool at_illecker_typeof_String(char * gc_info, int thisref){
   return false;
 }
 
+/*****************************************************************************/
 // getResult
+// is used to communicate with the host (HostMonitor) via pinned memory
+// object HostDeviceInterface and fetches results
 template<class T>
 $$__device__$$
 T at_illecker_getResult($$__global$$ char * gc_info, 
@@ -2195,10 +2207,11 @@ T at_illecker_getResult($$__global$$ char * gc_info,
   return return_value;
 }
 
+/*****************************************************************************/
 /* Hama Peer public methods */
 
 // HamaPeer.send
-// public static void send(String peerName, Object message)
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void send(String peerName, Object message)>
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info,
      int peer_name_str_ref, int message_obj_ref, int * exception) {
@@ -2265,7 +2278,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info
 }
 
 // HamaPeer.getCurrentIntMessage
-// public static String getCurrentIntMessage()
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getCurrentIntMessage()>
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentIntMessage($$__global$$ char * gc_info, 
     int * exception) {
@@ -2289,7 +2302,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentIntMessage($$__global$$
 }
 
 // HamaPeer.getCurrentLongMessage
-// public static String getCurrentLongMessage()
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: long getCurrentLongMessage()>
 $$__device__$$
 long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentLongMessage($$__global$$ char * gc_info, 
     int * exception) {
@@ -2313,7 +2326,7 @@ long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentLongMessage($$__global
 }
 
 // HamaPeer.getCurrentFloatMessage
-// public static String getCurrentFloatMessage()
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: float getCurrentFloatMessage()>
 $$__device__$$
 float edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentFloatMessage($$__global$$ char * gc_info, 
     int * exception) {
@@ -2337,7 +2350,7 @@ float edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentFloatMessage($$__glob
 }
 
 // HamaPeer.getCurrentDoubleMessage
-// public static String getCurrentDoubleMessage()
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: double getCurrentDoubleMessage()>
 $$__device__$$
 double edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentDoubleMessage($$__global$$ char * gc_info, 
     int * exception) {
@@ -2361,7 +2374,7 @@ double edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentDoubleMessage($$__gl
 }
 
 // HamaPeer.getCurrentStringMessage
-// public static String getCurrentStringMessage()
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: String getCurrentStringMessage()>
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentStringMessage($$__global$$ char * gc_info, 
     int * exception) {
@@ -2385,7 +2398,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getCurrentStringMessage($$__globa
 }
 
 // HamaPeer.getNumCurrentMessages
-// public static int getNumCurrentMessages()
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getNumCurrentMessages()>
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$$ char * gc_info, 
     int * exception) {
@@ -2409,7 +2422,8 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$
 }
 
 // HamaPeer.sync
-// public static void sync()
+// This method blocks.
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void sync()>
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sync($$__global$$ char * gc_info, 
      int * exception) {
@@ -2433,7 +2447,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sync($$__global$$ char * gc_info
 }
 
 // HamaPeer.getSuperstepCount
-// public static long getSuperstepCount()
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: long getSuperstepCount()>
 $$__device__$$
 long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getSuperstepCount($$__global$$ char * gc_info, 
     int * exception) {
@@ -2457,7 +2471,8 @@ long edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getSuperstepCount($$__global$$ c
 }
 
 // HamaPeer.getPeerName
-// public static String getPeerName()
+// Returns own PeerName
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: String getPeerName()>
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * gc_info, 
     int * exception) {
@@ -2465,7 +2480,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_PEERNAME, 
            HostDeviceInterface::STRING, true, // expecting string return value
            0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           -1, true,
+           -1, true, // -1 for own peername
            0, false,
            0, false,
            0, false,
@@ -2481,7 +2496,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
 }
 
 // HamaPeer.getPeerName
-// public static String getPeerName(int index)
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: String getPeerName(int index)>
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * gc_info, 
     int index, int * exception) {
@@ -2505,7 +2520,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * g
 }
 
 // HamaPeer.getPeerIndex
-// public static int getPeerIndex()
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getPeerIndex()>
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerIndex($$__global$$ char * gc_info, 
     int * exception) {
@@ -2529,7 +2544,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getPeerIndex($$__global$$ char * 
 }
 
 // HamaPeer.getAllPeerNames
-// public static String[] getAllPeerNames()
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: String[] getAllPeerNames()>
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getAllPeerNames($$__global$$ char * gc_info, 
     int * exception) {
@@ -2539,7 +2554,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getAllPeerNames($$__global$$ char
 }
 
 // HamaPeer.getNumPeers
-// public static int getNumPeers()
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getNumPeers()>
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumPeers($$__global$$ char * gc_info, 
     int * exception) {
@@ -2563,7 +2578,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getNumPeers($$__global$$ char * g
 }
 
 // HamaPeer.clear
-// public static void clear()
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void clear()>
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_clear($$__global$$ char * gc_info, 
      int * exception) {
@@ -2587,7 +2602,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_clear($$__global$$ char * gc_inf
 }
 
 // HamaPeer.reopenInput
-// public static void reopenInput() {
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void reopenInput()>
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_reopenInput($$__global$$ char * gc_info, 
      int * exception) {
@@ -2611,7 +2626,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_reopenInput($$__global$$ char * 
 }
 
 // HamaPeer.readNext
-// public static boolean readNext(KeyValuePair key_value_pair)
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean readNext(KeyValuePair key_value_pair)>
 $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_info, 
      int key_value_pair_ref, int * exception) {
@@ -2679,7 +2694,7 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_
 }
 
 // HamaPeer.write
-// public static void write(Object key, Object value)
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean write(Object key, Object value)>
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info, 
      int key_obj_ref, int value_obj_ref, int * exception) {
@@ -2777,7 +2792,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
 }
 
 // HamaPeer.sequenceFileReadNext
-// public static boolean sequenceFileReadNext(int file_id, KeyValuePair key_value_pair)
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileReadNext(int file_id, KeyValuePair key_value_pair)>
 $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$$ char * gc_info, 
      int file_id, int key_value_pair_ref, int * exception) {
@@ -2845,7 +2860,7 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$
 }
 
 // HamaPeer.sequenceFileAppend
-// public static boolean sequenceFileAppend(int file_id, Object key, Object value)
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileAppend(int file_id, Object key, Object value)>
 $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char * gc_info, 
      int file_id, int key_obj_ref, int value_obj_ref, int * exception) {
@@ -2943,7 +2958,7 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ 
 }
 
 // HamaPeer.sequenceFileOpen
-// public static int sequenceFileOpen(String path, char option, String keyType, String valueType)
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int sequenceFileOpen(String path, char option, String keyType, String valueType)>
 $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileOpen($$__global$$ char * gc_info, 
      int path_str_ref, char option, 
@@ -2969,7 +2984,7 @@ int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileOpen($$__global$$ cha
 }
 
 // HamaPeer.sequenceFileClose
-// public static boolean sequenceFileClose(int file_id)
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileClose(int file_id)>
 $$__device__$$
 bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileClose($$__global$$ char * gc_info, 
      int file_id, int * exception) {
