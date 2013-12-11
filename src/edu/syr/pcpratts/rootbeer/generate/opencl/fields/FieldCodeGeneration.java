@@ -7,16 +7,21 @@
 
 package edu.syr.pcpratts.rootbeer.generate.opencl.fields;
 
+import edu.syr.pcpratts.rootbeer.entry.ForcedFields;
 import edu.syr.pcpratts.rootbeer.generate.bytecode.FieldReadWriteInspector;
 import edu.syr.pcpratts.rootbeer.generate.opencl.FieldPackingSorter;
 import edu.syr.pcpratts.rootbeer.generate.opencl.OpenCLClass;
 import edu.syr.pcpratts.rootbeer.generate.opencl.OpenCLScene;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import soot.SootClass;
+
+import soot.RefType;
+import soot.SootField;
+import soot.rbclassload.FieldSignatureUtil;
 
 public class FieldCodeGeneration {
   
@@ -30,6 +35,14 @@ public class FieldCodeGeneration {
     for(CompositeField field : fields){
       set.addAll(getFieldPrototypes(field));
     }
+    // Force fields to be generated
+    FieldSignatureUtil util = new FieldSignatureUtil();
+    for(String field_sig : new ForcedFields().get()){
+      util.parse(field_sig);
+      OpenCLClass field_class = classes.get(util.getDeclaringClass());
+      OpenCLField field = field_class.getField(util.getName());
+      set.add(field.getGetterSetterPrototypes());
+    }
     return setToString(set);
   }
   
@@ -40,6 +53,21 @@ public class FieldCodeGeneration {
     List<CompositeField> fields = OpenCLScene.v().getCompositeFields();
     for(CompositeField field : fields){
       set.addAll(getFieldBodies(field));
+    }
+    // Force fields to be generated
+    FieldSignatureUtil util = new FieldSignatureUtil();
+    for(String field_sig : new ForcedFields().get()){
+      util.parse(field_sig);
+      OpenCLClass field_class = classes.get(util.getDeclaringClass());
+      OpenCLField field = field_class.getField(util.getName());
+      CompositeField composite = new CompositeField();
+      SootField soot_field = util.getSootField();
+      if(soot_field.getType() instanceof RefType){
+        composite.addRefField(field, soot_field.getDeclaringClass());
+      } else {
+        composite.addNonRefField(field, soot_field.getDeclaringClass());
+      }
+      set.add(field.getGetterSetterBodies(composite, true, m_TypeSwitch));
     }
     return setToString(set);
   }
