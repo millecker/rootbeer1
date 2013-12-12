@@ -85,6 +85,7 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.StringValue: char[] 'from'(char[])>");
     m_methods.add("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int)>");
     m_methods.add("<java.lang.String: void <init>(char[])>");
+    
     // HamaPeer methods
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void send(java.lang.String,java.lang.Object)>");
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: int getCurrentIntMessage()>");
@@ -108,16 +109,23 @@ public class DontDfsMethods {
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileReadNext(int,edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");    
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileAppend(int,java.lang.Object,java.lang.Object)>");  
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileClose(int)>");
-    // parsing methods
+    
+    // String methods
+    m_methods.add("<java.lang.String: java.lang.String substring(int)>");
+    m_methods.add("<java.lang.String: java.lang.String substring(int,int)>");
+    m_methods.add("<java.lang.String: int indexOf(java.lang.String)>");
+    m_methods.add("<java.lang.String: int indexOf(java.lang.String,int)>");  
+    m_methods.add("<java.lang.String: java.lang.String[] split(java.lang.String)>");
+    m_methods.add("<java.lang.String: java.lang.String[] split(java.lang.String,int)>");
+
+    // Parse methods
     m_methods.add("<java.lang.Integer: int parseInt(java.lang.String)>");
     m_methods.add("<java.lang.Long: long parseLong(java.lang.String)>");
     m_methods.add("<java.lang.Float: float parseFloat(java.lang.String)>");
     m_methods.add("<java.lang.Double: double parseDouble(java.lang.String)>");
+    
     // valueOf methods
-    //m_methods.add("<java.lang.Integer: java.lang.Integer valueOf(int)>");
-    // split methods
-    m_methods.add("<java.lang.String: java.lang.String[] split(java.lang.String)>");
-    m_methods.add("<java.lang.String: java.lang.String[] split(java.lang.String,int)>");
+    //m_methods.add("<java.lang.Integer: java.lang.Integer valueOf(int)>"); // needs Integer constructor
   }
   
   public Set<String> get(){

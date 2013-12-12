@@ -1385,23 +1385,135 @@ int java_lang_Float_toString9_7_(char * gc_info, float float_val, int * exceptio
   // Default is 6 digits after decimal point
   return at_illecker_double_to_string(gc_info, (double)float_val, 6, exception);
 }
-/*****************************************************************************/
-/* valueOf methods */
 
-//<java.lang.Integer: java.lang.Integer valueOf(int)>
+/*****************************************************************************/
+/* String.indexOf methods */
+
+// Returns the position of the first character of the first match.
+// If no matches were found, the function returns -1
 $$__device__$$
-int java_lang_Integer_valueOf(char * gc_info, int int_value, int * exception) {
-  int return_obj = -1;
-  
-  edu_syr_pcpratts_gc_assign (gc_info, 
-    &return_obj, java_lang_Integer_initab850b60f96d11de8a390800200c9a660_5_(gc_info,
-    int_value , exception));
-  
-  if(*exception != 0) {
-    return 0; 
+int at_illecker_strpos(char * gc_info, int str_value, int str_count, 
+                       int sub_str_value, int sub_str_count, 
+                       int start_pos, int * exception) {
+
+  if ( (str_count == 0) || (sub_str_count == 0) || 
+       (start_pos > str_count)) {
+    return -1;
   }
-  return return_obj;
+
+  for (int i = start_pos; i < str_count; i++) {
+    if (char__array_get(gc_info, str_value, i, exception) != 
+        char__array_get(gc_info, sub_str_value, 0, exception)) {
+      continue;
+    }
+    int found_pos = i;
+    int found_sub_string = true;
+    for (int j = 1; j < sub_str_count; j++) {
+      i++;
+      if (char__array_get(gc_info, str_value, i, exception) != 
+          char__array_get(gc_info, sub_str_value, j, exception)) {
+        found_sub_string = false;
+        break;
+      }
+    }
+    if (found_sub_string) {
+      return found_pos;
+    }
+  }
+  return -1;
 }
+
+//<java.lang.String: int indexOf(java.lang.String)>
+$$__device__$$
+int java_lang_String_indexOf(char * gc_info, int str_obj_ref, 
+                             int search_str_obj_ref, int * exception) {
+  int str_value = 0;
+  int str_count = 0;
+  int search_str_value = 0;
+  int search_str_count = 0;
+  
+  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
+  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+  search_str_value = instance_getter_java_lang_String_value(gc_info, search_str_obj_ref, exception);
+  search_str_count = instance_getter_java_lang_String_count(gc_info, search_str_obj_ref, exception);
+
+  return at_illecker_strpos(gc_info, str_value, str_count, search_str_value, search_str_count, 0, exception);
+}
+
+//<java.lang.String: int indexOf(java.lang.String, int fromIndex)>
+$$__device__$$
+int java_lang_String_indexOf(char * gc_info, int str_obj_ref, 
+                             int search_str_obj_ref, int from_index, int * exception) {
+  int str_value = 0;
+  int str_count = 0;
+  int search_str_value = 0;
+  int search_str_count = 0;
+  
+  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
+  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+  search_str_value = instance_getter_java_lang_String_value(gc_info, search_str_obj_ref, exception);
+  search_str_count = instance_getter_java_lang_String_count(gc_info, search_str_obj_ref, exception);
+
+  return at_illecker_strpos(gc_info, str_value, str_count, search_str_value, search_str_count, from_index, exception);
+}
+
+/*****************************************************************************/
+/* String.substring methods */
+
+// Returns a substring from given start index
+$$__device__$$
+int at_illecker_substring(char * gc_info, int str_value, int str_count, 
+                       int begin_index, int end_index, int * exception) {
+  int new_length = 0;
+  int new_string = -1;
+
+  // set new length
+  if (end_index == -1) { // copy to end
+    new_length = str_count - begin_index;
+  } else {
+    if (end_index < str_count) {
+      new_length = end_index - begin_index;
+    } else {
+      new_length = str_count - begin_index;
+    }
+  }
+
+  new_length = str_count - begin_index;
+  new_string = char__array_new(gc_info, new_length, exception);
+
+  for(int i = 0; i < new_length; i++) {
+    char__array_set(gc_info, new_string, i, char__array_get(gc_info, str_value, begin_index, exception), exception);
+    begin_index++;
+  }
+
+  return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, new_string, exception);
+}
+
+//<java.lang.String: java.lang.String substring(int)>
+$$__device__$$
+int java_lang_String_substring(char * gc_info, int str_obj_ref, int begin_index, int * exception) {
+  int str_value = 0;
+  int str_count = 0;
+
+  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
+  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+
+  return at_illecker_substring(gc_info, str_value, str_count, begin_index, -1, exception);
+}
+
+//<java.lang.String: java.lang.String substring(int,int)>
+$$__device__$$
+int java_lang_String_substring(char * gc_info, int str_obj_ref, int begin_index, 
+                               int end_index, int * exception) {
+  int str_value = 0;
+  int str_count = 0;
+
+  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
+  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+
+  return at_illecker_substring(gc_info, str_value, str_count, begin_index, end_index, exception);
+}
+
 
 /*****************************************************************************/
 /* String.split methods */
@@ -1438,41 +1550,7 @@ int at_illecker_strcnt(char * gc_info, int str_value, int str_count,
   return occurrences;
 }
 
-// Returns the position of the first character of the first match.
-// If no matches were found, the function returns -1
-$$__device__$$
-int at_illecker_strpos(char * gc_info, int str_value, int str_count, 
-                       int sub_str_value, int sub_str_count, 
-                       int start_pos, int * exception) {
-
-  if ( (str_count == 0) || (sub_str_count == 0) || 
-       (start_pos > str_count)) {
-    return -1;
-  }
-
-  for (int i = start_pos; i < str_count; i++) {
-    if (char__array_get(gc_info, str_value, i, exception) != 
-        char__array_get(gc_info, sub_str_value, 0, exception)) {
-      continue;
-    }
-    int found_pos = i;
-    int found_sub_string = true;
-    for (int j = 1; j < sub_str_count; j++) {
-      i++;
-      if (char__array_get(gc_info, str_value, i, exception) != 
-          char__array_get(gc_info, sub_str_value, j, exception)) {
-        found_sub_string = false;
-        break;
-      }
-    }
-    if (found_sub_string) {
-      return found_pos;
-    }
-  }
-  return -1;
-}
-
-// Returns String[] of splits
+// local split method
 $$__device__$$
 int at_illecker_split(char * gc_info, int str_value, int str_count, 
                       int delim_str_value, int delim_str_count,
@@ -1480,34 +1558,23 @@ int at_illecker_split(char * gc_info, int str_value, int str_count,
   int return_obj = -1;
   int start = 0;
   int end = 0;
-  int len = 0;
-  int substring_pos = 0;
-  int new_string = -1;
 
   printf("at_illecker_split: delim_occurrences: %d\n", delim_occurrences);
 
-  return_obj = java_lang_String__array_new(gc_info, delim_occurrences+1, exception);
+  return_obj = java_lang_String__array_new(gc_info, delim_occurrences + 1, exception);
 
   for (int i = 0; i < delim_occurrences; i++) {
     end = at_illecker_strpos(gc_info, str_value, str_count, 
-                  delim_str_value, delim_str_count, start, exception);
+                             delim_str_value, delim_str_count, start, exception);
 
     if (end == -1) {
       break;
     }
 
     // add token
-    // substring(start, end - start)
-    len = end - start;
-    substring_pos = start;
-    
-    new_string = char__array_new(gc_info, len, exception);
-    for(int j = 0; j < len; j++) {      
-      char__array_set(gc_info, new_string, j, char__array_get(gc_info, str_value, substring_pos, exception), exception);
-      substring_pos++;
-    }
+    // TODO substring(start, end - start)
     java_lang_String__array_set(gc_info, return_obj, i,
-      java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, new_string, exception), exception);
+      at_illecker_substring(gc_info, str_value, str_count, start, end, exception), exception);
 
     // Exclude the delimiter in the next search
     start = end + delim_str_count;
@@ -1516,17 +1583,9 @@ int at_illecker_split(char * gc_info, int str_value, int str_count,
   // add last token
   if ( (delim_occurrences > 0) && (end != -1) ) {
 
-    //substring(start, END_OF_STRING)
-    len = str_count - start;
-    substring_pos = start;
-
-    new_string = char__array_new(gc_info, len, exception);
-    for(int j = 0; j < len; j++) {      
-      char__array_set(gc_info, new_string, j, char__array_get(gc_info, str_value, substring_pos, exception), exception);
-      substring_pos++;
-    }
+    // TODO substring(start, END_OF_STRING)
     java_lang_String__array_set(gc_info, return_obj, delim_occurrences,
-      java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, new_string, exception), exception);
+      at_illecker_substring(gc_info, str_value, str_count, start, -1, exception), exception);
   }
 
   //TODO if delim_occurrences > current delimiters -> add emtpy string
@@ -1538,7 +1597,6 @@ int at_illecker_split(char * gc_info, int str_value, int str_count,
 //<java.lang.String: java.lang.String[] split(java.lang.String,int)>
 $$__device__$$
 int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_ref, int limit, int * exception) {
-
   int str_value = 0;
   int str_count = 0;
   int delim_str_value = 0;
@@ -1577,7 +1635,25 @@ int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_re
 }
 
 /*****************************************************************************/
-/* parsing methods */
+/* valueOf methods */
+
+//<java.lang.Integer: java.lang.Integer valueOf(int)>
+$$__device__$$
+int java_lang_Integer_valueOf(char * gc_info, int int_value, int * exception) {
+  int return_obj = -1;
+  
+  edu_syr_pcpratts_gc_assign (gc_info, 
+    &return_obj, java_lang_Integer_initab850b60f96d11de8a390800200c9a660_5_(gc_info,
+    int_value , exception));
+  
+  if(*exception != 0) {
+    return 0; 
+  }
+  return return_obj;
+}
+
+/*****************************************************************************/
+/* Parse methods */
 $$__device__$$
 bool at_illecker_is_digit(unsigned char c) {
   return ((c)>='0' && (c)<='9');
