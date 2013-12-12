@@ -1477,8 +1477,8 @@ int at_illecker_substring(char * gc_info, int str_value, int str_count,
       new_length = str_count - begin_index;
     }
   }
-
-  new_length = str_count - begin_index;
+ 
+  // printf("at_illecker_substring begin_index: %d, end_index: %d, new_length: %d\n", begin_index, end_index, new_length);
   new_string = char__array_new(gc_info, new_length, exception);
 
   for(int i = 0; i < new_length; i++) {
