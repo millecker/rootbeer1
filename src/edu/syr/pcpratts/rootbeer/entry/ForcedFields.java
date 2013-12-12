@@ -12,12 +12,18 @@ import java.util.List;
 
 public class ForcedFields {
   
+  private static ForcedFields m_instance = new ForcedFields();
   private List<String> m_fields;
   
-  public ForcedFields(){
+  // private constructor for singleton
+  private ForcedFields(){
     m_fields = new ArrayList<String>();
     m_fields.add("<edu.syr.pcpratts.rootbeer.runtime.KeyValuePair: java.lang.Object m_key>");
     m_fields.add("<edu.syr.pcpratts.rootbeer.runtime.KeyValuePair: java.lang.Object m_value>");
+  }
+  
+  public static ForcedFields getInstance() {
+    return m_instance;
   }
   
   public List<String> get(){

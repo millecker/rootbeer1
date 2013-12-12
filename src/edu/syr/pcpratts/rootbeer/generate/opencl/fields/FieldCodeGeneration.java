@@ -37,11 +37,19 @@ public class FieldCodeGeneration {
     }
     // Force fields to be generated
     FieldSignatureUtil util = new FieldSignatureUtil();
-    for(String field_sig : new ForcedFields().get()){
-      util.parse(field_sig);
+    Iterator<String> it = ForcedFields.getInstance().get().iterator();
+    while (it.hasNext()){
+      util.parse(it.next());
       OpenCLClass field_class = classes.get(util.getDeclaringClass());
       OpenCLField field = field_class.getField(util.getName());
-      set.add(field.getGetterSetterPrototypes());
+      String prototype = field.getGetterSetterPrototypes();
+      if (!set.contains(prototype)) {
+        set.add(prototype);
+      } else {
+        // remove item from m_ForcedFields, because it was already added
+        // this will skip generating duplicate bodies
+        it.remove();
+      }
     }
     return setToString(set);
   }
@@ -56,7 +64,7 @@ public class FieldCodeGeneration {
     }
     // Force fields to be generated
     FieldSignatureUtil util = new FieldSignatureUtil();
-    for(String field_sig : new ForcedFields().get()){
+    for(String field_sig : ForcedFields.getInstance().get()){
       util.parse(field_sig);
       OpenCLClass field_class = classes.get(util.getDeclaringClass());
       OpenCLField field = field_class.getField(util.getName());
@@ -67,6 +75,7 @@ public class FieldCodeGeneration {
       } else {
         composite.addNonRefField(field, soot_field.getDeclaringClass());
       }
+      System.out.println("ForcedFields addBody: "+field.getGetterSetterBodies(composite, true, m_TypeSwitch));
       set.add(field.getGetterSetterBodies(composite, true, m_TypeSwitch));
     }
     return setToString(set);
