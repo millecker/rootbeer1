@@ -1588,6 +1588,227 @@ bool at_illecker_is_space(unsigned char c) {
   return ((c)==' ' || (c)=='\f' || (c)=='\n' || (c)=='\r' || (c)=='\t' || (c)=='\v');
 }
 
+// local string to unsigned long method
+// http://www.opensource.apple.com/source/tcl/tcl-14/tcl/compat/strtoul.c
+//
+/* Argument1: String of ASCII digits, possibly
+ * preceded by white space.  For bases
+ * greater than 10, either lower- or
+ * upper-case digits may be used.
+ */
+/* Argument2: Where to store address of terminating
+ * character, or NULL.
+ */
+/* Argument3: Base for conversion.  Must be less
+ * than 37.  If 0, then the base is chosen
+ * from the leading characters of string:
+ * "0x" means hex, "0" means octal, anything
+ * else means decimal.
+ */
+$$__device__$$
+unsigned long int at_illecker_strtoul(const char *string, char **end_ptr, int base) {
+  register const char *p;
+  register unsigned long int result = 0;
+  register unsigned digit;
+  int anyDigits = 0;
+  int negative=0;
+  int overflow=0;
+
+  char cvtIn[] = {
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,		/* '0' - '9' */
+    100, 100, 100, 100, 100, 100, 100,		/* punctuation */
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19,	/* 'A' - 'Z' */
+    20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+    30, 31, 32, 33, 34, 35,
+    100, 100, 100, 100, 100, 100,		/* punctuation */
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19,	/* 'a' - 'z' */
+    20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+    30, 31, 32, 33, 34, 35
+  };
+
+  // Skip any leading blanks.
+  p = string;
+  while (at_illecker_is_space((unsigned char) (*p))) {
+    p += 1;
+  }
+  // Check for a sign.
+  if (*p == '-') {
+    negative = 1;
+    p += 1;
+  } else {
+    if (*p == '+') {
+      p += 1;
+    }
+  }
+
+  // If no base was provided, pick one from the leading characters
+  // of the string.
+  if (base == 0) {
+    if (*p == '0') {
+      p += 1;
+      if ((*p == 'x') || (*p == 'X')) {
+        p += 1;
+        base = 16;
+      } else {
+        // Must set anyDigits here, otherwise "0" produces a
+        // "no digits" error.
+        anyDigits = 1;
+        base = 8;
+      }
+    } else {
+      base = 10;
+    }
+  } else if (base == 16) {
+    // Skip a leading "0x" from hex numbers.
+    if ((p[0] == '0') && ((p[1] == 'x') || (p[1] == 'X'))) {
+      p += 2;
+    }
+  }
+
+  // Sorry this code is so messy, but speed seems important. Do
+  // different things for base 8, 10, 16, and other.
+  if (base == 8) {
+    unsigned long maxres = 0xFFFFFFFFUL >> 3; // ULONG_MAX = 0xFFFFFFFFUL
+    for ( ; ; p += 1) {
+      digit = *p - '0';
+      if (digit > 7) {
+        break;
+      }
+      if (result > maxres) { 
+        overflow = 1;
+      }
+      result = (result << 3);
+      if (digit > (0xFFFFFFFFUL - result)) { 
+        overflow = 1;
+      }
+      result += digit;
+      anyDigits = 1;
+    }
+  } else if (base == 10) {
+    unsigned long maxres = 0xFFFFFFFFUL / 10; // ULONG_MAX = 0xFFFFFFFFUL
+    for ( ; ; p += 1) {
+      digit = *p - '0';
+      if (digit > 9) {
+        break;
+      }
+      if (result > maxres) { 
+        overflow = 1;
+      }
+      result *= 10;
+      if (digit > (0xFFFFFFFFUL - result)) { 
+        overflow = 1;
+      }
+      result += digit;
+      anyDigits = 1;
+    }
+  } else if (base == 16) {
+    unsigned long maxres = 0xFFFFFFFFUL >> 4;
+    for ( ; ; p += 1) {
+      digit = *p - '0';
+      if (digit > ('z' - '0')) {
+        break;
+      }
+      digit = cvtIn[digit];
+      if (digit > 15) {
+        break;
+      }
+      if (result > maxres) { 
+        overflow = 1;
+      }
+      result = (result << 4);
+      if (digit > (0xFFFFFFFFUL - result)) { 
+        overflow = 1;
+      }
+      result += digit;
+      anyDigits = 1;
+    }
+  } else if ( base >= 2 && base <= 36 ) {
+    unsigned long maxres = 0xFFFFFFFFUL / base;
+    for ( ; ; p += 1) {
+      digit = *p - '0';
+      if (digit > ('z' - '0')) {
+        break;
+      }
+      digit = cvtIn[digit];
+      if (digit >= ( (unsigned) base )) {
+        break;
+      }
+      if (result > maxres) { 
+        overflow = 1;
+      }
+      result *= base;
+      if (digit > (0xFFFFFFFFUL - result)) {
+        overflow = 1;
+      }
+      result += digit;
+      anyDigits = 1;
+    }
+  }
+
+  // See if there were any digits at all.
+  if (!anyDigits) {
+    p = string;
+  }
+
+  if (end_ptr != 0) {
+    /* unsafe, but required by the strtoul prototype */
+    *end_ptr = (char *) p;
+  }
+
+  if (overflow) {
+    // TODO
+    return 0xFFFFFFFFUL;
+  } 
+
+  if (negative) {
+    return -result;
+  }
+  return result;
+}
+
+// local string to long method
+// http://www.opensource.apple.com/source/tcl/tcl-14/tcl/compat/strtol.c
+//
+/* Argument1: String of ASCII digits, possibly
+ * preceded by white space.  For bases
+ * greater than 10, either lower- or
+ * upper-case digits may be used.
+ */
+/* Argument2: Where to store address of terminating
+ * character, or NULL.
+ */
+/* Argument3: Base for conversion.  Must be less
+ * than 37.  If 0, then the base is chosen
+ * from the leading characters of string:
+ * "0x" means hex, "0" means octal, anything
+ * else means decimal.
+ */
+$$__device__$$
+long int at_illecker_strtol(const char *string, char **end_ptr, int base) {
+  register const char *p;
+  long result;
+
+  // Skip any leading blanks.
+  p = string;
+  while (at_illecker_is_space((unsigned char) (*p))) {
+    p += 1;
+  }
+  // Check for a sign.
+  if (*p == '-') {
+    p += 1;
+    result = -(at_illecker_strtoul(p, end_ptr, base));
+  } else {
+    if (*p == '+') {
+      p += 1;
+    }
+    result = at_illecker_strtoul(p, end_ptr, base);
+  }
+  if ((result == 0) && (end_ptr != 0) && (*end_ptr == p)) {
+    *end_ptr = (char *) string;
+  }
+  return result;
+}
+
 // local string to double method
 // http://www.opensource.apple.com/source/tcl/tcl-14/tcl/compat/strtod.c
 $$__device__$$
@@ -1754,30 +1975,66 @@ done:
   return fraction;
 }
 
-
-//<java.lang.Double: double parseDouble(java.lang.String)>
+//<java.lang.Long: long parseLong(java.lang.String)>
 $$__device__$$
-double java_lang_Double_parseDouble(char * gc_info, int str_obj_ref, int * exception) {
-
+long java_lang_Long_parseLong(char * gc_info, int str_obj_ref, int * exception) {
   int str_value = 0;
   int str_count = 0;
   char str_val[255];
+  long return_val = 0;
 
   str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
   str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
 
+  // convert string to char[]
   // TODO check if str_count > 255
-
   for(int i = 0; i < str_count; i++){
     str_val[i] = char__array_get(gc_info, str_value, i, exception);
   }
   str_val[str_count] = '\0';
 
-  // printf("java_lang_Double_parseDouble str: '%s'\n", str_val);
-  double double_val = at_illecker_strtod(str_val);
-  // printf("java_lang_Double_parseDouble double: '%f'\n", double_val);
+  printf("java_lang_Long_parseLong str: '%s'\n", str_val);
+  return_val = at_illecker_strtol(str_val, 0, 0);
+  printf("java_lang_Long_parseLong int: '%ld'\n", return_val);
 
-  return double_val;
+  return return_val;
+}
+
+//<java.lang.Integer: int parseInt(java.lang.String)>
+$$__device__$$
+int java_lang_Integer_parseInt(char * gc_info, int str_obj_ref, int * exception) {
+  return java_lang_Long_parseLong(gc_info, str_obj_ref, exception);
+}
+
+//<java.lang.Double: double parseDouble(java.lang.String)>
+$$__device__$$
+double java_lang_Double_parseDouble(char * gc_info, int str_obj_ref, int * exception) {
+  int str_value = 0;
+  int str_count = 0;
+  char str_val[255];
+  double return_val = 0;
+
+  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
+  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+
+  // convert string to char[]
+  // TODO check if str_count > 255
+  for(int i = 0; i < str_count; i++){
+    str_val[i] = char__array_get(gc_info, str_value, i, exception);
+  }
+  str_val[str_count] = '\0';
+
+  printf("java_lang_Double_parseDouble str: '%s'\n", str_val);
+  return_val = at_illecker_strtod(str_val);
+  printf("java_lang_Double_parseDouble double: '%f'\n", return_val);
+
+  return return_val;
+}
+
+//<java.lang.Float: float parseFloat(java.lang.String)>
+$$__device__$$
+float java_lang_Float_parseFloat(char * gc_info, int str_obj_ref, int * exception) {
+  return java_lang_Double_parseDouble(gc_info, str_obj_ref, exception);
 }
 
 /*****************************************************************************/

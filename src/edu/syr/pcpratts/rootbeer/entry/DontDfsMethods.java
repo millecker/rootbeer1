@@ -109,7 +109,11 @@ public class DontDfsMethods {
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileAppend(int,java.lang.Object,java.lang.Object)>");  
     m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean sequenceFileClose(int)>");
     // parsing methods
+    m_methods.add("<java.lang.Integer: int parseInt(java.lang.String)>");
+    m_methods.add("<java.lang.Long: long parseLong(java.lang.String)>");
+    m_methods.add("<java.lang.Float: float parseFloat(java.lang.String)>");
     m_methods.add("<java.lang.Double: double parseDouble(java.lang.String)>");
+    // valueOf methods
     //m_methods.add("<java.lang.Integer: java.lang.Integer valueOf(int)>");
     // split methods
     m_methods.add("<java.lang.String: java.lang.String[] split(java.lang.String)>");
