@@ -2321,10 +2321,15 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         str_param1_count = instance_getter_java_lang_String_count(gc_info, str_param1,
                           exception);
 
+        printf("Use String parameter1 with len: %d\n", str_param1_count);
+        printf("String: ");
+
         // TODO - check for max str_val1 size
-        for(int i = 0; i < str_param1_count; i++){
+        for(int i = 0; i < str_param1_count; i++) {
           host_device_interface->str_val1[i] = char__array_get(gc_info, str_param1_value, i, exception);
+          printf("%c",host_device_interface->str_val1[i]);
         }
+        printf("\n");
         host_device_interface->use_str_val1 = true;
         host_device_interface->str_val1[str_param1_count] = '\0';
       }
@@ -2335,7 +2340,7 @@ T at_illecker_getResult($$__global$$ char * gc_info,
                            exception);
 
         // TODO - check for max str_val2 size
-        for(int i = 0; i < str_param2_count; i++){
+        for(int i = 0; i < str_param2_count; i++) {
           host_device_interface->str_val2[i] = char__array_get(gc_info, str_param2_value, i, exception);
         }
         host_device_interface->use_str_val2 = true;
@@ -3344,5 +3349,67 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileClose($$__global$$ c
            0, false,
            0, false,
            exception);
+}
+
+// HamaPeer.write
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void test(Object key)>
+$$__device__$$
+void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_test($$__global$$ char * gc_info, 
+     int obj_ref, int * exception) {
+
+  char * obj_deref;
+  obj_deref = edu_syr_pcpratts_gc_deref(gc_info, obj_ref);
+
+  // check key type
+  if (at_illecker_typeof_Integer(gc_info, obj_ref)) {
+    printf("HamaPeer.test intValue: %d\n", *(( int *) &obj_deref[32]) );
+  } else if (at_illecker_typeof_Long(gc_info, obj_ref)) {
+    printf("HamaPeer.test longValue: %ld\n", *(( long long *) &obj_deref[32]) );
+  } else if (at_illecker_typeof_Float(gc_info, obj_ref)) {
+    printf("HamaPeer.test floatValue: %f\n", *(( float *) &obj_deref[32]) );
+  } else if (at_illecker_typeof_Double(gc_info, obj_ref)) {
+    printf("HamaPeer.test doubleValue: %f\n", *(( double *) &obj_deref[32]) );
+  } else if (at_illecker_typeof_String(gc_info, obj_ref)) {
+    printf("HamaPeer.test StringValue!\n");
+    
+    char str_val1[1024]; // if 1024 then it will fail
+    char c;
+    int str_value = instance_getter_java_lang_String_value(gc_info, obj_ref,
+                          exception);
+    int str_count = instance_getter_java_lang_String_count(gc_info, obj_ref,
+                          exception);
+
+    printf("Use String.len: %d\n", str_count);
+
+    printf("str_val1: '");
+    for (int i = 0; i < 20; i++) {
+      printf("%c", str_val1[i]);
+    }
+    printf("'\n");
+
+    printf("new_string: '");
+    for(int i = 0; i < str_count; i++) {
+      c = char__array_get(gc_info, str_value, i, exception);
+      printf("%c", c);
+      str_val1[i] = c;
+    }
+    printf("'\n");
+    str_val1[str_count] = '\0';
+    printf("Char[]: '%s'\n", str_val1);
+
+    printf("str_val1: '");
+    for (int i = 0; i < 20; i++) {
+      printf("%c", str_val1[i]);
+    }
+    printf("'\n");
+
+    printf("HamaPeer.test StringValue END!\n");
+
+  } else {
+    // TODO throw CudaException unsupported Type
+    printf("HamaPeer.test Exception: unsupported Type\n");
+    return;
+  }
+
 }
 

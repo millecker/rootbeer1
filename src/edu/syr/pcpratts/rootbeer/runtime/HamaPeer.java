@@ -204,5 +204,8 @@ public class HamaPeer {
   public static boolean sequenceFileClose(int fileID) {
     return false;
   }
+  
+  public static void test(Object o) {
+  }
 
 }
