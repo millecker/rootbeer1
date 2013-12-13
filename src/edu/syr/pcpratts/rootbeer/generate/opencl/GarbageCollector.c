@@ -1630,7 +1630,13 @@ int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_re
 
   printf("java_lang_String_split: occurrences: %d\n", occurrences);
 
-  return at_illecker_split(gc_info, str_value, str_count, delim_str_value, delim_str_count, occurrences, exception);
+  // TODO if occurrences == 0 ?
+  if (occurrences != 0) {
+    return at_illecker_split(gc_info, str_value, str_count, delim_str_value, delim_str_count, occurrences, exception);
+  } else {
+    printf("java_lang_String_split: No occurrences found! Returning 0\n");
+    return 0;
+  }
 }
 
 /*****************************************************************************/
