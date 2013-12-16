@@ -1559,7 +1559,7 @@ int at_illecker_split(char * gc_info, int str_value, int str_count,
   int start = 0;
   int end = 0;
 
-  // printf("at_illecker_split: delim_occurrences: %d\n", delim_occurrences);
+  printf("at_illecker_split: delim_occurrences: %d\n", delim_occurrences);
 
   return_obj = java_lang_String__array_new(gc_info, delim_occurrences + 1, exception);
 
@@ -1571,7 +1571,8 @@ int at_illecker_split(char * gc_info, int str_value, int str_count,
       break;
     }
 
-    // add token substring(start, end)
+    // add token
+    // TODO substring(start, end - start)
     java_lang_String__array_set(gc_info, return_obj, i,
       at_illecker_substring(gc_info, str_value, str_count, start, end, exception), exception);
 
@@ -1582,7 +1583,7 @@ int at_illecker_split(char * gc_info, int str_value, int str_count,
   // add last token
   if ( (delim_occurrences > 0) && (end != -1) ) {
 
-    // substring(start)
+    // TODO substring(start, END_OF_STRING)
     java_lang_String__array_set(gc_info, return_obj, delim_occurrences,
       at_illecker_substring(gc_info, str_value, str_count, start, -1, exception), exception);
   }
@@ -1630,13 +1631,7 @@ int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_re
 
   printf("java_lang_String_split: occurrences: %d\n", occurrences);
 
-  // TODO if occurrences == 0 ?
-  if (occurrences != 0) {
-    return at_illecker_split(gc_info, str_value, str_count, delim_str_value, delim_str_count, occurrences, exception);
-  } else {
-    printf("java_lang_String_split: No occurrences found! Returning 0\n");
-    return 0;
-  }
+  return at_illecker_split(gc_info, str_value, str_count, delim_str_value, delim_str_count, occurrences, exception);
 }
 
 /*****************************************************************************/
@@ -2074,9 +2069,9 @@ long java_lang_Long_parseLong(char * gc_info, int str_obj_ref, int * exception) 
   }
   str_val[str_count] = '\0';
 
-  // printf("java_lang_Long_parseLong str: '%s'\n", str_val);
+  printf("java_lang_Long_parseLong str: '%s'\n", str_val);
   return_val = at_illecker_strtol(str_val, 0, 0);
-  // printf("java_lang_Long_parseLong int: '%ld'\n", return_val);
+  printf("java_lang_Long_parseLong int: '%ld'\n", return_val);
 
   return return_val;
 }
@@ -2105,9 +2100,9 @@ double java_lang_Double_parseDouble(char * gc_info, int str_obj_ref, int * excep
   }
   str_val[str_count] = '\0';
 
-  // printf("java_lang_Double_parseDouble str: '%s'\n", str_val);
+  printf("java_lang_Double_parseDouble str: '%s'\n", str_val);
   return_val = at_illecker_strtod(str_val);
-  // printf("java_lang_Double_parseDouble double: '%f'\n", return_val);
+  printf("java_lang_Double_parseDouble double: '%f'\n", return_val);
 
   return return_val;
 }
@@ -2322,7 +2317,7 @@ T at_illecker_getResult($$__global$$ char * gc_info,
                           exception);
 
         // TODO - check for max str_val1 size
-        for(int i = 0; i < str_param1_count; i++) {
+        for(int i = 0; i < str_param1_count; i++){
           host_device_interface->str_val1[i] = char__array_get(gc_info, str_param1_value, i, exception);
         }
         host_device_interface->use_str_val1 = true;
@@ -2335,7 +2330,7 @@ T at_illecker_getResult($$__global$$ char * gc_info,
                            exception);
 
         // TODO - check for max str_val2 size
-        for(int i = 0; i < str_param2_count; i++) {
+        for(int i = 0; i < str_param2_count; i++){
           host_device_interface->str_val2[i] = char__array_get(gc_info, str_param2_value, i, exception);
         }
         host_device_interface->use_str_val2 = true;
@@ -3014,8 +3009,7 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_
   }
 
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::READ_KEYVALUE,
-           HostDeviceInterface::KEY_VALUE_PAIR, false, 
-           // do not use return value, because key_value_obj will be modified
+           HostDeviceInterface::KEY_VALUE_PAIR, false, // do not use return value, because obj is modified
            key_value_pair_ref, key_type, value_type,
            0, false,
            0, false,
@@ -3033,7 +3027,7 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_
 }
 
 // HamaPeer.write
-//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: void write(Object key, Object value)>
+//<edu.syr.pcpratts.rootbeer.runtime.HamaPeer: boolean write(Object key, Object value)>
 $$__device__$$
 void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info, 
      int key_obj_ref, int value_obj_ref, int * exception) {

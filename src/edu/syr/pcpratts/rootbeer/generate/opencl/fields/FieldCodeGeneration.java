@@ -75,6 +75,7 @@ public class FieldCodeGeneration {
       } else {
         composite.addNonRefField(field, soot_field.getDeclaringClass());
       }
+      System.out.println("ForcedFields addBody: "+field.getGetterSetterBodies(composite, true, m_TypeSwitch));
       set.add(field.getGetterSetterBodies(composite, true, m_TypeSwitch));
     }
     return setToString(set);

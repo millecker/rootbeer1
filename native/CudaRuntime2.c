@@ -2378,9 +2378,7 @@ void initDevice(JNIEnv * env, jobject this_ref, jint max_blocks_per_proc, jint m
   savePointers(env, this_ref);
 
   printf("initDevice - allocate host_device_interface pinned memory.\n");
-
-  printf("initDevice - HostDeviceInterface: sizeof: %ld bytes\n", sizeof(HostDeviceInterface));
-
+    
   // allocate host_device_interface as pinned memory
   status = cuMemHostAlloc((void**)&h_host_device_interface, sizeof(HostDeviceInterface),
                           CU_MEMHOSTALLOC_WRITECOMBINED | CU_MEMHOSTALLOC_DEVICEMAP);
