@@ -1552,87 +1552,79 @@ int at_illecker_strcnt(char * gc_info, int str_value, int str_count,
 
 // local split method
 $$__device__$$
-int at_illecker_split(char * gc_info, int str_value, int str_count, 
-                      int delim_str_value, int delim_str_count,
-                      int delim_occurrences, int * exception) {
+int at_illecker_split(char * gc_info, int str_obj_ref, int delim_str_obj_ref,
+                      int limit, int * exception) {
   int return_obj = -1;
   int start = 0;
   int end = 0;
+  int str_value = 0;
+  int str_count = 0;
+  int delim_str_value = 0;
+  int delim_str_count = 0;
+  int delim_occurrences = 0;
+
+  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
+  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+
+  delim_str_value = instance_getter_java_lang_String_value(gc_info, delim_str_obj_ref, exception);
+  delim_str_count = instance_getter_java_lang_String_count(gc_info, delim_str_obj_ref, exception);
+
+  // count delimiters, needed for array size
+  delim_occurrences = at_illecker_strcnt(gc_info, str_value, str_count, 
+                                         delim_str_value, delim_str_count, exception);
 
   // printf("at_illecker_split: delim_occurrences: %d\n", delim_occurrences);
 
-  return_obj = java_lang_String__array_new(gc_info, delim_occurrences + 1, exception);
+  if ( (limit <= 0) || (limit > delim_occurrences) ) {
+    return_obj = java_lang_String__array_new(gc_info, delim_occurrences + 1, exception);
+    limit = delim_occurrences + 1;
+  } else {
+    return_obj = java_lang_String__array_new(gc_info, limit, exception);
+  }
 
-  for (int i = 0; i < delim_occurrences; i++) {
-    end = at_illecker_strpos(gc_info, str_value, str_count, 
-                             delim_str_value, delim_str_count, start, exception);
+  if (delim_occurrences == 0) {
+    // return this string
+    java_lang_String__array_set(gc_info, return_obj, 0, str_obj_ref, exception);
+    
+  } else {
 
-    if (end == -1) {
-      break;
+    // parse string for tokens
+    for (int i = 0; i < limit - 1; i++) {
+      end = at_illecker_strpos(gc_info, str_value, str_count, 
+                               delim_str_value, delim_str_count, start, exception);
+
+      if (end == -1) {
+        break;
+      }
+
+      // add token - substring(start, end - start)
+      java_lang_String__array_set(gc_info, return_obj, i,
+        at_illecker_substring(gc_info, str_value, str_count, start, end, exception), exception);
+
+      // Exclude the delimiter in the next search
+      start = end + delim_str_count;
     }
 
-    // add token - substring(start, end - start)
-    java_lang_String__array_set(gc_info, return_obj, i,
-      at_illecker_substring(gc_info, str_value, str_count, start, end, exception), exception);
-
-    // Exclude the delimiter in the next search
-    start = end + delim_str_count;
+    // add last token
+    if (end != -1) {
+      // substring(start, END_OF_STRING)
+      java_lang_String__array_set(gc_info, return_obj, limit - 1,
+        at_illecker_substring(gc_info, str_value, str_count, start, -1, exception), exception);
+    }
   }
-
-  // add last token
-  if ( (delim_occurrences > 0) && (end != -1) ) {
-
-    // substring(start, END_OF_STRING)
-    java_lang_String__array_set(gc_info, return_obj, delim_occurrences,
-      at_illecker_substring(gc_info, str_value, str_count, start, -1, exception), exception);
-  }
-
-  //TODO if delim_occurrences > current delimiters -> add emtpy string
-  //TODO if delim_occurrences < current delimiters -> parse last token until next delimiter
-
   return return_obj;
 }
 
 //<java.lang.String: java.lang.String[] split(java.lang.String,int)>
 $$__device__$$
 int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_ref, int limit, int * exception) {
-  int str_value = 0;
-  int str_count = 0;
-  int delim_str_value = 0;
-  int delim_str_count = 0;
-  
-  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
-  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
-  delim_str_value = instance_getter_java_lang_String_value(gc_info, delim_str_obj_ref, exception);
-  delim_str_count = instance_getter_java_lang_String_count(gc_info, delim_str_obj_ref, exception);
-
-  printf("java_lang_String_split: limit: %d\n", limit);
-
-  return at_illecker_split(gc_info, str_value, str_count, delim_str_value, delim_str_count, limit-1, exception);
+  return at_illecker_split(gc_info, str_obj_ref, delim_str_obj_ref, limit, exception);
 }
 
 //<java.lang.String: java.lang.String[] split(java.lang.String)>
 $$__device__$$
 int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_ref, int * exception) {
-  int occurrences = 0;
-  int str_value = 0;
-  int str_count = 0;
-  int delim_str_value = 0;
-  int delim_str_count = 0;
-  
-  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
-  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
-  delim_str_value = instance_getter_java_lang_String_value(gc_info, delim_str_obj_ref, exception);
-  delim_str_count = instance_getter_java_lang_String_count(gc_info, delim_str_obj_ref, exception);
- 
-  occurrences = at_illecker_strcnt(gc_info, str_value, str_count, 
-                  delim_str_value, delim_str_count, exception);
-
-  // TODO check if occurrences == 0
-
-  printf("java_lang_String_split: occurrences: %d\n", occurrences);
-
-  return at_illecker_split(gc_info, str_value, str_count, delim_str_value, delim_str_count, occurrences, exception);
+  return at_illecker_split(gc_info, str_obj_ref, delim_str_obj_ref, 0, exception);
 }
 
 /*****************************************************************************/
