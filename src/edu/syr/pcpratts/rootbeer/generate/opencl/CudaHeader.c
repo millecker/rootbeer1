@@ -90,6 +90,8 @@ using std::string;
 
 class HostDeviceInterface {
 public:
+  volatile bool is_debugging; 
+
   // Only one thread is able to use the
   // HostDeviceInterface
   volatile int lock_thread_id; 
@@ -150,7 +152,8 @@ public:
   volatile char str_val3[255];
 
   enum TYPE {
-    INT, LONG, FLOAT, DOUBLE, STRING, KEY_VALUE_PAIR, NOT_AVAILABLE
+    INT, LONG, FLOAT, DOUBLE, STRING, STRING_ARRAY,
+    KEY_VALUE_PAIR, NOT_AVAILABLE
   };
   volatile TYPE return_type;
   volatile TYPE key_type;
@@ -166,6 +169,7 @@ public:
   }
 
   void init() {
+    is_debugging = false;
     lock_thread_id = -1;
     has_task = false;
     done = false;

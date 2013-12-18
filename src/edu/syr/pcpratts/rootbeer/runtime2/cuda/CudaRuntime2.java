@@ -632,7 +632,8 @@ public class CudaRuntime2 implements ParallelRuntime {
   * Init socket connection to Hama Pipes
   *    
   * @param port of socket connection
+  * @param debugging write debug outputs
   */
-  public native void connect(int port);
+  public native void connect(int port, boolean debugging);
   
 }

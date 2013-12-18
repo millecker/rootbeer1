@@ -29,9 +29,13 @@ public class Rootbeer implements IRootbeer {
   
   public Rootbeer(Map<String, String> env){
     this();
+    
     int port = Integer.parseInt(env.get("hama.pipes.command.port"));
-    System.out.println("Starting Rootbeer using port: " + port);
-    CudaRuntime2.v().connect(port);
+    boolean debugging = Boolean.parseBoolean(env.get("hama.pipes.logging"));
+    if (debugging) {
+      System.out.println("Starting Rootbeer using port: " + port+" debugging: "+debugging);
+    }
+    CudaRuntime2.v().connect(port, debugging);
   }
   
   public static void init(){

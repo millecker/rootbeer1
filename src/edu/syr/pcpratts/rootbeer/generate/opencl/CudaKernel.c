@@ -56,10 +56,10 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
   int * java_lang_class_refs, HostDeviceInterface * h_d_interface,
   int num_blocks) {
 
+  // HamaPeer - host_device_interface pinned memory parameter
   host_device_interface = h_d_interface;
-
-  printf("host_device_interface.ptr: %p\n", host_device_interface);
-  printf("host_device_interface->lock_thread_id: %d\n", host_device_interface->lock_thread_id);
+  // printf("host_device_interface.ptr: %p\n", host_device_interface);
+  // printf("host_device_interface->lock_thread_id: %d\n", host_device_interface->lock_thread_id);
 
   edu_syr_pcpratts_gc_init(to_space, *space_size, java_lang_class_refs);
   __syncthreads();

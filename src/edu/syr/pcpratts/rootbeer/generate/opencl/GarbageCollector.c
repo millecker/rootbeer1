@@ -1199,12 +1199,18 @@ int at_illecker_string_constant(char * gc_info, volatile char * str_constant, in
   int len = at_illecker_strlen(str_constant);
   int characters = char__array_new(gc_info, len, exception);
   
-  printf("at_illecker_string_constant str: '"); 
+  if (host_device_interface->is_debugging) {
+    printf("at_illecker_string_constant str: '"); 
+  }
   for(i = 0; i < len; ++i) {
     char__array_set(gc_info, characters, i, str_constant[i], exception);
-    printf("%c",str_constant[i]);
+    if (host_device_interface->is_debugging) {
+      printf("%c",str_constant[i]);
+    }
   }
-  printf("'\n");  
+  if (host_device_interface->is_debugging) {
+    printf("'\n");  
+  }
 
   // make new String
   return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
@@ -2248,9 +2254,10 @@ T at_illecker_getResult($$__global$$ char * gc_info,
       //do critical section code
       // thread won race condition
 
-      printf("gpu_Thread %d GOT LOCK lock_thread_id: %d\n", thread_id,
-             host_device_interface->lock_thread_id);
-
+      if (host_device_interface->is_debugging) {
+        printf("gpu_Thread %d GOT LOCK lock_thread_id: %d\n", thread_id,
+               host_device_interface->lock_thread_id);
+      }
       /***********************************************************************/
       // wait for possible old task to end
       int inner_timeout = 0;
@@ -2450,7 +2457,49 @@ T at_illecker_getResult($$__global$$ char * gc_info,
           // make new String object
           edu_syr_pcpratts_gc_assign(gc_info, (int*)&return_value,
             at_illecker_string_constant(gc_info, host_device_interface->str_val1, exception));
+       
+        } else if (return_type == HostDeviceInterface::STRING_ARRAY) {
+
+          int index = 0;
+          int array_len = host_device_interface->int_val1;
+
+          if (array_len > 0) {
+            // make new String[] object
+            return_value = java_lang_String__array_new(gc_info, array_len, exception);
+
+            while ( (host_device_interface->use_int_val1) && (index < array_len) ) {
+
+              if (host_device_interface->use_str_val1) {
+                java_lang_String__array_set(gc_info, return_value, index, 
+                  at_illecker_string_constant(gc_info, host_device_interface->str_val1, exception), exception);
+                index++;
+              }
+              if (host_device_interface->use_str_val2) {
+                java_lang_String__array_set(gc_info, return_value, index, 
+                  at_illecker_string_constant(gc_info, host_device_interface->str_val2, exception), exception);
+                index++;
+              }
+              if (host_device_interface->use_str_val3) {
+                java_lang_String__array_set(gc_info, return_value, index, 
+                  at_illecker_string_constant(gc_info, host_device_interface->str_val3, exception), exception);
+                index++;
+              }
+
+              // Notify HostMonitor that result was received
+              host_device_interface->is_result_available = false;
+              __threadfence_system();
+
+              // Wait for next result
+              while (!host_device_interface->is_result_available) {
+                __threadfence_system();
+              }
+            }
+
+          } else {
+            return_value = 0;
+          }
         }
+
       }
 
       /***********************************************************************/
@@ -2506,6 +2555,16 @@ T at_illecker_getResult($$__global$$ char * gc_info,
       if (return_type == HostDeviceInterface::KEY_VALUE_PAIR) {
         host_device_interface->key_type = HostDeviceInterface::NOT_AVAILABLE;
         host_device_interface->value_type = HostDeviceInterface::NOT_AVAILABLE;
+      }
+      if (return_type == HostDeviceInterface::STRING_ARRAY) {
+        host_device_interface->int_val1 = 0;
+        host_device_interface->use_int_val1 = false;
+        host_device_interface->str_val1[0] = '\0';
+        host_device_interface->use_str_val1 = false;
+        host_device_interface->str_val2[0] = '\0';
+        host_device_interface->use_str_val2 = false;
+        host_device_interface->str_val3[0] = '\0';
+        host_device_interface->use_str_val3 = false;
       }
 
       host_device_interface->command = HostDeviceInterface::UNDEFINED;
@@ -2875,8 +2934,22 @@ $$__device__$$
 int edu_syr_pcpratts_rootbeer_runtime_HamaPeer_getAllPeerNames($$__global$$ char * gc_info, 
     int * exception) {
 
-  // TODO
-  return 0;
+  return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_ALL_PEERNAME,
+           HostDeviceInterface::STRING_ARRAY, true, // expecting string array return value
+           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           0, false,
+           exception);
 }
 
 // HamaPeer.getNumPeers

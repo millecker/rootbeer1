@@ -64,18 +64,22 @@ static size_t gc_space_size;
 #include <string>
 #include <sys/socket.h>
 #include <typeinfo> /* typeid */
+#include <vector>
 
 #define stringify( name ) # name
 #define STR_SIZE 1024
 
-using std::string;
 using std::pair;
+using std::string;
+using std::vector;
 
 /*****************************************************************************/
 // HostDeviceInterface
 /*****************************************************************************/
 class HostDeviceInterface {
 public:
+  volatile bool is_debugging; 
+
   // Only one thread is able to use the
   // HostDeviceInterface
   volatile int lock_thread_id; 
@@ -136,7 +140,8 @@ public:
   volatile char str_val3[255];
 
   enum TYPE {
-    INT, LONG, FLOAT, DOUBLE, STRING, KEY_VALUE_PAIR, NOT_AVAILABLE
+    INT, LONG, FLOAT, DOUBLE, STRING, STRING_ARRAY,
+    KEY_VALUE_PAIR, NOT_AVAILABLE
   };
   volatile TYPE return_type;
   volatile TYPE key_type;
@@ -152,6 +157,7 @@ public:
   }
 
   void init() {
+    is_debugging = false;
     lock_thread_id = -1;
     has_task = false;
     done = false;
@@ -332,8 +338,7 @@ bool toBool(const string& val) {
   } else if (val == "false") {
     return false;
   } else {
-    HADOOP_ASSERT(false,
-                  "Problem converting " + val + " to boolean.");
+    HADOOP_ASSERT(false, "Problem converting " + val + " to boolean.");
   }
 }
 
@@ -385,13 +390,11 @@ public:
     }
   }
   
-  bool skip(size_t nbytes)
-  {
+  bool skip(size_t nbytes) {
     return (0==fseek(mFile, nbytes, SEEK_CUR));
   }
   
-  bool close()
-  {
+  bool close() {
     int ret = 0;
     if (mFile != NULL && isOwned) {
       ret = fclose(mFile);
@@ -423,8 +426,7 @@ public:
     }
   }
   
-  bool open(const std::string& name, bool overwrite)
-  {
+  bool open(const std::string& name, bool overwrite) {
     if (!overwrite) {
       mFile = fopen(name.c_str(), "rb");
       if (mFile != NULL) {
@@ -437,27 +439,23 @@ public:
     return (mFile != NULL);
   }
   
-  bool open(FILE* file)
-  {
+  bool open(FILE* file) {
     mFile = file;
     isOwned = false;
     return (mFile != NULL);
   }
   
-  void write(const void* buf, size_t len)
-  {
+  void write(const void* buf, size_t len) {
     size_t result = fwrite(buf, len, 1, mFile);
     HADOOP_ASSERT(result == 1,
                   string("write error to file: ") + strerror(errno));
   }
   
-  bool advance(size_t nbytes)
-  {
+  bool advance(size_t nbytes) {
     return (0==fseek(mFile, nbytes, SEEK_CUR));
   }
   
-  bool close()
-  {
+  bool close() {
     int ret = 0;
     if (mFile != NULL && isOwned) {
       ret = fclose(mFile);
@@ -466,8 +464,7 @@ public:
     return (ret == 0);
   }
   
-  void flush()
-  {
+  void flush() {
     fflush(mFile);
   }
   
@@ -641,9 +638,11 @@ private:
   FILE* out_stream_;
   FileInStream* file_in_stream_;
   FileOutStream* file_out_stream_;
+  bool is_debugging;
 
 public: 
-  SocketClient() {
+  SocketClient(bool is_debugging) {
+    is_debugging = is_debugging;
     sock_ = -1;
     in_stream_ = NULL;
     out_stream_ = NULL;
@@ -663,7 +662,7 @@ public:
     if (sock_ != -1) {
       int result = shutdown(sock_, SHUT_RDWR);
       if (result != 0) {
-        fprintf(stderr, "SocketClient: problem shutting down socket\n");
+        printf("SocketClient: problem shutting down socket\n");
       }
     }
 
@@ -674,17 +673,19 @@ public:
   }
   
   void connectSocket(int port) {
-    printf("SocketClient started\n");
-    
+    if (is_debugging) {
+      printf("SocketClient started\n");
+    }
+  
     if (port <= 0) {
-      fprintf(stderr, "SocketClient: invalid port number!\n");
-      return; /* Failed */
+      printf("SocketClient: invalid port number!\n");
+      return;
     }
     
     sock_ = socket(PF_INET, SOCK_STREAM, 0);
     if (sock_ == -1) {
-      fprintf(stderr, "SocketClient: problem creating socket: %s\n",
-              strerror(errno));
+      printf("SocketClient: problem creating socket: %s\n",
+             strerror(errno));
     }
     
     sockaddr_in addr;
@@ -694,8 +695,8 @@ public:
     
     int res = connect(sock_, (sockaddr*) &addr, sizeof(addr));
     if (res != 0) {
-      fprintf(stderr, "SocketClient: problem connecting command socket: %s\n",
-              strerror(errno));
+      printf("SocketClient: problem connecting command socket: %s\n",
+             strerror(errno));
     }
     
     FILE* in_stream = fdopen(sock_, "r");
@@ -706,13 +707,17 @@ public:
     file_out_stream_ = new FileOutStream();
     file_out_stream_->open(out_stream);
     
-    printf("SocketClient is connected to port %d ...\n", port);
+    if (is_debugging) {
+      printf("SocketClient is connected to port %d ...\n", port);
+    }
   }
   
   bool sendCMD(int32_t cmd, bool verify_response) volatile {
     serialize<int32_t>(cmd, *file_out_stream_);
     file_out_stream_->flush();
-    printf("SocketClient sent CMD %s\n", messageTypeNames[cmd]);
+    if (is_debugging) {
+      printf("SocketClient sent CMD %s\n", messageTypeNames[cmd]);
+    }
     if (verify_response) {
       int32_t response = deserialize<int32_t>(*file_in_stream_);
       if (response != cmd) {
@@ -727,8 +732,10 @@ public:
     serialize<int32_t>(cmd, *file_out_stream_);
     serialize<T>(value, *file_out_stream_);
     file_out_stream_->flush();
-    printf("SocketClient sent CMD: %s with Value: '%s'\n", messageTypeNames[cmd],
-           toString<T>(value).c_str());
+    if (is_debugging) {
+      printf("SocketClient sent CMD: %s with Value: '%s'\n", messageTypeNames[cmd],
+             toString<T>(value).c_str());
+    }
     if (verify_response) {
       int32_t response = deserialize<int32_t>(*file_in_stream_);
       if (response != cmd) {
@@ -744,8 +751,10 @@ public:
     serialize<T1>(value1, *file_out_stream_);
     serialize<T2>(value2, *file_out_stream_);
     file_out_stream_->flush();
-    printf("SocketClient sent CMD: %s with Value1: '%s' and Value2: '%s'\n", messageTypeNames[cmd],
-           toString<T1>(value1).c_str(), toString<T2>(value2).c_str());
+    if (is_debugging) {
+      printf("SocketClient sent CMD: %s with Value1: '%s' and Value2: '%s'\n", messageTypeNames[cmd],
+             toString<T1>(value1).c_str(), toString<T2>(value2).c_str());
+    }
     if (verify_response) {
       int32_t response = deserialize<int32_t>(*file_in_stream_);
       if (response != cmd) {
@@ -762,8 +771,10 @@ public:
     serialize<T2>(value2, *file_out_stream_);
     serialize<T3>(value3, *file_out_stream_);
     file_out_stream_->flush();
-    printf("SocketClient sent CMD: %s with Value1: '%s', Value2: '%s' and Value3: '%s'\n", messageTypeNames[cmd],
-           toString<T1>(value1).c_str(), toString<T2>(value2).c_str(), toString<T3>(value3).c_str());
+    if (is_debugging) {
+      printf("SocketClient sent CMD: %s with Value1: '%s', Value2: '%s' and Value3: '%s'\n", messageTypeNames[cmd],
+             toString<T1>(value1).c_str(), toString<T2>(value2).c_str(), toString<T3>(value3).c_str());
+    }
     if (verify_response) {
       int32_t response = deserialize<int32_t>(*file_in_stream_);
       if (response != cmd) {
@@ -777,25 +788,13 @@ public:
     serialize<int32_t>(cmd, *file_out_stream_);
     for (int i = 0; i < size; i++) {
       serialize<string>(values[i], *file_out_stream_);
-      printf("SocketClient sent CMD: %s with Param%d: %s\n",
-             messageTypeNames[cmd], i + 1, values[i].c_str());
+      if (is_debugging) {
+        printf("SocketClient sent CMD: %s with Param%d: %s\n",
+               messageTypeNames[cmd], i + 1, values[i].c_str());
+      }
     }
     file_out_stream_->flush();
   }
-
-/*  
-  void sendCMD(int32_t cmd, int32_t value, const string values[],
-               int size) volatile {
-    serialize<int32_t>(cmd, *file_out_stream_);
-    serialize<int32_t>(value, *file_out_stream_);
-    for (int i = 0; i < size; i++) {
-      serialize<string>(values[i], *file_out_stream_);
-      printf("SocketClient sent CMD: %s with Param%d: %s\n",
-             messageTypeNames[cmd], i + 1, values[i].c_str());
-    }
-    file_out_stream_->flush();
-  }
-*/
 
   /**
    * Wait for next event, which should be a response for
@@ -871,8 +870,8 @@ public:
        break;
        }
        */
-      fprintf(stderr, "SocketClient - Unknown binary command: %d\n", cmd);
-      //HADOOP_ASSERT(false, "Unknown binary command " + toString(cmd));
+      printf("SocketClient.getResult - Unknown binary command: %d\n", cmd);
+      HADOOP_ASSERT(false, "Unknown binary command " + toString(cmd));
     }
     return result;
   }
@@ -882,33 +881,32 @@ public:
    * a previously sent command (expected_response_cmd)
    * and return the generic vector result list
    */
-  /*
   template<class T>
   vector<T> getVectorResult(int32_t expected_response_cmd) {
     
     vector<T> results;
     
     // read response command
-    int32_t cmd;
-    cmd = deserializeInt(*in_stream_);
+    int32_t cmd = deserialize<int32_t>(*file_in_stream_);
     
     // check if response is expected
     if (expected_response_cmd == cmd) {
       
       switch (cmd) {
-        case GET_ALL_PEERNAME: {
+        case HostDeviceInterface::GET_ALL_PEERNAME: {
           vector<T> peernames;
           T peername;
-          int32_t peername_count = deserialize<int32_t>(*in_stream_);
-          if(logging) {
-            fprintf(stderr,"HamaPipes::BinaryProtocol::nextEvent - got GET_ALL_PEERNAME peername_count: %d\n",
-                    peername_count);
+          int32_t peername_count = deserialize<int32_t>(*file_in_stream_);
+          if (is_debugging) {
+            printf("SocketClient.getVectorResult peername_count: %d\n",
+                  peername_count);
           }
+
           for (int i=0; i<peername_count; i++)  {
-            peername = deserialize<T>(*in_stream_);
+            peername = deserialize<T>(*file_in_stream_);
             peernames.push_back(peername);
-            if(logging) {
-              fprintf(stderr,"HamaPipes::BinaryProtocol::nextEvent - got GET_ALL_PEERNAME peername: '%s'\n",
+            if (is_debugging) {
+              printf("SocketClient.getVectorResult peername: '%s'\n",
                       toString<T>(peername).c_str());
             }
           }
@@ -916,13 +914,12 @@ public:
         }
       }
     } else {
-      HADOOP_ASSERT(false, "Unknown binary command " + toString(cmd));
-      fprintf(stderr,"HamaPipes::BinaryProtocol::nextEvent(%d) - Unknown binary command: %d\n",
+      printf("SocketClient.getVectorResult(expected_cmd = %d) - Unknown binary command: %d\n",
               expected_response_cmd, cmd);
+      HADOOP_ASSERT(false, "Unknown binary command " + toString(cmd));
     }
     return results;
   }
-  */
 
   /**
    * Wait for next event, which should be a response for
@@ -952,14 +949,15 @@ public:
         }
         case HostDeviceInterface::END_OF_DATA: {
           key_value_pair = KeyValuePair<K,V>(true);
-          fprintf(stderr,"getKeyValueResult - got END_OF_DATA\n");
+          if (is_debugging) {
+            printf("SocketClient.getKeyValueResult - got END_OF_DATA\n");
+          }
         }
       }
     } else {
       key_value_pair = KeyValuePair<K,V>(true);
-      fprintf(stderr,"getKeyValueResult(expected_cmd = %d) - Unknown binary command: %d\n",
+      printf("SocketClient.getKeyValueResult(expected_cmd = %d) - Unknown binary command: %d\n",
               expected_response_cmd, cmd);
-      fprintf(stderr,"ERORR: Please verfiy serialization! The key or value type could possibly not be deserialized!\n");
       HADOOP_ASSERT(false, "Unknown binary command " + toString(cmd));
     }
     return key_value_pair;
@@ -980,17 +978,22 @@ public:
   volatile bool is_monitoring;
   volatile HostDeviceInterface *host_device_interface;
 
-  HostMonitor(HostDeviceInterface *h_d_interface, int port) {
+  HostMonitor(HostDeviceInterface *h_d_interface, int port, bool is_debugging) {
     host_device_interface = h_d_interface;
+    host_device_interface->is_debugging = is_debugging;
+
     is_monitoring = false;
     pthread_mutex_init(&mutex_process_command_, NULL);
-    socket_client_ = new SocketClient();
+    socket_client_ = new SocketClient(is_debugging);
 
     // connect SocketClient
     socket_client_->connectSocket(port);
 
     reset();
-    printf("HostMonitor init finished...\n");
+
+    if (host_device_interface->is_debugging) {
+      printf("HostMonitor init finished...\n");
+    }
   }
 
   ~HostMonitor() {
@@ -1000,15 +1003,19 @@ public:
   void reset() volatile {
     host_device_interface->command = HostDeviceInterface::UNDEFINED;
     host_device_interface->has_task = false;
-    printf("HostMonitor reset lock_thread_id: %d, has_task: %s, result_available: %s\n",
-           host_device_interface->lock_thread_id, 
-           (host_device_interface->has_task) ? "true" : "false",
-           (host_device_interface->is_result_available) ? "true" : "false");
+    if (host_device_interface->is_debugging) {
+      printf("HostMonitor reset lock_thread_id: %d, has_task: %s, result_available: %s\n",
+             host_device_interface->lock_thread_id, 
+             (host_device_interface->has_task) ? "true" : "false",
+             (host_device_interface->is_result_available) ? "true" : "false");
+    }
   }
 
   void startMonitoring() {
     if ( (host_device_interface != NULL) && (!is_monitoring) ) {
-      printf("HostMonitor.startMonitoring...\n");
+      if (host_device_interface->is_debugging) {
+        printf("HostMonitor.startMonitoring...\n");
+      }
       pthread_create(&monitor_thread_, NULL, &HostMonitor::thread, this);
 
       // wait for monitoring
@@ -1016,14 +1023,19 @@ public:
       //  printf("HostMonitor.startMonitoring is_monitoring: %s\n",
       //    (is_monitoring) ? "true" : "false");
       //}
-      printf("HostMonitor.startMonitoring started thread! is_monitoring: %s\n",
+
+      if (host_device_interface->is_debugging) {
+        printf("HostMonitor.startMonitoring started thread! is_monitoring: %s\n",
             (is_monitoring) ? "true" : "false");
+      }
     }
   }
 
   void stopMonitoring() {
     if ( (host_device_interface != NULL) && (is_monitoring) ) {
-      printf("HostMonitor.stopMonitoring...\n");
+      if (host_device_interface->is_debugging) {
+        printf("HostMonitor.stopMonitoring...\n");
+      }
 
       host_device_interface->done = true;
 
@@ -1032,16 +1044,22 @@ public:
       //  printf("HostMonitor.stopMonitoring is_monitoring: %s\n",
       //    (is_monitoring) ? "true" : "false");
       //}
-      printf("HostMonitor.stopMonitoring stopped! done: %s\n",
-            (host_device_interface->done) ? "true" : "false");
+
+      if (host_device_interface->is_debugging) {
+        printf("HostMonitor.stopMonitoring stopped! done: %s\n",
+              (host_device_interface->done) ? "true" : "false");
+      }
     }
   }
 
   static void *thread(void *context) {
     volatile HostMonitor *_this = ((HostMonitor *) context);
-    printf("HostMonitorThread started... done: %s\n",
-            (_this->host_device_interface->done) ? "true" : "false");
-    fflush(stdout);
+
+    if (_this->host_device_interface->is_debugging) {
+      printf("HostMonitorThread started... done: %s\n",
+             (_this->host_device_interface->done) ? "true" : "false");
+      fflush(stdout);
+    }
 
     while (!_this->host_device_interface->done) {
       _this->is_monitoring = true;
@@ -1062,15 +1080,20 @@ public:
         pthread_mutex_t *lock = (pthread_mutex_t *) &_this->mutex_process_command_;
         pthread_mutex_lock(lock);
 	
-        printf("HostMonitor thread: %p, LOCKED(mutex_process_command)\n", pthread_self());
+        if (_this->host_device_interface->is_debugging) {
+          printf("HostMonitor thread: %p, LOCKED(mutex_process_command)\n", pthread_self());
+        }
 
         _this->processCommand();
         
         _this->reset();
 
         pthread_mutex_unlock(lock);
-        printf("HostMonitor thread: %p, UNLOCKED(mutex_process_command)\n", pthread_self());
-        fflush(stdout);
+
+        if (_this->host_device_interface->is_debugging) {
+          printf("HostMonitor thread: %p, UNLOCKED(mutex_process_command)\n", pthread_self());
+          fflush(stdout);
+        }
       }
     }
     _this->is_monitoring = false;
@@ -1079,10 +1102,12 @@ public:
 
   void processCommand() volatile {
 
-    printf("HostMonitor processCommand: %s, lock_thread_id: %d, result_available: %s\n",
-           messageTypeNames[host_device_interface->command], 
-           host_device_interface->lock_thread_id, 
-           (host_device_interface->is_result_available) ? "true" : "false");
+    if (host_device_interface->is_debugging) {
+      printf("HostMonitor processCommand: %s, lock_thread_id: %d, result_available: %s\n",
+             messageTypeNames[host_device_interface->command], 
+             host_device_interface->lock_thread_id, 
+             (host_device_interface->is_result_available) ? "true" : "false");
+    }
 
     switch (host_device_interface->command) {
       
@@ -1136,24 +1161,34 @@ public:
         // Check return type
         if (host_device_interface->return_type == HostDeviceInterface::INT) {
           host_device_interface->int_val1 = socket_client_->getResult<int32_t>(HostDeviceInterface::GET_MSG);
-          printf("HostMonitor got result: '%d' \n", host_device_interface->int_val1);
+          if (host_device_interface->is_debugging) {
+            printf("HostMonitor got result: '%d' \n", host_device_interface->int_val1);
+          }
 
         } else if (host_device_interface->return_type == HostDeviceInterface::LONG) {
           host_device_interface->long_val1 = socket_client_->getResult<int64_t>(HostDeviceInterface::GET_MSG);
-          printf("HostMonitor got result: '%ld' \n", host_device_interface->long_val1);
+          if (host_device_interface->is_debugging) {
+            printf("HostMonitor got result: '%ld' \n", host_device_interface->long_val1);
+          }
 
         } else if (host_device_interface->return_type == HostDeviceInterface::FLOAT) {
           host_device_interface->float_val1 = socket_client_->getResult<float>(HostDeviceInterface::GET_MSG);
-          printf("HostMonitor got result: '%f' \n", host_device_interface->float_val1);
+          if (host_device_interface->is_debugging) {
+            printf("HostMonitor got result: '%f' \n", host_device_interface->float_val1);
+          }
 
         } else if (host_device_interface->return_type == HostDeviceInterface::DOUBLE) {
           host_device_interface->double_val1 = socket_client_->getResult<double>(HostDeviceInterface::GET_MSG);
-          printf("HostMonitor got result: '%f' \n", host_device_interface->double_val1);
+          if (host_device_interface->is_debugging) {
+            printf("HostMonitor got result: '%f' \n", host_device_interface->double_val1);
+          }
 
         } else if (host_device_interface->return_type == HostDeviceInterface::STRING) {
           string result = socket_client_->getResult<string>(HostDeviceInterface::GET_MSG);
           strcpy(const_cast<char *>(host_device_interface->str_val1), result.c_str());
-          printf("HostMonitor got result: '%s' \n", host_device_interface->str_val1);
+          if (host_device_interface->is_debugging) {
+            printf("HostMonitor got result: '%s' \n", host_device_interface->str_val1);
+          }
         }
         
         // Set result available for GPU Kernel
@@ -1161,7 +1196,10 @@ public:
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
-        printf("HostMonitor result was consumed\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor result was consumed\n");
+        }
         break;
       }
 
@@ -1173,20 +1211,28 @@ public:
         // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
-        printf("HostMonitor got result: %d result_available: %s\n",
-               host_device_interface->int_val1,
-               (host_device_interface->is_result_available) ? "true" : "false");
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor got result: %d result_available: %s\n",
+                 host_device_interface->int_val1,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
-        printf("HostMonitor result was consumed\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor result was consumed\n");
+        }
         break;
       }
 
       /***********************************************************************/
       case HostDeviceInterface::SYNC: {
         bool response = socket_client_->sendCMD(HostDeviceInterface::SYNC, true);
-        printf("HostMonitor sent SYNC\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor sent SYNC\n");
+        }
         if (response == false) {
           // TODO throw CudaException?
           printf("HostDeviceInterface::SYNC got wrong response command!\n");
@@ -1209,13 +1255,18 @@ public:
         // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
-        printf("HostMonitor got result: %ld result_available: %s\n",
-               host_device_interface->long_val1,
-               (host_device_interface->is_result_available) ? "true" : "false");
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor got result: %ld result_available: %s\n",
+                 host_device_interface->long_val1,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
-        printf("HostMonitor result was consumed\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor result was consumed\n");
+        }
         break;
       }
 
@@ -1229,13 +1280,72 @@ public:
         // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
-        printf("HostMonitor got result: %s result_available: %s\n",
-               host_device_interface->str_val1,
-               (host_device_interface->is_result_available) ? "true" : "false");
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor got result: %s result_available: %s\n",
+                 host_device_interface->str_val1,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
-        printf("HostMonitor result was consumed\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor result was consumed\n");
+        }
+        break;
+      }
+
+      /***********************************************************************/
+      case HostDeviceInterface::GET_ALL_PEERNAME: {
+        socket_client_->sendCMD(HostDeviceInterface::GET_ALL_PEERNAME, false);
+        
+        vector<string> results = socket_client_->getVectorResult<string>(HostDeviceInterface::GET_ALL_PEERNAME);
+
+        // Set result available for GPU Kernel
+        host_device_interface->int_val1 = results.size();
+        host_device_interface->use_int_val1 = true;
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor got results.len: %d\n",
+                 host_device_interface->int_val1);
+        }
+
+        int index = 0;
+        while (index < host_device_interface->int_val1) {
+
+           if (index < host_device_interface->int_val1) {
+             strcpy(const_cast<char *>(host_device_interface->str_val1), results.at(index).c_str());
+             host_device_interface->use_str_val1 = true;
+             index++;
+           }
+
+           if (index < host_device_interface->int_val1) {
+             strcpy(const_cast<char *>(host_device_interface->str_val2), results.at(index).c_str());
+             host_device_interface->use_str_val2 = true;
+             index++;
+           }
+
+           if (index < host_device_interface->int_val1) {
+             strcpy(const_cast<char *>(host_device_interface->str_val3), results.at(index).c_str());
+             host_device_interface->use_str_val3 = true;
+             index++;
+           }
+          
+           host_device_interface->is_result_available = true;
+
+           // block until result was consumed
+           while (host_device_interface->is_result_available) {}
+        }
+
+        host_device_interface->use_int_val1 = false;
+        host_device_interface->is_result_available = true;
+
+        // block until result was consumed
+        while (host_device_interface->is_result_available) {}
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor all results were consumed\n");
+        }
         break;
       }
 
@@ -1247,13 +1357,18 @@ public:
         // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
-        printf("HostMonitor got result: %d result_available: %s\n",
-               host_device_interface->int_val1,
-               (host_device_interface->is_result_available) ? "true" : "false");
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor got result: %d result_available: %s\n",
+                 host_device_interface->int_val1,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
-        printf("HostMonitor result was consumed\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor result was consumed\n");
+        }
         break;
       }
 
@@ -1265,20 +1380,29 @@ public:
         // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
-        printf("HostMonitor got result: %d result_available: %s\n",
-               host_device_interface->int_val1,
-               (host_device_interface->is_result_available) ? "true" : "false");
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor got result: %d result_available: %s\n",
+                 host_device_interface->int_val1,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
-        printf("HostMonitor result was consumed\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor result was consumed\n");
+        }
         break;
       }
 
       /***********************************************************************/
       case HostDeviceInterface::CLEAR: {
         bool response = socket_client_->sendCMD(HostDeviceInterface::CLEAR, true);
-        printf("HostMonitor sent CLEAR\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor sent CLEAR\n");
+        }
+
         if (response == false) {
           // TODO throw CudaException?
           printf("HostDeviceInterface::CLEAR got wrong response command!\n");
@@ -1296,7 +1420,11 @@ public:
       /***********************************************************************/
       case HostDeviceInterface::REOPEN_INPUT: {
         bool response = socket_client_->sendCMD(HostDeviceInterface::REOPEN_INPUT, true);
-        printf("HostMonitor sent REOPEN_INPUT\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor sent REOPEN_INPUT\n");
+        }
+
         if (response == false) {
           // TODO throw CudaException?
           printf("HostDeviceInterface::REOPEN_INPUT got wrong response command!\n");
@@ -1333,11 +1461,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->int_val1 = key_value_pair.first;
             host_device_interface->int_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%d' value: '%d' \n", host_device_interface->int_val1, 
-                   host_device_interface->int_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%d' value: '%d' \n", host_device_interface->int_val1, 
+                     host_device_interface->int_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (int,long)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::INT) &&
@@ -1348,11 +1480,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->int_val1 = key_value_pair.first;
             host_device_interface->long_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%d' value: '%ld' \n", host_device_interface->int_val1, 
-                   host_device_interface->long_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%d' value: '%ld' \n", host_device_interface->int_val1, 
+                     host_device_interface->long_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (int,float)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::INT) &&
@@ -1363,11 +1499,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->int_val1 = key_value_pair.first;
             host_device_interface->float_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%d' value: '%f' \n", host_device_interface->int_val1, 
-                   host_device_interface->float_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%d' value: '%f' \n", host_device_interface->int_val1, 
+                     host_device_interface->float_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (int,double)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::INT) &&
@@ -1378,11 +1518,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->int_val1 = key_value_pair.first;
             host_device_interface->double_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%d' value: '%f' \n", host_device_interface->int_val1, 
-                   host_device_interface->double_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%d' value: '%f' \n", host_device_interface->int_val1, 
+                     host_device_interface->double_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (int,string)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::INT) &&
@@ -1393,11 +1537,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->int_val1 = key_value_pair.first;
             strcpy(const_cast<char *>(host_device_interface->str_val2), key_value_pair.second.c_str());
-            printf("HostMonitor got key: '%d' value: '%s' \n", host_device_interface->int_val1, 
-                   host_device_interface->str_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%d' value: '%s' \n", host_device_interface->int_val1, 
+                     host_device_interface->str_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         }
         /***********************************************************************/
@@ -1410,11 +1558,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->long_val1 = key_value_pair.first;
             host_device_interface->int_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%ld' value: '%d' \n", host_device_interface->long_val1, 
-                   host_device_interface->int_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%ld' value: '%d' \n", host_device_interface->long_val1, 
+                     host_device_interface->int_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (long,long)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::LONG) &&
@@ -1425,11 +1577,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->long_val1 = key_value_pair.first;
             host_device_interface->long_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%ld' value: '%ld' \n", host_device_interface->long_val1, 
-                   host_device_interface->long_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%ld' value: '%ld' \n", host_device_interface->long_val1, 
+                     host_device_interface->long_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (long,float)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::LONG) &&
@@ -1440,11 +1596,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->long_val1 = key_value_pair.first;
             host_device_interface->float_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%ld' value: '%f' \n", host_device_interface->long_val1, 
-                   host_device_interface->float_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%ld' value: '%f' \n", host_device_interface->long_val1, 
+                     host_device_interface->float_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (long,double)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::LONG) &&
@@ -1455,11 +1615,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->long_val1 = key_value_pair.first;
             host_device_interface->double_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%ld' value: '%f' \n", host_device_interface->long_val1, 
-                   host_device_interface->double_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%ld' value: '%f' \n", host_device_interface->long_val1, 
+                     host_device_interface->double_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (long,string)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::LONG) &&
@@ -1470,11 +1634,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->long_val1 = key_value_pair.first;
             strcpy(const_cast<char *>(host_device_interface->str_val2), key_value_pair.second.c_str());
-            printf("HostMonitor got key: '%ld' value: '%s' \n", host_device_interface->long_val1,
-                   host_device_interface->str_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%ld' value: '%s' \n", host_device_interface->long_val1,
+                     host_device_interface->str_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         }
         /***********************************************************************/
@@ -1487,11 +1655,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->float_val1 = key_value_pair.first;
             host_device_interface->int_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%f' value: '%d' \n", host_device_interface->float_val1, 
-                   host_device_interface->int_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%f' value: '%d' \n", host_device_interface->float_val1, 
+                     host_device_interface->int_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (float,long)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::FLOAT) &&
@@ -1502,11 +1674,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->float_val1 = key_value_pair.first;
             host_device_interface->long_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%f' value: '%ld' \n", host_device_interface->float_val1, 
-                   host_device_interface->long_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%f' value: '%ld' \n", host_device_interface->float_val1, 
+                     host_device_interface->long_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (float,float)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::FLOAT) &&
@@ -1517,11 +1693,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->float_val1 = key_value_pair.first;
             host_device_interface->float_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->float_val1, 
-                   host_device_interface->float_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->float_val1, 
+                     host_device_interface->float_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (float,double)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::FLOAT) &&
@@ -1532,11 +1712,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->float_val1 = key_value_pair.first;
             host_device_interface->double_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->float_val1, 
-                   host_device_interface->double_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->float_val1, 
+                     host_device_interface->double_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (float,string)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::FLOAT) &&
@@ -1547,11 +1731,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->float_val1 = key_value_pair.first;
             strcpy(const_cast<char *>(host_device_interface->str_val2), key_value_pair.second.c_str());
-            printf("HostMonitor got key: '%f' value: '%s' \n", host_device_interface->float_val1, 
-                   host_device_interface->str_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%f' value: '%s' \n", host_device_interface->float_val1, 
+                     host_device_interface->str_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         }
         /***********************************************************************/
@@ -1564,11 +1752,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->double_val1 = key_value_pair.first;
             host_device_interface->int_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%f' value: '%d' \n", host_device_interface->double_val1, 
-                   host_device_interface->int_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%f' value: '%d' \n", host_device_interface->double_val1, 
+                     host_device_interface->int_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (double,long)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::DOUBLE) &&
@@ -1579,11 +1771,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->double_val1 = key_value_pair.first;
             host_device_interface->long_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%f' value: '%ld' \n", host_device_interface->double_val1, 
-                   host_device_interface->long_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%f' value: '%ld' \n", host_device_interface->double_val1, 
+                     host_device_interface->long_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (double,float)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::DOUBLE) &&
@@ -1594,11 +1790,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->double_val1 = key_value_pair.first;
             host_device_interface->float_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->double_val1, 
-                   host_device_interface->float_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->double_val1, 
+                     host_device_interface->float_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (double,double)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::DOUBLE) &&
@@ -1609,11 +1809,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->double_val1 = key_value_pair.first;
             host_device_interface->double_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->double_val1, 
-                   host_device_interface->double_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%f' value: '%f' \n", host_device_interface->double_val1, 
+                     host_device_interface->double_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (double,string)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::DOUBLE) &&
@@ -1624,11 +1828,15 @@ public:
             host_device_interface->end_of_data = false;
             host_device_interface->double_val1 = key_value_pair.first;
             strcpy(const_cast<char *>(host_device_interface->str_val2), key_value_pair.second.c_str());
-            printf("HostMonitor got key: '%f' value: '%s' \n", host_device_interface->double_val1, 
-                   host_device_interface->str_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%f' value: '%s' \n", host_device_interface->double_val1, 
+                     host_device_interface->str_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         }
         /***********************************************************************/
@@ -1641,11 +1849,15 @@ public:
             host_device_interface->end_of_data = false;
             strcpy(const_cast<char *>(host_device_interface->str_val1), key_value_pair.first.c_str());
             host_device_interface->int_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%s' value: '%d' \n", host_device_interface->str_val1, 
-                   host_device_interface->int_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%s' value: '%d' \n", host_device_interface->str_val1, 
+                     host_device_interface->int_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (string,long)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::STRING) &&
@@ -1656,11 +1868,15 @@ public:
             host_device_interface->end_of_data = false;
             strcpy(const_cast<char *>(host_device_interface->str_val1), key_value_pair.first.c_str());
             host_device_interface->long_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%s' value: '%ld' \n", host_device_interface->str_val1, 
-                   host_device_interface->long_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%s' value: '%ld' \n", host_device_interface->str_val1, 
+                     host_device_interface->long_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (string,float)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::STRING) &&
@@ -1671,11 +1887,15 @@ public:
             host_device_interface->end_of_data = false;
             strcpy(const_cast<char *>(host_device_interface->str_val1), key_value_pair.first.c_str());
             host_device_interface->float_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%s' value: '%f' \n", host_device_interface->str_val1, 
-                   host_device_interface->float_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%s' value: '%f' \n", host_device_interface->str_val1, 
+                     host_device_interface->float_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (string,double)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::STRING) &&
@@ -1686,11 +1906,15 @@ public:
             host_device_interface->end_of_data = false;
             strcpy(const_cast<char *>(host_device_interface->str_val1), key_value_pair.first.c_str());
             host_device_interface->double_val2 = key_value_pair.second;
-            printf("HostMonitor got key: '%s' value: '%f' \n", host_device_interface->str_val1, 
-                   host_device_interface->double_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%s' value: '%f' \n", host_device_interface->str_val1, 
+                     host_device_interface->double_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         // (string,string)
         } else if ( (host_device_interface->key_type == HostDeviceInterface::STRING) &&
@@ -1701,11 +1925,15 @@ public:
             host_device_interface->end_of_data = false;
             strcpy(const_cast<char *>(host_device_interface->str_val1), key_value_pair.first.c_str());
             strcpy(const_cast<char *>(host_device_interface->str_val2), key_value_pair.second.c_str());
-            printf("HostMonitor got key: '%s' value: '%s' \n", host_device_interface->str_val1, 
-                   host_device_interface->str_val2);
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key: '%s' value: '%s' \n", host_device_interface->str_val1, 
+                     host_device_interface->str_val2);
+            }
           } else {
             host_device_interface->end_of_data = true;
-            printf("HostMonitor got key_value_pair is empty!\n");
+            if (host_device_interface->is_debugging) {
+              printf("HostMonitor got key_value_pair is empty!\n");
+            }
           }
         }
         /***********************************************************************/
@@ -1715,7 +1943,10 @@ public:
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
-        printf("HostMonitor result was consumed\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor result was consumed\n");
+        }
         break;
       }
 
@@ -2115,13 +2346,18 @@ public:
         // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
-        printf("HostMonitor got result: %d result_available: %s\n",
-               host_device_interface->int_val1,
-               (host_device_interface->is_result_available) ? "true" : "false");
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor got result: %d result_available: %s\n",
+                 host_device_interface->int_val1,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
-        printf("HostMonitor result was consumed\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor result was consumed\n");
+        }
         break;
       }
 
@@ -2139,13 +2375,18 @@ public:
         // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
-        printf("HostMonitor got result: %d result_available: %s\n",
-               host_device_interface->int_val1,
-               (host_device_interface->is_result_available) ? "true" : "false");
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor got result: %d result_available: %s\n",
+                 host_device_interface->int_val1,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
-        printf("HostMonitor result was consumed\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor result was consumed\n");
+        }
         break;
       }
 
@@ -2157,13 +2398,18 @@ public:
         // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
 
-        printf("HostMonitor got result: %d result_available: %s\n",
-               host_device_interface->int_val1,
-               (host_device_interface->is_result_available) ? "true" : "false");
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor got result: %d result_available: %s\n",
+                 host_device_interface->int_val1,
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
-        printf("HostMonitor result was consumed\n");
+
+        if (host_device_interface->is_debugging) {
+          printf("HostMonitor result was consumed\n");
+        }
         break;
       }
     }
@@ -2323,7 +2569,7 @@ void initDevice(JNIEnv * env, jobject this_ref, jint max_blocks_per_proc, jint m
   to_space_size -= gc_space_size;
   to_space_size -= free_space;
   to_space_size -= classMemSize;
-  // substract Pinned Memory HostDeviceInterface object
+  // HamaPeer - substract Pinned Memory HostDeviceInterface object
   to_space_size -= sizeof(HostDeviceInterface);
   //leave 10MB for module
   to_space_size -= 10L*1024L*1024L;
@@ -2377,20 +2623,20 @@ void initDevice(JNIEnv * env, jobject this_ref, jint max_blocks_per_proc, jint m
 
   savePointers(env, this_ref);
 
-  printf("initDevice - allocate host_device_interface pinned memory.\n");
-  printf("initDevice - allocate HostDeviceInterface sizeof: %ld bytes\n", sizeof(HostDeviceInterface));
+  // HamaPeer - Allocate HostDeviceInterface Pinned Memory
+  // printf("initDevice - allocate HostDeviceInterface sizeof: %ld bytes\n", sizeof(HostDeviceInterface));
 
-  // allocate host_device_interface as pinned memory
+  // HamaPeer - Allocate HOST host_device_interface as pinned memory
   status = cuMemHostAlloc((void**)&h_host_device_interface, sizeof(HostDeviceInterface),
                           CU_MEMHOSTALLOC_WRITECOMBINED | CU_MEMHOSTALLOC_DEVICEMAP);
   CHECK_STATUS(env,"h_host_device_interface memory allocation failed",status)
 
+  // HamaPeer - initialize object
   h_host_device_interface->init();
 
+  // HamaPeer - Allocate DEVICE host_device_interface as pinned memory
   status = cuMemHostGetDevicePointer(&d_host_device_interface, h_host_device_interface, 0);
   CHECK_STATUS(env,"d_host_device_interface memory allocation failed",status)
-  
-  printf("initDevice finished!\n");
 
   return;
 }
@@ -2755,8 +3001,6 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   CUresult status;
   char * native_filename;
   heapEndPtr = heap_end_ptr;
-
-  printf("loadFunction...\n");
   
   cuCtxPushCurrent(cuContext);
   fatcubin = readCubinFileFromBuffers(env, buffers, size, total_size);
@@ -2802,10 +3046,11 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   CHECK_STATUS(env,"error in cuParamSetv gpuClassMemory",status)
   offset += sizeof(CUdeviceptr);
 
-  printf("loadFunction - lock_thread_id: %d\n",h_host_device_interface->lock_thread_id);
-  printf("loadFunction - h_host_device_interface: %p\n",h_host_device_interface);
-  printf("loadFunction - d_host_device_interface: %p\n",d_host_device_interface);
-  fflush(stdout);
+  // HamaPeer - Pass HostDeviceInterface argument to kernel function
+  // printf("loadFunction - lock_thread_id: %d\n",h_host_device_interface->lock_thread_id);
+  // printf("loadFunction - h_host_device_interface: %p\n",h_host_device_interface);
+  // printf("loadFunction - d_host_device_interface: %p\n",d_host_device_interface);
+  // fflush(stdout);
 
   status = cuParamSetv(cuFunction, offset, (void *) &d_host_device_interface, sizeof(CUdeviceptr)); 
   CHECK_STATUS(env,"error in cuParamSetv d_host_device_interface",status)
@@ -2817,9 +3062,6 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
 
   cuCtxPopCurrent(&cuContext);
   
-  printf("loadFunction finished!\n");
-  fflush(stdout);
-
   return;
 }
 
@@ -2856,12 +3098,18 @@ JNIEXPORT jint JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   }
 */
 
-
+  // HamaPeer - Start HostMonitor
   if (host_monitor != NULL) {
-    printf("runBlocks - startMonitoring...\n");
+    if (host_monitor->host_device_interface->is_debugging) {
+      printf("runBlocks - startMonitoring...\n");
+    }
+
     host_monitor->startMonitoring();
-    printf("runBlocks - startMonitoring finished!\n");
-    fflush(stdout);
+
+    if (host_monitor->host_device_interface->is_debugging) {
+      printf("runBlocks - startMonitoring finished!\n");
+      fflush(stdout);
+    }
   }
 
   status = cuFuncSetBlockShape(cuFunction, block_shape, 1, 1);
@@ -2885,12 +3133,18 @@ JNIEXPORT jint JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   }
   CHECK_STATUS_RTN(env,"error in cuCtxSynchronize",status, (jint)status)
  
-
+  // HamaPeer - Stop HostMonitor
   if (host_monitor != NULL) {
-    printf("runBlocks - stopMonitoring...\n");
+    if (host_monitor->host_device_interface->is_debugging) {
+      printf("runBlocks - stopMonitoring...\n");
+    }
+
     host_monitor->stopMonitoring();
-    printf("runBlocks - stopMonitoring finished!\n");
-    fflush(stdout);
+
+    if (host_monitor->host_device_interface->is_debugging) {
+      printf("runBlocks - stopMonitoring finished!\n");
+      fflush(stdout);
+    }
   }
 
   cuMemcpyDtoH(infoSpace, gcInfoSpace, gc_space_size);
@@ -2920,11 +3174,11 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
 /*
  * Class:     edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
  * Method:    connect
- * Signature: (I)V
+ * Signature: (IZ)V
  */
 JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2_connect
-  (JNIEnv *env, jobject this_ref, jint port) {
+  (JNIEnv *env, jobject this_ref, jint port, jboolean is_debugging) {
 
-  // init HostMonitor for Pinned Memory
-  host_monitor = new HostMonitor(h_host_device_interface, port);
+  // HamaPeer - init HostMonitor for Pinned Memory
+  host_monitor = new HostMonitor(h_host_device_interface, port, is_debugging);
 }
