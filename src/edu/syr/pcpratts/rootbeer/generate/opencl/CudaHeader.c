@@ -153,7 +153,7 @@ public:
 
   enum TYPE {
     INT, LONG, FLOAT, DOUBLE, STRING, STRING_ARRAY,
-    KEY_VALUE_PAIR, NOT_AVAILABLE
+    KEY_VALUE_PAIR, NULL_TYPE, NOT_AVAILABLE
   };
   volatile TYPE return_type;
   volatile TYPE key_type;

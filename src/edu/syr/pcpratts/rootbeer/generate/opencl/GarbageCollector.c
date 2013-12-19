@@ -2350,10 +2350,9 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         host_device_interface->str_val3[str_param3_count] = '\0';
       }
 
-      if (return_type == HostDeviceInterface::KEY_VALUE_PAIR) {
-        host_device_interface->key_type = key_type;
-        host_device_interface->value_type = value_type;
-      }
+      // Set key and value type
+      host_device_interface->key_type = key_type;
+      host_device_interface->value_type = value_type;
 
       /***********************************************************************/
       // Activate task for HostMonitor
@@ -2552,10 +2551,6 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         host_device_interface->str_val3[0] = '\0';
         host_device_interface->use_str_val3 = false;
       }
-      if (return_type == HostDeviceInterface::KEY_VALUE_PAIR) {
-        host_device_interface->key_type = HostDeviceInterface::NOT_AVAILABLE;
-        host_device_interface->value_type = HostDeviceInterface::NOT_AVAILABLE;
-      }
       if (return_type == HostDeviceInterface::STRING_ARRAY) {
         host_device_interface->int_val1 = 0;
         host_device_interface->use_int_val1 = false;
@@ -2569,6 +2564,8 @@ T at_illecker_getResult($$__global$$ char * gc_info,
 
       host_device_interface->command = HostDeviceInterface::UNDEFINED;
       host_device_interface->return_type = HostDeviceInterface::NOT_AVAILABLE;
+      host_device_interface->key_type = HostDeviceInterface::NOT_AVAILABLE;
+      host_device_interface->value_type = HostDeviceInterface::NOT_AVAILABLE;
 
       /***********************************************************************/ 
       // Notify HostMonitor that result was received
@@ -2613,37 +2610,44 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info
   bool use_string_value = false;
   char * message_obj_deref;
   
-  // check message type
-  if (at_illecker_typeof_Integer(gc_info, message_obj_ref)) {
-    message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
-    int_value = *(( int *) &message_obj_deref[32]);
-    use_int_value = true;
-    
-  } else if (at_illecker_typeof_Long(gc_info, message_obj_ref)) {
-    message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
-    long_value = *(( long long *) &message_obj_deref[32]);
-    use_long_value = true;
-    
-  } else if (at_illecker_typeof_Float(gc_info, message_obj_ref)) {
-    message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
-    float_value = *(( float *) &message_obj_deref[32]);
-    use_float_value = true;
-    
-  } else if (at_illecker_typeof_Double(gc_info, message_obj_ref)) {
-    message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
-    double_value = *(( double *) &message_obj_deref[32]);
-    use_double_value = true;
-    
-  } else if (at_illecker_typeof_String(gc_info, message_obj_ref)) {
-    string_value = message_obj_ref;
-    use_string_value = true;
+  // check key value
+  if (message_obj_ref == -1) {
+    printf("Exception in HamaPeer.send: unsupported NULL Type\n");
+    return;
 
   } else {
-    // TODO throw CudaException unsupported Type
-    printf("Exception in HamaPeer.send: unsupported Type\n");
-    return;
+    // check message type
+    if (at_illecker_typeof_Integer(gc_info, message_obj_ref)) {
+      message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
+      int_value = *(( int *) &message_obj_deref[32]);
+      use_int_value = true;
+      
+    } else if (at_illecker_typeof_Long(gc_info, message_obj_ref)) {
+      message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
+      long_value = *(( long long *) &message_obj_deref[32]);
+      use_long_value = true;
+      
+    } else if (at_illecker_typeof_Float(gc_info, message_obj_ref)) {
+      message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
+      float_value = *(( float *) &message_obj_deref[32]);
+      use_float_value = true;
+      
+    } else if (at_illecker_typeof_Double(gc_info, message_obj_ref)) {
+      message_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, message_obj_ref);
+      double_value = *(( double *) &message_obj_deref[32]);
+      use_double_value = true;
+      
+    } else if (at_illecker_typeof_String(gc_info, message_obj_ref)) {
+      string_value = message_obj_ref;
+      use_string_value = true;
+      
+    } else {
+      // TODO throw CudaException unsupported Type
+      printf("Exception in HamaPeer.send: unsupported Type\n");
+      return;
+    }
   }
-  
+
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEND_MSG,
     HostDeviceInterface::NOT_AVAILABLE, false, // do not use the return value
     0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
@@ -3051,6 +3055,8 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_
     key_type = HostDeviceInterface::DOUBLE;
   } else if (at_illecker_typeof_String(gc_info, key_obj_ref)) {
     key_type = HostDeviceInterface::STRING;
+  } else if (key_obj_ref == -1) {
+    key_type = HostDeviceInterface::NULL_TYPE;
   } else {
     // TODO throw CudaException unsupported Type
     printf("Exception in HamaPeer.readNext: unsupported Key Type\n");
@@ -3068,9 +3074,17 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_
     value_type = HostDeviceInterface::DOUBLE;
   } else if (at_illecker_typeof_String(gc_info, value_obj_ref)) {
     value_type = HostDeviceInterface::STRING;
+  } else if (value_obj_ref == -1) {
+    value_type = HostDeviceInterface::NULL_TYPE;
   } else {
     // TODO throw CudaException unsupported Type
     printf("Exception in HamaPeer.readNext: unsupported Value Type\n");
+    return false;
+  }
+
+  if ( (key_type == HostDeviceInterface::NULL_TYPE) &&
+       (value_type == HostDeviceInterface::NULL_TYPE) ) {
+    printf("Exception in HamaPeer.readNext: key and value are NULL!\n");
     return false;
   }
 
@@ -3122,13 +3136,15 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
   int string_val2 = 0;
   bool use_string_val2 = false;
 
+  HostDeviceInterface::TYPE key_type;
+  HostDeviceInterface::TYPE value_type;
+
   char * key_obj_deref;
   char * value_obj_deref;
 
   // check key value
   if (key_obj_ref == -1) {
-    printf("Exception in HamaPeer.write: unsupported NULL Key Type\n");
-    return;
+    key_type = HostDeviceInterface::NULL_TYPE;
 
   } else {
     key_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, key_obj_ref);
@@ -3137,18 +3153,23 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
     if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
       int_val1 = *(( int *) &key_obj_deref[32]);
       use_int_val1 = true;
+      key_type = HostDeviceInterface::INT;
     } else if (at_illecker_typeof_Long(gc_info, key_obj_ref)) {
       long_val1 = *(( long long *) &key_obj_deref[32]);
       use_long_val1 = true;
+      key_type = HostDeviceInterface::LONG;
     } else if (at_illecker_typeof_Float(gc_info, key_obj_ref)) {
       float_val1 = *(( float *) &key_obj_deref[32]);
       use_float_val1 = true;
+      key_type = HostDeviceInterface::FLOAT;
     } else if (at_illecker_typeof_Double(gc_info, key_obj_ref)) {
       double_val1 = *(( double *) &key_obj_deref[32]);
       use_double_val1 = true;
+      key_type = HostDeviceInterface::DOUBLE;
     } else if (at_illecker_typeof_String(gc_info, key_obj_ref)) {
       string_val1 = key_obj_ref;
       use_string_val1 = true;
+      key_type = HostDeviceInterface::STRING;
     } else {
       // TODO throw CudaException unsupported Type
       printf("Exception in HamaPeer.write: unsupported Key Type\n");
@@ -3158,8 +3179,7 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
 
   // check value value
   if (value_obj_ref == -1) {
-    printf("Exception in HamaPeer.write: unsupported NULL Value Type\n");
-    return;
+    value_type = HostDeviceInterface::NULL_TYPE;
 
   } else {
     value_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, value_obj_ref);
@@ -3168,18 +3188,23 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
     if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
       int_val2 = *(( int *) &value_obj_deref[32]);
       use_int_val2 = true;
+      value_type = HostDeviceInterface::INT;
     } else if (at_illecker_typeof_Long(gc_info, value_obj_ref)) {
       long_val2 = *(( long long *) &value_obj_deref[32]);
       use_long_val2 = true;
+      value_type = HostDeviceInterface::LONG;
     } else if (at_illecker_typeof_Float(gc_info, value_obj_ref)) {
       float_val2 = *(( float *) &value_obj_deref[32]);
       use_float_val2 = true;
+      value_type = HostDeviceInterface::FLOAT;
     } else if (at_illecker_typeof_Double(gc_info, value_obj_ref)) {
       double_val2 = *(( double *) &value_obj_deref[32]);
       use_double_val2 = true;
+      value_type = HostDeviceInterface::DOUBLE;
     } else if (at_illecker_typeof_String(gc_info, value_obj_ref)) {
       string_val2 = value_obj_ref;
       use_string_val2 = true;
+      value_type = HostDeviceInterface::STRING;
     } else {
       // TODO throw CudaException unsupported Type
       printf("Exception in HamaPeer.write: unsupported Value Type\n");
@@ -3187,9 +3212,15 @@ void edu_syr_pcpratts_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_inf
     }
   }
 
+  if ( (key_type == HostDeviceInterface::NULL_TYPE) &&
+       (value_type == HostDeviceInterface::NULL_TYPE) ) {
+    printf("Exception in HamaPeer.write: key and value are NULL!\n");
+    return;
+  }
+
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::WRITE_KEYVALUE,
     HostDeviceInterface::NOT_AVAILABLE, false, // do not use the return value
-    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+    0, key_type, value_type,
     int_val1, use_int_val1,
     int_val2, use_int_val2,
     0, false,
@@ -3232,6 +3263,8 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$
     key_type = HostDeviceInterface::DOUBLE;
   } else if (at_illecker_typeof_String(gc_info, key_obj_ref)) {
     key_type = HostDeviceInterface::STRING;
+  } else if (key_obj_ref == -1) {
+    key_type = HostDeviceInterface::NULL_TYPE;
   } else {
     // TODO throw CudaException unsupported Type
     printf("Exception in HamaPeer.sequenceFileReadNext: unsupported Key Type\n");
@@ -3249,9 +3282,17 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$
     value_type = HostDeviceInterface::DOUBLE;
   } else if (at_illecker_typeof_String(gc_info, value_obj_ref)) {
     value_type = HostDeviceInterface::STRING;
+  } else if (value_obj_ref == -1) {
+    value_type = HostDeviceInterface::NULL_TYPE;
   } else {
     // TODO throw CudaException unsupported Type
     printf("Exception in HamaPeer.sequenceFileReadNext: unsupported Value Type\n");
+    return false;
+  }
+
+  if ( (key_type == HostDeviceInterface::NULL_TYPE) &&
+       (value_type == HostDeviceInterface::NULL_TYPE) ) {
+    printf("Exception in HamaPeer.sequenceFileReadNext: key and value are NULL!\n");
     return false;
   }
 
@@ -3303,13 +3344,15 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ 
   int string_val2 = 0;
   bool use_string_val2 = false;
 
+  HostDeviceInterface::TYPE key_type;
+  HostDeviceInterface::TYPE value_type;
+
   char * key_obj_deref;
   char * value_obj_deref;
 
   // check key value
   if (key_obj_ref == -1) {
-    printf("Exception in HamaPeer.sequenceFileAppend: unsupported NULL Key Type\n");
-    return;
+    key_type = HostDeviceInterface::NULL_TYPE;
 
   } else {
     key_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, key_obj_ref);
@@ -3318,29 +3361,33 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ 
     if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
       int_val1 = *(( int *) &key_obj_deref[32]);
       use_int_val1 = true;
+      key_type = HostDeviceInterface::INT;
     } else if (at_illecker_typeof_Long(gc_info, key_obj_ref)) {
       long_val1 = *(( long long *) &key_obj_deref[32]);
       use_long_val1 = true;
+      key_type = HostDeviceInterface::LONG;
     } else if (at_illecker_typeof_Float(gc_info, key_obj_ref)) {
       float_val1 = *(( float *) &key_obj_deref[32]);
       use_float_val1 = true;
+      key_type = HostDeviceInterface::FLOAT;
     } else if (at_illecker_typeof_Double(gc_info, key_obj_ref)) {
       double_val1 = *(( double *) &key_obj_deref[32]);
       use_double_val1 = true;
+      key_type = HostDeviceInterface::DOUBLE;
     } else if (at_illecker_typeof_String(gc_info, key_obj_ref)) {
       string_val1 = key_obj_ref;
       use_string_val1 = true;
+      key_type = HostDeviceInterface::STRING;
     } else {
       // TODO throw CudaException unsupported Type
       printf("Exception in HamaPeer.sequenceFileAppend: unsupported Key Type\n");
-      return;
+      return false;
     }
   }
 
   // check value value
   if (value_obj_ref == -1) {
-    printf("Exception in HamaPeer.sequenceFileAppend: unsupported NULL Value Type\n");
-    return;
+    value_type = HostDeviceInterface::NULL_TYPE;
 
   } else {
     value_obj_deref = edu_syr_pcpratts_gc_deref(gc_info, value_obj_ref);
@@ -3349,28 +3396,39 @@ bool edu_syr_pcpratts_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ 
     if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
       int_val2 = *(( int *) &value_obj_deref[32]);
       use_int_val2 = true;
+      value_type = HostDeviceInterface::INT;
     } else if (at_illecker_typeof_Long(gc_info, value_obj_ref)) {
       long_val2 = *(( long long *) &value_obj_deref[32]);
       use_long_val2 = true;
+      value_type = HostDeviceInterface::LONG;
     } else if (at_illecker_typeof_Float(gc_info, value_obj_ref)) {
       float_val2 = *(( float *) &value_obj_deref[32]);
       use_float_val2 = true;
+      value_type = HostDeviceInterface::FLOAT;
     } else if (at_illecker_typeof_Double(gc_info, value_obj_ref)) {
       double_val2 = *(( double *) &value_obj_deref[32]);
       use_double_val2 = true;
+      value_type = HostDeviceInterface::DOUBLE;
     } else if (at_illecker_typeof_String(gc_info, value_obj_ref)) {
       string_val2 = value_obj_ref;
       use_string_val2 = true;
+      value_type = HostDeviceInterface::STRING;
     } else {
       // TODO throw CudaException unsupported Type
       printf("Exception in HamaPeer.sequenceFileAppend: unsupported Value Type\n");
-      return;
+      return false;
     }
+  }
+
+  if ( (key_type == HostDeviceInterface::NULL_TYPE) &&
+       (value_type == HostDeviceInterface::NULL_TYPE) ) {
+    printf("Exception in HamaPeer.sequenceFileAppend: key and value are NULL!\n");
+    return false;
   }
 
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEQFILE_APPEND,
            HostDeviceInterface::INT, true, // expecting integer return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+           0, key_type, value_type,
            int_val1, use_int_val1,
            int_val2, use_int_val2,
            file_id, true,
