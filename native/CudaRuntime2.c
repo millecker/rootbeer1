@@ -2134,9 +2134,91 @@ public:
       case HostDeviceInterface::WRITE_KEYVALUE:
       case HostDeviceInterface::SEQFILE_APPEND: {
         int response = 0; // false
+        // Variation with repetition (n=6,k=2) -> 6^2 - 1 (null,null) variations
         /***********************************************************************/
+        // (null,int)
+        if ( (host_device_interface->key_type == HostDeviceInterface::NULL_TYPE) &&
+             (host_device_interface->use_int_val2) ) {
+
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true,
+                                  host_device_interface->int_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->int_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
+        } 
+        // (null,long)
+        else if ( (host_device_interface->key_type == HostDeviceInterface::NULL_TYPE) &&
+             (host_device_interface->use_long_val2) ) {
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->long_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->long_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
+        } 
+        // (null,float)
+        else if ( (host_device_interface->key_type == HostDeviceInterface::NULL_TYPE) &&
+             (host_device_interface->use_float_val2) ) {
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->float_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->float_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
+        } 
+        // (null,double)
+        else if ( (host_device_interface->key_type == HostDeviceInterface::NULL_TYPE) &&
+             (host_device_interface->use_double_val2) ) {
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->double_val2);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->double_val2);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
+        } 
+        // (null,string)
+        else if ( (host_device_interface->key_type == HostDeviceInterface::NULL_TYPE) &&
+             (host_device_interface->use_str_val2) ) {
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  string(const_cast<char *>(host_device_interface->str_val2)));
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
+        }
+        /***********************************************************************/
+        // (int,null)
+        else if ( (host_device_interface->use_int_val1) &&
+             (host_device_interface->value_type == HostDeviceInterface::NULL_TYPE) ) {
+
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true,
+                                  host_device_interface->int_val1);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->int_val1);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
+        }
         // (int,int)
-        if ( (host_device_interface->use_int_val1) &&
+        else if ( (host_device_interface->use_int_val1) &&
              (host_device_interface->use_int_val2) ) {
 
           if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
@@ -2212,6 +2294,19 @@ public:
           }
         }
         /***********************************************************************/
+        // (long,null)
+        else if ( (host_device_interface->use_long_val1) &&
+             (host_device_interface->value_type == HostDeviceInterface::NULL_TYPE) ) {
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->long_val1);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->long_val1);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
+        }
         // (long,int)
         else if ( (host_device_interface->use_long_val1) &&
              (host_device_interface->use_int_val2) ) {
@@ -2288,6 +2383,19 @@ public:
           }
         }
         /***********************************************************************/
+        // (float,null)
+        else if ( (host_device_interface->use_float_val1) &&
+             (host_device_interface->value_type == HostDeviceInterface::NULL_TYPE) ) {
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->float_val1);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->float_val1);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
+        }
         // (float,int)
         else if ( (host_device_interface->use_float_val1) &&
              (host_device_interface->use_int_val2) ) {
@@ -2364,6 +2472,19 @@ public:
           }
         }
         /***********************************************************************/
+        // (double,null)
+        else if ( (host_device_interface->use_double_val1) &&
+             (host_device_interface->value_type == HostDeviceInterface::NULL_TYPE) ) {
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  host_device_interface->double_val1);
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  host_device_interface->double_val1);
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
+        } 
         // (double,int)
         else if ( (host_device_interface->use_double_val1) &&
              (host_device_interface->use_int_val2) ) {
@@ -2440,8 +2561,21 @@ public:
           }
         }
         /***********************************************************************/
+        // (string,null)
+        else if ( (host_device_interface->use_str_val1) &&
+             (host_device_interface->value_type == HostDeviceInterface::NULL_TYPE) ) {
+          if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
+            response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
+                                  string(const_cast<char *>(host_device_interface->str_val1)));
+          } else {
+            socket_client_->sendCMD(HostDeviceInterface::SEQFILE_APPEND, false,
+                                  host_device_interface->int_val3, // file_id
+                                  string(const_cast<char *>(host_device_interface->str_val1)));
+            response = socket_client_->getResult<int32_t>(HostDeviceInterface::SEQFILE_APPEND);
+          }
+        } 
         // (string,int)
-        if ( (host_device_interface->use_str_val1) &&
+        else if ( (host_device_interface->use_str_val1) &&
              (host_device_interface->use_int_val2) ) {
           if (host_device_interface->command == HostDeviceInterface::WRITE_KEYVALUE) {
             response = socket_client_->sendCMD(HostDeviceInterface::WRITE_KEYVALUE, true, 
