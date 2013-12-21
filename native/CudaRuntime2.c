@@ -812,51 +812,15 @@ public:
     // check if response is expected
     if (expected_response_cmd == cmd) {
 
-      switch (cmd) {
+      result = deserialize<T>(*file_in_stream_);
+      return result;
 
-        case HostDeviceInterface::GET_MSG: {
-          T msg;
-          msg = deserialize<T>(*file_in_stream_);
-          return msg;
-        }
-        case HostDeviceInterface::GET_MSG_COUNT: {
-          T msg_count;
-          msg_count = deserialize<T>(*file_in_stream_);
-          return msg_count;
-        }
-        case HostDeviceInterface::GET_PEERNAME: {
-          T peername;
-          peername = deserialize<T>(*file_in_stream_);
-          return peername;
-        }
-        case HostDeviceInterface::GET_PEER_INDEX: {
-          T peer_index = deserialize<T>(*file_in_stream_);
-          return peer_index;
-        }
-        case HostDeviceInterface::GET_PEER_COUNT: {
-          T peer_count = deserialize<T>(*file_in_stream_);
-          return peer_count;
-        }
-        case HostDeviceInterface::GET_SUPERSTEP_COUNT: {
-          T superstep_count = deserialize<T>(*file_in_stream_);
-          return superstep_count;
-        }
-        
-        case HostDeviceInterface::SEQFILE_OPEN: {
-          T file_id = deserialize<T>(*file_in_stream_);
-          return file_id;
-        }
-        case HostDeviceInterface::SEQFILE_APPEND: {
-          result = deserialize<T>(*file_in_stream_);
-          return result;
-        }
-        case HostDeviceInterface::SEQFILE_CLOSE: {
-          result = deserialize<T>(*file_in_stream_);
-          return result;
-        }
-      }
-      // Not expected response
-    } else {
+    } else if ( (expected_response_cmd == HostDeviceInterface::GET_MSG) &&
+                (cmd == HostDeviceInterface::END_OF_DATA)) {
+
+      return result; // default constructor (empty string, int 0)
+      
+    } else { // Not expected response
       
       /*
        case CLOSE: {
