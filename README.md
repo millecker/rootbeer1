@@ -49,6 +49,21 @@ competative speed when using single-dimensional arrays of primitive types.
 
 See here: http://rbcompiler.com/download.html
 
+## Command Line Options
+
+* -nemu = test without GPU
+* -runeasytests = run test suite to see if things are working
+* -printdeviceinfo = print out information regarding your GPU
+* -maxrregcount = sent to CUDA compiler to limit register count
+* -noarraychecks = remove array out of bounds checks once you get your application to work
+* -nodoubles = you are telling rootbeer that there are no doubles and we can compile with older versions of CUDA
+* -noexceptions = remove exception checking
+* -shared-mem-size = specify the shared memory size
+* -32bit = compile with 32bit
+* -64bit = compile with 64bit (if you are on a 64bit machine you will want to use just this)
+
+Once you get started, you will find you want to use a combination of -maxregcount, -shared-mem-size and the thread count sent to the GPU to control occupancy.
+
 ## CUDA Setup
 
 You need to have the CUDA Toolkit and CUDA Driver installed to use Rootbeer.
