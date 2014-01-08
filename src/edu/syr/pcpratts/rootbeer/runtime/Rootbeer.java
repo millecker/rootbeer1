@@ -31,7 +31,7 @@ public class Rootbeer implements IRootbeer {
     this();
     
     int port = Integer.parseInt(env.get("hama.pipes.command.port"));
-    boolean debugging = Boolean.parseBoolean(env.get("hama.pipes.logging"));
+    boolean debugging = (Integer.parseInt(env.get("hama.pipes.logging")) == 0)? false : true;
     if (debugging) {
       System.out.println("Starting Rootbeer using port: " + port+" debugging: "+debugging);
     }
