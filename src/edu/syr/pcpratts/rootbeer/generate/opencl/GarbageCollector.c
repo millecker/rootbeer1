@@ -2217,7 +2217,6 @@ T at_illecker_getResult($$__global$$ char * gc_info,
 
   int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
   int count = 0;
-  int timeout = 0;
   bool done = false;
 
   int str_param1_value = 0;
@@ -2235,11 +2234,7 @@ T at_illecker_getResult($$__global$$ char * gc_info,
   // loop until done == true
   while (count < 100) {
 
-    // TODO timeout to break infinite loop
-    if (++timeout > 100000) {
-      break;
-    }
-    __syncthreads();
+    //__syncthreads();
     
     if (done) {
       break;
@@ -2260,12 +2255,7 @@ T at_illecker_getResult($$__global$$ char * gc_info,
       }
       /***********************************************************************/
       // wait for possible old task to end
-      int inner_timeout = 0;
       while (host_device_interface->has_task) {
-        // TODO timeout to break infinite loop
-        if (++inner_timeout > 10000) {
-          break;
-        }
       }
 
       /***********************************************************************/
@@ -2362,14 +2352,9 @@ T at_illecker_getResult($$__global$$ char * gc_info,
 
       /***********************************************************************/
       // wait for socket communication to end
-      inner_timeout = 0;
       while (!host_device_interface->is_result_available) {
         __threadfence_system();
         //__threadfence();
-	// TODO timeout to break infinite loop 
-        if (++inner_timeout > 30000) {
-          break;
-        }
       }
 
       /***********************************************************************/
