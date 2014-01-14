@@ -53,12 +53,41 @@ void edu_syr_pcpratts_threadfence_block(){
   __threadfence_block();
 }
 
+__device__ clock_t global_now;
+
 __device__
-void edu_syr_pcpratts_threadfence_system(){
+void at_illecker_threadfence_system(){
   __threadfence_system();
 }
 
-__device__ clock_t global_now;
+// Inter-Block Lock-Based Synchronization
+__device__ int global_mutex = 0;
+__device__
+void at_illecker_syncblocks(int goal_value){
+  // threadId in a block
+  // threadIdx.x * blockDim.y + threadIdx.y
+  int tid_in_block = threadIdx.x;
+  
+  // only thread 0 is used for synchronization
+  if (tid_in_block == 0) {
+    atomicAdd(&global_mutex, 1);
+
+    // only when all blocks add 1 to global_mutex
+    // global_mutex will equal to goal_value
+    int count = 0;
+    while (count < 100) {
+      __threadfence();
+      if (global_mutex == goal_value) {
+        break;
+      }
+      count++;
+      if (count > 50) {
+        count = 0;
+      }
+    }
+  }
+  __syncthreads();
+}
 
 /*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_START*/
 
