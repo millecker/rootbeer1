@@ -64,9 +64,8 @@ void at_illecker_threadfence_system(){
 __device__ int global_mutex = 0;
 __device__
 void at_illecker_syncblocks(int goal_value){
-  // threadId in a block
-  // threadIdx.x * blockDim.y + threadIdx.y
-  int tid_in_block = threadIdx.x;
+  int tid_in_block = threadIdx.x; // * blockDim.y + threadIdx.y
+  int count = 0;
   
   // only thread 0 is used for synchronization
   if (tid_in_block == 0) {
@@ -74,10 +73,63 @@ void at_illecker_syncblocks(int goal_value){
 
     // only when all blocks add 1 to global_mutex
     // global_mutex will equal to goal_value
-    int count = 0;
+    // busy wait
     while (count < 100) {
       __threadfence();
       if (global_mutex == goal_value) {
+        break;
+      }
+      count++;
+      if (count > 50) {
+        count = 0;
+      }
+    }
+  }
+  __syncthreads();
+}
+
+// Inter-Block Lock-Free Synchronization
+__device__
+void at_illecker_syncblocks_lock_free(int goal_value, int *array_in, int *array_out){
+  int tid_in_block = threadIdx.x; // * blockDim.y + threadIdx.y
+  int nBlockNum = gridDim.x; // * gridDim.y
+  int bid = blockIdx.x; // * gridDim.y + blockIdx.y
+  int count = 0;
+
+  // only thread 0 is used for synchronization
+  if (tid_in_block == 0) {
+    array_in[bid] = goal_value;
+  }
+  
+  if (bid == 1) {
+
+    if (tid_in_block < nBlockNum) {
+      // busy wait
+      count = 0;
+      while (count < 100) {
+        __threadfence();
+        if (array_in[tid_in_block] == goal_value) {
+          break;
+        }
+        count++;
+        if (count > 50) {
+          count = 0;
+        }
+      }
+    }
+    __syncthreads();
+
+    if (tid_in_block < nBlockNum) {
+      array_out[tid_in_block] = goal_value;
+    }
+  }
+
+  if (tid_in_block == 0) {
+    // busy wait
+    count = 0;
+    while (count < 100) {
+      __threadfence();
+      if (array_out[bid] == goal_value) {
         break;
       }
       count++;
