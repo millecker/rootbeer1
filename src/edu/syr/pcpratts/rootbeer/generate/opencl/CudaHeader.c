@@ -53,6 +53,11 @@ void edu_syr_pcpratts_threadfence_block(){
   __threadfence_block();
 }
 
+__device__
+void edu_syr_pcpratts_threadfence_system(){
+  __threadfence_system();
+}
+
 __device__ clock_t global_now;
 
 /*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_START*/
