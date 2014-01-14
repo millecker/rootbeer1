@@ -76,7 +76,7 @@ public class RootbeerGpu {
   public static void threadfenceSystem(){
   }
   
-  public static void syncblocks(int goalValue){ 
+  public static void syncblocks(int goal_value){ 
   }
   
   public static long getRef(Object obj) {

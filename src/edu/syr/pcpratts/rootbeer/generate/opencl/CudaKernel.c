@@ -54,13 +54,18 @@ long long java_lang_System_nanoTime(char * gc_info, int * exception){
 __global__ void entry(char * gc_info, char * to_space, int * handles, 
   long long * to_space_free_ptr, long long * space_size, int * exceptions,
   int * java_lang_class_refs, HostDeviceInterface * h_d_interface,
-  int num_blocks) {
+  int * barrier_arr_in, int * barrier_arr_out, int num_blocks) {
 
   // HamaPeer - host_device_interface pinned memory parameter
   host_device_interface = h_d_interface;
-  // printf("host_device_interface.ptr: %p\n", host_device_interface);
-  // printf("host_device_interface->lock_thread_id: %d\n", host_device_interface->lock_thread_id);
-
+  //printf("host_device_interface.ptr: %p\n", host_device_interface);
+  
+  // Barrier arrays (size of blocks) for Inter-Block Lock-Free Synchronization
+  barrier_array_in = barrier_arr_in;
+  //printf("barrier_array_in.ptr: %p\n", barrier_array_in);
+  barrier_array_out = barrier_arr_out;
+  //printf("barrier_array_out.ptr: %p\n", barrier_array_out);
+  
   edu_syr_pcpratts_gc_init(to_space, *space_size, java_lang_class_refs);
   __syncthreads();
 

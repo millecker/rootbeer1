@@ -589,7 +589,7 @@ void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_threadfenceSystem($$__global$
 
 $$__device__$$ 
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_syncblocks($$__global$$ char * gc_info, int goal_value, int * exception){
-  at_illecker_syncblocks(goal_value);
+  at_illecker_syncblocks(barrier_array_in, barrier_array_out, goal_value);
 }
 
 $$__device__$$ char

@@ -36,6 +36,8 @@ static CUdeviceptr gpuExceptionsMemory;
 static CUdeviceptr gpuClassMemory;
 static CUdeviceptr gpuHeapEndPtr;
 static CUdeviceptr gpuBufferSize;
+static CUdeviceptr gpuBarrierArrayIn;
+static CUdeviceptr gpuBarrierArrayOut;
 static CUtexref    cache;
 
 static jclass thisRefClass;
@@ -478,7 +480,7 @@ public:
  */
 template<class T>
 void serialize(T t, FileOutStream& stream) {
-  serializeString(toString<T>(t), stream);
+  serialize<string>(toString<T>(t), stream);
 }
 
 /**
@@ -2699,8 +2701,8 @@ public:
 HostMonitor *host_monitor = NULL;
 
 // Global HostDeviceInterface
-HostDeviceInterface *h_host_device_interface = NULL;
-CUdeviceptr d_host_device_interface;
+HostDeviceInterface *hostDeviceInterface = NULL;
+CUdeviceptr gpuHostDeviceInterface;
 
 
 /*****************************************************************************/
@@ -2901,20 +2903,36 @@ void initDevice(JNIEnv * env, jobject this_ref, jint max_blocks_per_proc, jint m
 
   savePointers(env, this_ref);
 
-  // HamaPeer - Allocate HostDeviceInterface Pinned Memory
-  // printf("initDevice - allocate HostDeviceInterface sizeof: %ld bytes\n", sizeof(HostDeviceInterface));
+  // TODO
+  // numBlocks is the maximum possible numBlocks (e.g., 114688)
+  // Allocate only actual numBlocks later
+  //printf("initDevice - numBlocks: %d\n", numBlocks);
+  
+  // HamaPeer - Allocate gpuBarrierArrayIn for Inter-Block Lock-Free Synchronization
+  //printf("initDevice - allocate gpuBarrierArrayIn sizeof: %ld bytes\n", numBlocks * sizeof(jint));
+  status = cuMemAlloc(&gpuBarrierArrayIn, numBlocks * sizeof(jint));
+  CHECK_STATUS(env,"gpuBarrierArrayIn memory allocation failed",status)
+  //printf("initDevice - gpuBarrierArrayIn.ptr: %p\n", gpuBarrierArrayIn);
 
-  // HamaPeer - Allocate HOST host_device_interface as pinned memory
-  status = cuMemHostAlloc((void**)&h_host_device_interface, sizeof(HostDeviceInterface),
+  // HamaPeer - Allocate gpuBarrierArrayOut for Inter-Block Lock-Free Synchronization
+  //printf("initDevice - allocate gpuBarrierArrayOut sizeof: %ld bytes\n", numBlocks * sizeof(jint));
+  status = cuMemAlloc(&gpuBarrierArrayOut, numBlocks * sizeof(jint));
+  CHECK_STATUS(env,"gpuBarrierArrayOut memory allocation failed",status)
+  //printf("initDevice - gpuBarrierArrayOut.ptr: %p\n", gpuBarrierArrayOut);
+
+  // HamaPeer - Allocate HostDeviceInterface Pinned Memory
+  //printf("initDevice - allocate HostDeviceInterface sizeof: %ld bytes\n", sizeof(HostDeviceInterface));
+  status = cuMemHostAlloc((void**)&hostDeviceInterface, sizeof(HostDeviceInterface),
                           CU_MEMHOSTALLOC_WRITECOMBINED | CU_MEMHOSTALLOC_DEVICEMAP);
-  CHECK_STATUS(env,"h_host_device_interface memory allocation failed",status)
+  CHECK_STATUS(env,"hostDeviceInterface memory allocation failed",status)
 
   // HamaPeer - initialize object
-  h_host_device_interface->init();
+  hostDeviceInterface->init();
 
-  // HamaPeer - Allocate DEVICE host_device_interface as pinned memory
-  status = cuMemHostGetDevicePointer(&d_host_device_interface, h_host_device_interface, 0);
-  CHECK_STATUS(env,"d_host_device_interface memory allocation failed",status)
+  // HamaPeer - Ged Device Pointer of HostDeviceInterface object
+  status = cuMemHostGetDevicePointer(&gpuHostDeviceInterface, hostDeviceInterface, 0);
+  CHECK_STATUS(env,"gpuHostDeviceInterface cuMemHostGetDevicePointer failed",status)
+  //printf("initDevice - gpuHostDeviceInterface.ptr: %p\n", gpuHostDeviceInterface);
 
   return;
 }
@@ -3286,13 +3304,14 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   CHECK_STATUS(env, "error in cuModuleLoad", status);
   free(fatcubin);
 
-  status = cuModuleGetFunction(&cuFunction, cuModule, "_Z5entryPcS_PiPxS1_S0_S0_P19HostDeviceInterfacei"); 
+  status = cuModuleGetFunction(&cuFunction, cuModule, "_Z5entryPcS_PiPxS1_S0_S0_P19HostDeviceInterfaceS0_S0_i"); 
   CHECK_STATUS(env,"error in cuModuleGetFunction",status)
 
   status = cuFuncSetCacheConfig(cuFunction, CU_FUNC_CACHE_PREFER_L1);
   CHECK_STATUS(env,"error in cuFuncSetCacheConfig",status)
 
-  status = cuParamSetSize(cuFunction, (8 * sizeof(CUdeviceptr) + sizeof(int))); 
+  // HamaPeer Align argmument count 
+  status = cuParamSetSize(cuFunction, (10 * sizeof(CUdeviceptr) + sizeof(int))); 
   CHECK_STATUS(env,"error in cuParamSetSize",status)
 
   offset = 0;
@@ -3325,13 +3344,18 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   offset += sizeof(CUdeviceptr);
 
   // HamaPeer - Pass HostDeviceInterface argument to kernel function
-  // printf("loadFunction - lock_thread_id: %d\n",h_host_device_interface->lock_thread_id);
-  // printf("loadFunction - h_host_device_interface: %p\n",h_host_device_interface);
-  // printf("loadFunction - d_host_device_interface: %p\n",d_host_device_interface);
-  // fflush(stdout);
+  status = cuParamSetv(cuFunction, offset, (void *) &gpuHostDeviceInterface, sizeof(CUdeviceptr)); 
+  CHECK_STATUS(env,"error in cuParamSetv gpuHostDeviceInterface",status)
+  offset += sizeof(CUdeviceptr);
 
-  status = cuParamSetv(cuFunction, offset, (void *) &d_host_device_interface, sizeof(CUdeviceptr)); 
-  CHECK_STATUS(env,"error in cuParamSetv d_host_device_interface",status)
+  // HamaPeer - Pass gpuBarrierArrayIn to kernel function (Inter-Block Lock-Free Synchronization)
+  status = cuParamSetv(cuFunction, offset, (void *) &gpuBarrierArrayIn, sizeof(CUdeviceptr)); 
+  CHECK_STATUS(env,"error in cuParamSetv gpuBarrierArrayIn",status)
+  offset += sizeof(CUdeviceptr);
+
+  // HamaPeer - Pass gpuBarrierArrayOut to kernel function (Inter-Block Lock-Free Synchronization)
+  status = cuParamSetv(cuFunction, offset, (void *) &gpuBarrierArrayOut, sizeof(CUdeviceptr)); 
+  CHECK_STATUS(env,"error in cuParamSetv gpuBarrierArrayOut",status)
   offset += sizeof(CUdeviceptr);
 
   status = cuParamSeti(cuFunction, offset, num_blocks); 
@@ -3458,5 +3482,5 @@ JNIEXPORT void JNICALL Java_edu_syr_pcpratts_rootbeer_runtime2_cuda_CudaRuntime2
   (JNIEnv *env, jobject this_ref, jint port, jboolean is_debugging) {
 
   // HamaPeer - init HostMonitor for Pinned Memory
-  host_monitor = new HostMonitor(h_host_device_interface, port, is_debugging);
+  host_monitor = new HostMonitor(hostDeviceInterface, port, is_debugging);
 }

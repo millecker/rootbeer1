@@ -61,6 +61,7 @@ void at_illecker_threadfence_system(){
 }
 
 // Inter-Block Lock-Based Synchronization
+/*
 __device__ int global_mutex = 0;
 __device__
 void at_illecker_syncblocks(int goal_value){
@@ -75,10 +76,10 @@ void at_illecker_syncblocks(int goal_value){
     // global_mutex will equal to goal_value
     // busy wait
     while (count < 100) {
-      __threadfence();
       if (global_mutex == goal_value) {
         break;
       }
+      __threadfence();
       count++;
       if (count > 50) {
         count = 0;
@@ -87,39 +88,43 @@ void at_illecker_syncblocks(int goal_value){
   }
   __syncthreads();
 }
+*/
 
 // Inter-Block Lock-Free Synchronization
+__device__ int *barrier_array_in;
+__device__ int *barrier_array_out;
 __device__
-void at_illecker_syncblocks_lock_free(int goal_value, int *array_in, int *array_out){
+void at_illecker_syncblocks(int *array_in, int *array_out, int goal_value){
   int tid_in_block = threadIdx.x; // * blockDim.y + threadIdx.y
-  int nBlockNum = gridDim.x; // * gridDim.y
-  int bid = blockIdx.x; // * gridDim.y + blockIdx.y
+  int blockId = blockIdx.x; // * gridDim.y + blockIdx.y
+  int blockCount = gridDim.x; // * gridDim.y
   int count = 0;
 
   // only thread 0 is used for synchronization
   if (tid_in_block == 0) {
-    array_in[bid] = goal_value;
+    array_in[blockId] = goal_value;
+    // printf("block: %d goal_value: %d\n", blockId, goal_value);
   }
-  
-  if (bid == 1) {
 
-    if (tid_in_block < nBlockNum) {
+  if (blockId == 0) {
+    if (tid_in_block < blockCount) {
       // busy wait
       count = 0;
       while (count < 100) {
-        __threadfence();
         if (array_in[tid_in_block] == goal_value) {
           break;
         }
+        __threadfence();
         count++;
         if (count > 50) {
           count = 0;
         }
       }
     }
+
     __syncthreads();
 
-    if (tid_in_block < nBlockNum) {
+    if (tid_in_block < blockCount) {
       array_out[tid_in_block] = goal_value;
     }
   }
@@ -128,16 +133,17 @@ void at_illecker_syncblocks_lock_free(int goal_value, int *array_in, int *array_
     // busy wait
     count = 0;
     while (count < 100) {
-      __threadfence();
-      if (array_out[bid] == goal_value) {
+      if (array_out[blockId] == goal_value) {
         break;
       }
+      __threadfence();
       count++;
       if (count > 50) {
         count = 0;
       }
     }
   }
+
   __syncthreads();
 }
 
