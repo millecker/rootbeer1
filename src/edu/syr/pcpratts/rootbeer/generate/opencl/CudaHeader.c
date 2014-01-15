@@ -94,25 +94,54 @@ void at_illecker_syncblocks(int goal_value){
 __device__ int *barrier_array_in;
 __device__ int *barrier_array_out;
 __device__
-void at_illecker_syncblocks(int *array_in, int *array_out, int goal_value){
+void at_illecker_syncblocks(int goal_value){
   int tid_in_block = threadIdx.x; // * blockDim.y + threadIdx.y
-  int blockId = blockIdx.x; // * gridDim.y + blockIdx.y
+  int bid = blockIdx.x; // * gridDim.y + blockIdx.y
   int blockCount = gridDim.x; // * gridDim.y
+  int threadCount = blockDim.x;
   int count = 0;
 
-  // only thread 0 is used for synchronization
-  if (tid_in_block == 0) {
-    array_in[blockId] = goal_value;
-    __threadfence();
-    printf("block: %d goal_value: %d\n", blockId, goal_value);
-  }
+  // only sync when gridSize > 1 and threadCount >= blockCount
+  if ( (blockCount > 1) && (threadCount >= blockCount) ) {
 
-  if (blockId == 0) {
-    if (tid_in_block < blockCount) {
+    // only thread 0 is used for synchronization
+    if (tid_in_block == 0) {
+      barrier_array_in[bid] = goal_value;
+      __threadfence();
+      // printf("block: %d goal_value: %d\n", bid, goal_value);
+    }
+
+    // only block 0 is used for synchronization
+    if (bid == 0) {
+   
+      if (tid_in_block < blockCount) {
+        // busy wait
+        count = 0;
+        while (count < 100) {
+          if (barrier_array_in[tid_in_block] == goal_value) {
+            break;
+          }
+          __threadfence();
+          count++;
+          if (count > 50) {
+            count = 0;
+          }
+        }
+      }
+    
+      __syncthreads();
+
+      if (tid_in_block < blockCount) {
+        barrier_array_out[tid_in_block] = goal_value;
+        __threadfence();
+      }
+    }
+
+    if (tid_in_block == 0) {
       // busy wait
       count = 0;
       while (count < 100) {
-        if (array_in[tid_in_block] == goal_value) {
+        if (barrier_array_out[bid] == goal_value) {
           break;
         }
         __threadfence();
@@ -123,27 +152,6 @@ void at_illecker_syncblocks(int *array_in, int *array_out, int goal_value){
       }
     }
 
-    __syncthreads();
-
-    if (tid_in_block < blockCount) {
-      array_out[tid_in_block] = goal_value;
-      __threadfence();
-    }
-  }
-
-  if (tid_in_block == 0) {
-    // busy wait
-    count = 0;
-    while (count < 100) {
-      if (array_out[blockId] == goal_value) {
-        break;
-      }
-      __threadfence();
-      count++;
-      if (count > 50) {
-        count = 0;
-      }
-    }
   }
 
   __syncthreads();
