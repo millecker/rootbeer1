@@ -103,7 +103,8 @@ void at_illecker_syncblocks(int *array_in, int *array_out, int goal_value){
   // only thread 0 is used for synchronization
   if (tid_in_block == 0) {
     array_in[blockId] = goal_value;
-    // printf("block: %d goal_value: %d\n", blockId, goal_value);
+    __threadfence();
+    printf("block: %d goal_value: %d\n", blockId, goal_value);
   }
 
   if (blockId == 0) {
@@ -126,6 +127,7 @@ void at_illecker_syncblocks(int *array_in, int *array_out, int goal_value){
 
     if (tid_in_block < blockCount) {
       array_out[tid_in_block] = goal_value;
+      __threadfence();
     }
   }
 
