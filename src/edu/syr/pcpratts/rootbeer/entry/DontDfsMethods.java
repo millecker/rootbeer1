@@ -127,7 +127,9 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.Double: double parseDouble(java.lang.String)>");
     
     // valueOf methods
-    //m_methods.add("<java.lang.Integer: java.lang.Integer valueOf(int)>"); // needs Integer constructor
+    // Integer.valueOf requires the following Integer constructor
+    // java_lang_Integer_initab850b60f96d11de8a390800200c9a660_5_
+    m_methods.add("<java.lang.Integer: java.lang.Integer valueOf(int)>");
   }
   
   public Set<String> get(){
