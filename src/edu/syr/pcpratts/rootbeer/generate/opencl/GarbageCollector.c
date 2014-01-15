@@ -2225,9 +2225,8 @@ T at_illecker_getResult($$__global$$ char * gc_info,
 
   T return_value = 0;
 
-  int thread_id = threadIdx.x + blockIdx.x * blockDim.x;
+  int thread_id = getThreadId();
   int count = 0;
-  bool done = false;
 
   int str_param1_value = 0;
   int str_param1_count = 0;
@@ -2244,20 +2243,13 @@ T at_illecker_getResult($$__global$$ char * gc_info,
   // loop until done == true
   while (count < 100) {
 
-    //__syncthreads();
-    
-    if (done) {
-      break;
-    }
-
     // (lock_thread_id == -1 ? thread_id : lock_thread_id)
     int old = atomicCAS((int *) &host_device_interface->lock_thread_id, -1, thread_id);
 
     // printf("Thread %d old: %d\n", thread_id, old);
 
     if (old == -1 || old == thread_id) {
-      //do critical section code
-      // thread won race condition
+      // critical section code, thread won race condition
 
       if (host_device_interface->is_debugging) {
         printf("gpu_Thread %d GOT LOCK lock_thread_id: %d\n", thread_id,
@@ -2265,8 +2257,7 @@ T at_illecker_getResult($$__global$$ char * gc_info,
       }
       /***********************************************************************/
       // wait for possible old task to end
-      while (host_device_interface->has_task) {
-      }
+      while (host_device_interface->has_task) { }
 
       /***********************************************************************/
       // Setup command
@@ -2358,13 +2349,11 @@ T at_illecker_getResult($$__global$$ char * gc_info,
       // Activate task for HostMonitor
       host_device_interface->has_task = true;
       __threadfence_system();
-      //__threadfence();
 
       /***********************************************************************/
       // wait for socket communication to end
       while (!host_device_interface->is_result_available) {
         __threadfence_system();
-        //__threadfence();
       }
 
       /***********************************************************************/
@@ -2565,14 +2554,13 @@ T at_illecker_getResult($$__global$$ char * gc_info,
       /***********************************************************************/ 
       // Notify HostMonitor that result was received
       host_device_interface->is_result_available = false;
-      host_device_interface->lock_thread_id = -1;
-      
+      // host_device_interface->lock_thread_id = -1;
       __threadfence_system();
-      //__threadfence();
-
+      atomicExch((int *) &host_device_interface->lock_thread_id, -1);
+      
       /***********************************************************************/ 
       // exit infinite loop
-      done = true; // finished work
+      return return_value;
 
     } else {
       count++;

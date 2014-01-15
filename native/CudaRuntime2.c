@@ -1118,13 +1118,22 @@ public:
         if (response == false) {
           // TODO throw CudaException?
           printf("HostDeviceInterface::SEND_MSG got wrong response command!\n");
+        } else if (host_device_interface->is_debugging) {
+          printf("HostDeviceInterface::SEND_MSG got response: 'true' \n");
         }
 
         // Set result available for GPU Kernel
         host_device_interface->is_result_available = true;
+        if (host_device_interface->is_debugging) {
+          printf("HostDeviceInterface::SEND_MSG is_result_available: '%s' \n", 
+                 (host_device_interface->is_result_available) ? "true" : "false");
+        }
 
         // block until result was consumed
         while (host_device_interface->is_result_available) {}
+        if (host_device_interface->is_debugging) {
+          printf("HostDeviceInterface::SEND_MSG result was consumed!\n");
+        }
         break;
       }
 
