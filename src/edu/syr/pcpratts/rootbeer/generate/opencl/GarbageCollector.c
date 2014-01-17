@@ -1038,12 +1038,6 @@ int java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a66(char * gc_info,
   return thisref;
 }
 
-//<java.lang.StringBuilder: java.lang.StringBuilder init()>
-$$__device__$$
-int java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a660_(char * gc_info, int * exception){ 
-  return java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a66(gc_info, exception);
-}
-
 //<java.lang.StringBuilder: java.lang.StringBuilder void(java.lang.String)>
 $$__device__$$ 
 int java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a6610_9_(char * gc_info, 
