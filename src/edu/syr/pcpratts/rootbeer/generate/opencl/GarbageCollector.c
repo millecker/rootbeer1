@@ -1037,11 +1037,40 @@ java_util_Arrays_copyOf(char * gc_info, int object_array, int new_size, int * ex
   return ret; 
 }
 
+//<java.lang.StringBuilder: java.lang.StringBuilder init()>
+$$__device__$$
+int java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a66(char * gc_info, int * exception){
+
+  int thisref;
+  int chars;
+  char * thisref_deref;
+
+  thisref = -1;
+  edu_syr_pcpratts_gc_assign ( gc_info , & thisref , edu_syr_pcpratts_gc_malloc ( gc_info , 48 ) ) ; 
+  if ( thisref ==-1 ) { 
+    * exception = %%java_lang_NullPointerException_TypeNumber%%; 
+    return-1 ; 
+  }
+  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
+  edu_syr_pcpratts_gc_set_count(thisref_deref, 1);
+  edu_syr_pcpratts_gc_set_color(thisref_deref, COLOR_GREY);
+  edu_syr_pcpratts_gc_set_type(thisref_deref, %%java_lang_StringBuilder_TypeNumber%%);
+  edu_syr_pcpratts_gc_set_ctor_used(thisref_deref, 1);
+  edu_syr_pcpratts_gc_set_size(thisref_deref, 48);
+  edu_syr_pcpratts_gc_init_monitor(thisref_deref);
+  
+  chars = char__array_new(gc_info, 0, exception);
+
+  instance_setter_java_lang_AbstractStringBuilder_value(gc_info, thisref, chars, exception);
+  instance_setter_java_lang_AbstractStringBuilder_count(gc_info, thisref, 0, exception);
+  return thisref;
+}
+
+//<java.lang.StringBuilder: java.lang.StringBuilder void(java.lang.String)>
 $$__device__$$ 
 int java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a6610_9_(char * gc_info, 
   int str ,int * exception){
  
-  int r0 = -1; 
   int thisref; 
   int str_value;
   int str_count;  
