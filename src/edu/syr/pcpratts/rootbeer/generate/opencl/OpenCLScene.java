@@ -442,14 +442,13 @@ public class OpenCLScene {
       protos.add(poly_method.getMethodPrototypes());
     }
     FieldCodeGeneration gen = new FieldCodeGeneration();
-    protos.add(gen.prototypes(m_classes, m_codeSegment.getReadWriteFieldInspector()));
+    protos.add(gen.prototypes(m_classes));
     for(OpenCLArrayType array_type : m_arrayTypes){
       protos.add(array_type.getPrototypes());
     }
     for(OpenCLInstanceof type : m_instanceOfs){
       protos.add(type.getPrototype());
     }
-
     Iterator<String> iter = protos.iterator();
     while(iter.hasNext()){
       ret.append(iter.next());
@@ -483,8 +482,7 @@ public class OpenCLScene {
     }
     FieldTypeSwitch type_switch = new FieldTypeSwitch();
     FieldCodeGeneration gen = new FieldCodeGeneration();
-    String field_bodies = gen.bodies(m_classes, 
-      m_codeSegment.getReadWriteFieldInspector(), type_switch);
+    String field_bodies = gen.bodies(m_classes, type_switch);
     bodies.add(field_bodies);
     for(OpenCLArrayType array_type : m_arrayTypes){
       bodies.add(array_type.getBodies());
@@ -492,10 +490,8 @@ public class OpenCLScene {
     for(OpenCLInstanceof type : m_instanceOfs){
       bodies.add(type.getBody());
     }
-    
-    ret.append(type_switch.getFunctions());
-    
     Iterator<String> iter = bodies.iterator();
+    ret.append(type_switch.getFunctions());
     while(iter.hasNext()){
       ret.append(iter.next());
     }
@@ -520,7 +516,7 @@ public class OpenCLScene {
   }
 
   public boolean isArrayLocalWrittenTo(Local local){
-    return m_codeSegment.getReadWriteFieldInspector().localRepresentingArrayIsWrittenOnGpu(local);
+    return true;
   }
   
   public ReadOnlyTypes getReadOnlyTypes(){
