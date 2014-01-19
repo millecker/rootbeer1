@@ -1399,11 +1399,11 @@ int at_illecker_double_to_string(char * gc_info, double fvalue, int max, int * e
     // char to print out.
     at_illecker_set_char(buffer, &currlen, maxlen, '.');
 
-  // Add lasting zeros
-  while (zpadlen > 0) {
-    at_illecker_set_char(buffer, &currlen, maxlen, '0');
-    --zpadlen;
-  }
+    // Add lasting zeros
+    while (zpadlen > 0) {
+      at_illecker_set_char(buffer, &currlen, maxlen, '0');
+      --zpadlen;
+    }
 
     while (fplace > 0) {
       at_illecker_set_char(buffer, &currlen, maxlen, fconvert[--fplace]);
