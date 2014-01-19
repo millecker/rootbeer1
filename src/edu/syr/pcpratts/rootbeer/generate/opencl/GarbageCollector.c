@@ -1215,7 +1215,7 @@ $$__device__$$
 int java_lang_Integer_valueOf(char * gc_info, int int_value, int * exception) {
   int return_obj = -1;
   
-  edu_syr_pcpratts_gc_assign (gc_info, 
+  edu_syr_pcpratts_gc_assign(gc_info,
     &return_obj, java_lang_Integer_initab850b60f96d11de8a390800200c9a660_5_(gc_info,
     int_value, exception));
   
