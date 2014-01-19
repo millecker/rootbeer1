@@ -1647,26 +1647,11 @@ int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_re
 /*****************************************************************************/
 /* Integer methods */
 
-//<java.lang.Integer: void set(int value)>
-// instance_setter_java_lang_Integer_value
-// TODO method is unused added _ at ending
-$$__device__$$ 
-void instance_setter_java_lang_Integer_value_( char * gc_info, int thisref, int parameter0, int * exception){
-  char * thisref_deref;
-  if ( thisref ==-1 ) { 
-    * exception = %%java_lang_NullPointerException_TypeNumber%%; 
-    return-1 ; 
-  }
-
-  thisref_deref = edu_syr_pcpratts_gc_deref(gc_info, thisref);
-  *(( int *) &thisref_deref[32]) = parameter0;
-}
-
 //<java.lang.Integer: java.lang.Integer init()>
 // java_lang_Integer_initab850b60f96d11de8a390800200c9a660_5_
 // TODO method is unused added _ at ending
 $$__device__$$
-int java_lang_Integer_initab850b60f96d11de8a390800200c9a660_5__(char * gc_info, 
+int java_lang_Integer_initab850b60f96d11de8a390800200c9a660_5_(char * gc_info, 
   int int_value, int * exception){
  
   int r0 = -1;

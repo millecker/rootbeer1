@@ -126,11 +126,10 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.Float: float parseFloat(java.lang.String)>");
     m_methods.add("<java.lang.Double: double parseDouble(java.lang.String)>");
     
-    // Integer.valueOf methods
     // Integer.valueOf requires Integer(int) constructor
     // java_lang_Integer_initab850b60f96d11de8a390800200c9a660_5_
-    // m_methods.add("<java.lang.Integer: void(int)>");
-    // m_methods.add("<java.lang.Integer: java.lang.Integer valueOf(int)>");
+    m_methods.add("<java.lang.Integer: void(int)>");
+    m_methods.add("<java.lang.Integer: java.lang.Integer valueOf(int)>");
   }
   
   public Set<String> get(){
