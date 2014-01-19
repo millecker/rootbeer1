@@ -17,7 +17,6 @@ import edu.syr.pcpratts.rootbeer.runtimegpu.GpuException;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.kerneltemplate.FastMatrixTest;
 import edu.syr.pcpratts.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel;
 import edu.syr.pcpratts.rootbeer.util.ResourceReader;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -131,9 +131,6 @@ public class DontDfsMethods {
     // java_lang_Integer_initab850b60f96d11de8a390800200c9a660_5_
     // m_methods.add("<java.lang.Integer: void(int)>");
     // m_methods.add("<java.lang.Integer: java.lang.Integer valueOf(int)>");
-    
-    // StringBuilder constructor
-    m_methods.add("<java.lang.StringBuilder: void <init>()>");
   }
   
   public Set<String> get(){
