@@ -1222,6 +1222,7 @@ int java_lang_Integer_valueOf(char * gc_info, int int_value, int * exception) {
   if(*exception != 0) {
     return 0; 
   }
+
   return return_obj;
 }
 
@@ -1291,8 +1292,8 @@ double at_illecker_pow10(int exp) {
 }
 
 $$__device__$$
-long at_illecker_round(double value) {
-  long intpart;
+long long at_illecker_round(double value) {
+  long long intpart;
   intpart = value;
   value = value - intpart;
   if (value >= 0.5) {
@@ -1314,8 +1315,8 @@ $$__device__$$
 int at_illecker_double_to_string(char * gc_info, double fvalue, int max, int * exception) {
   int signvalue = 0;
   double ufvalue;
-  long intpart;
-  long fracpart;
+  long long intpart;
+  long long fracpart;
   char iconvert[20];
   char fconvert[20];
   int iplace = 0;
@@ -1325,9 +1326,6 @@ int at_illecker_double_to_string(char * gc_info, double fvalue, int max, int * e
   char buffer[64];
   int maxlen = 64;
   int currlen = 0;
-
-  // DEBUG
-  // printf("at_illecker_doubleToString: fvalue: %f max: %d\n", fvalue, max);
 
   // Max digits after decimal point, default is 6
   if (max < 0) {
@@ -1355,9 +1353,6 @@ int at_illecker_double_to_string(char * gc_info, double fvalue, int max, int * e
     intpart++;
     fracpart -= at_illecker_pow10(max);
   }
-
-  // DEBUG
-  // printf("at_illecker_doubleToString: %f =? %d.%d\n", fvalue, intpart, fracpart);
 
   // Convert integer part
   do {
@@ -1387,9 +1382,6 @@ int at_illecker_double_to_string(char * gc_info, double fvalue, int max, int * e
     zpadlen = 0;
   }
 
-  //  DEBUG
-  // printf("at_illecker_doubleToString: zpadlen: %d\n", zpadlen);
-
   // Set sign
   if (signvalue) {
     at_illecker_set_char(buffer, &currlen, maxlen, signvalue);
@@ -1407,15 +1399,15 @@ int at_illecker_double_to_string(char * gc_info, double fvalue, int max, int * e
     // char to print out.
     at_illecker_set_char(buffer, &currlen, maxlen, '.');
 
-    while (fplace > 0) {
-      at_illecker_set_char(buffer, &currlen, maxlen, fconvert[--fplace]);
-    }
-  }
-
   // Add lasting zeros
   while (zpadlen > 0) {
     at_illecker_set_char(buffer, &currlen, maxlen, '0');
     --zpadlen;
+  }
+
+    while (fplace > 0) {
+      at_illecker_set_char(buffer, &currlen, maxlen, fconvert[--fplace]);
+    }
   }
 
   // Terminate string
@@ -1425,7 +1417,7 @@ int at_illecker_double_to_string(char * gc_info, double fvalue, int max, int * e
     buffer[maxlen - 1] = '\0';
   }
 
-  return at_illecker_string_constant(gc_info, buffer, exception);
+  return edu_syr_pcpratts_string_constant(gc_info, buffer, exception);
 }
 
 //<java.lang.Double: java.lang.String toString(double)>
