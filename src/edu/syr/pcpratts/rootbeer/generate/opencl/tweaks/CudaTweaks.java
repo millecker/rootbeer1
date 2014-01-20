@@ -7,19 +7,13 @@
 
 package edu.syr.pcpratts.rootbeer.generate.opencl.tweaks;
 
-import edu.syr.pcpratts.rootbeer.util.WindowsCompile;
-import edu.syr.pcpratts.compressor.Compressor;
+import java.io.File;
+import java.io.PrintWriter;
+
 import edu.syr.pcpratts.deadmethods2.DeadMethods;
-import edu.syr.pcpratts.rootbeer.configuration.Configuration;
 import edu.syr.pcpratts.rootbeer.configuration.RootbeerPaths;
 import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.GencodeOptions.CompileArchitecture;
-import edu.syr.pcpratts.rootbeer.util.CompilerRunner;
 import edu.syr.pcpratts.rootbeer.util.CudaPath;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class CudaTweaks extends Tweaks {
 
@@ -118,9 +112,6 @@ public class CudaTweaks extends Tweaks {
         cuda_code = cuda_code.replace(template_header_str, hama_custom_header_code);
       }
       
-      // Fix __syncthreads()
-      String syncthreads_str = Pattern.quote("edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_syncthreads(gc_info, exception)");
-      cuda_code = cuda_code.replaceAll(syncthreads_str, "__syncthreads()");
       
       File generated = new File(RootbeerPaths.v().getRootbeerHome() + "generated.cu");
       writer = new PrintWriter(generated);
