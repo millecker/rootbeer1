@@ -861,7 +861,7 @@ edu_syr_pcpratts_string_constant($$__global$$ char * gc_info, char * str_constan
   for(i = 0; i < len; ++i){
     char__array_set(gc_info, characters, i, str_constant[i], exception);
   }
-
+  
   return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
 }
 
