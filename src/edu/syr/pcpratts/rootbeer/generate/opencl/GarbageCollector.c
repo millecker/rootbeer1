@@ -567,10 +567,10 @@ double edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_sin($$__global$$ char * gc_
   return sin(value);
 }
 
-$$__device__$$ 
-void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_syncthreads($$__global$$ char * gc_info, int * exception){
-  edu_syr_pcpratts_syncthreads();
-}
+// $$__device__$$ 
+// void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_syncthreads($$__global$$ char * gc_info, int * exception){
+//   edu_syr_pcpratts_syncthreads();
+// }
 
 $$__device__$$ 
 void edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_threadfence($$__global$$ char * gc_info, int * exception){

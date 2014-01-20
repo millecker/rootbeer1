@@ -15,9 +15,11 @@ import edu.syr.pcpratts.rootbeer.configuration.RootbeerPaths;
 import edu.syr.pcpratts.rootbeer.generate.opencl.tweaks.GencodeOptions.CompileArchitecture;
 import edu.syr.pcpratts.rootbeer.util.CompilerRunner;
 import edu.syr.pcpratts.rootbeer.util.CudaPath;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class CudaTweaks extends Tweaks {
 
@@ -90,10 +92,11 @@ public class CudaTweaks extends Tweaks {
       String start_str = "/*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_START*/";
       String end_str = "/*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_END*/";
       String template_header_str = "/*HAMA_PIPES_HEADER_CODE*/";
+      
       int start_pos = cuda_code.indexOf(start_str);
       int end_pos = cuda_code.indexOf(end_str);
       String hama_custom_header_code = "";
-      if ( (start_pos>0) && (end_pos>0) ) {
+      if ( (start_pos > 0) && (end_pos > 0) ) {
         hama_custom_header_code = cuda_code.substring(start_pos, 
             end_pos + end_str.length());
         
@@ -111,9 +114,13 @@ public class CudaTweaks extends Tweaks {
       //cuda_code = compressor.compress(cuda_code);
 
       // Add custom Hama Pipes code after tweaks (DeadMethod check)
-      if (cuda_code.indexOf(template_header_str)>0) {
+      if (cuda_code.indexOf(template_header_str) > 0) {
         cuda_code = cuda_code.replace(template_header_str, hama_custom_header_code);
       }
+      
+      // Fix __syncthreads()
+      String syncthreads_str = Pattern.quote("edu_syr_pcpratts_rootbeer_runtime_RootbeerGpu_syncthreads(gc_info, exception)");
+      cuda_code = cuda_code.replaceAll(syncthreads_str, "__syncthreads()");
       
       File generated = new File(RootbeerPaths.v().getRootbeerHome() + "generated.cu");
       writer = new PrintWriter(generated);
