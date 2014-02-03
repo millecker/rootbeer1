@@ -18,8 +18,8 @@ public class ForcedFields {
   // private constructor for singleton
   private ForcedFields(){
     m_fields = new ArrayList<String>();
-    m_fields.add("<edu.syr.pcpratts.rootbeer.runtime.KeyValuePair: java.lang.Object m_key>");
-    m_fields.add("<edu.syr.pcpratts.rootbeer.runtime.KeyValuePair: java.lang.Object m_value>");
+    m_fields.add("<org.trifort.rootbeer.runtime.KeyValuePair: java.lang.Object m_key>");
+    m_fields.add("<org.trifort.rootbeer.runtime.KeyValuePair: java.lang.Object m_value>");
   }
   
   public static ForcedFields getInstance() {
