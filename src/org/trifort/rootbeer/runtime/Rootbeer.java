@@ -38,7 +38,8 @@ public class Rootbeer {
     if (debugging) {
       System.out.println("Starting Rootbeer using port: " + port+" debugging: "+debugging);
     }
-    CudaRuntime2.v().connect(port, debugging);
+    // TODO
+    // CudaRuntime2.v().connect(port, debugging);
   }
   
   public List<GpuDevice> getDevices(){
