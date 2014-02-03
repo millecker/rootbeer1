@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 public class Rootbeer {
@@ -27,6 +28,17 @@ public class Rootbeer {
   
   public Rootbeer(){
     m_stats = new ArrayList<StatsRow>();
+  }
+  
+  public Rootbeer(Map<String, String> env){
+    this();
+    
+    int port = Integer.parseInt(env.get("hama.pipes.command.port"));
+    boolean debugging = (Integer.parseInt(env.get("hama.pipes.logging")) == 0)? false : true;
+    if (debugging) {
+      System.out.println("Starting Rootbeer using port: " + port+" debugging: "+debugging);
+    }
+    CudaRuntime2.v().connect(port, debugging);
   }
   
   public List<GpuDevice> getDevices(){

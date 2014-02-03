@@ -5,7 +5,7 @@
  * See the file LICENSE for copying permission.
  */
 
-package edu.syr.pcpratts.rootbeer.entry;
+package org.trifort.rootbeer.entry;
 
 import java.util.ArrayList;
 import java.util.List;

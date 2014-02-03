@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.syr.pcpratts.rootbeer.runtime;
+package org.trifort.rootbeer.runtime;
 
 /**
  * Mutable class for key values.
