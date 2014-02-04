@@ -505,6 +505,7 @@ public class OpenCLMethod {
     m_dontEmitMethods.add("<java.lang.Long: java.lang.String toString(long)>");
     
     m_emitUnmangled.add("<org.trifort.rootbeer.runtimegpu.GpuException: org.trifort.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
+    m_emitUnmangled.add("<org.trifort.rootbeer.runtime.KeyValuePair: void <init>(java.lang.Object,java.lang.Object)>");
   }
 
   public String getSignature() {
