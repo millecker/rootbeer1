@@ -209,6 +209,7 @@ public class CUDAContext implements Context, Runnable {
       m_handlesMemory.writeRef(handle);
       m_handles.put(kernel, handle);
     }
+    m_objectMemory.align16();
     
     if(Configuration.getPrintMem()){
       BufferPrinter printer = new BufferPrinter();
@@ -225,7 +226,9 @@ public class CUDAContext implements Context, Runnable {
     
     Serializer serializer = compiled_kernel.getSerializer(m_objectMemory, m_textureMemory);
     serializer.writeStaticsToHeap();
+    
     long handle = serializer.writeToHeap(compiled_kernel);
+    m_objectMemory.align16();
     m_handlesMemory.writeRef(handle);
     
     if(Configuration.getPrintMem()){
@@ -330,7 +333,7 @@ public class CUDAContext implements Context, Runnable {
   
   private void runBlocks(ThreadConfig thread_config, byte[] cubin_file){    
     m_runOnGpuStopwatch.start();
-    
+        
     KernelLaunch item = new KernelLaunch(m_device.getDeviceId(), cubin_file, 
       cubin_file.length, thread_config.getBlockShapeX(), 
       thread_config.getGridShapeX(), thread_config.getNumThreads(), 
