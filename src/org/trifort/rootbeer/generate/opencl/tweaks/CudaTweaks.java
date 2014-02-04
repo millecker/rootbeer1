@@ -84,6 +84,24 @@ public class CudaTweaks extends Tweaks {
       writer.flush();
       writer.close();
 
+      // HamaPeer workaround - Ignore custom code in CudaHeader.c
+      // Because template functions are not supported
+      // Check for custom code and remove it before DeadMethod check
+      String start_str = "/*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_START*/";
+      String end_str = "/*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_END*/";
+      String template_header_str = "/*HAMA_PIPES_HEADER_CODE*/";
+      int start_pos = cuda_code.indexOf(start_str);
+      int end_pos = cuda_code.indexOf(end_str);
+      String hama_custom_header_code = "";
+      if ( (start_pos > 0) && (end_pos > 0) ) {
+        hama_custom_header_code = cuda_code.substring(start_pos, 
+            end_pos + end_str.length());
+        
+        cuda_code = cuda_code.substring(0, start_pos) 
+            + template_header_str + "\n"
+            + cuda_code.substring(end_pos + end_str.length());
+      }
+      
       DeadMethods dead_methods = new DeadMethods();
       dead_methods.parseString(cuda_code);
       cuda_code = dead_methods.getResult();
@@ -91,6 +109,11 @@ public class CudaTweaks extends Tweaks {
       //Compressor compressor = new Compressor();
       //cuda_code = compressor.compress(cuda_code);
 
+      // HamaPeer workaround - Bring back custom code after DeadMethod check
+      if (cuda_code.indexOf(template_header_str) > 0) {
+        cuda_code = cuda_code.replace(template_header_str, hama_custom_header_code);
+      }
+      
       File generated = new File(RootbeerPaths.v().getRootbeerHome() + "generated.cu");
       writer = new PrintWriter(generated);
       writer.println(cuda_code.toString());
