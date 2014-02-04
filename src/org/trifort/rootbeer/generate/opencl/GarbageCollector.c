@@ -1399,7 +1399,7 @@ int java_lang_Float_toString9_7_(char * gc_info, float float_val, int * exceptio
 $$__device__$$
 int at_illecker_long_to_string(char * gc_info, long long value, int max, int base, int * exception) {
   int signvalue = 0;
-  unsigned long uvalue;
+  unsigned long long uvalue;
   char convert[20];
   int place = 0;
   int zpadlen = 0; // lasting zeros
@@ -1720,9 +1720,9 @@ bool at_illecker_is_space(unsigned char c) {
 // If 0, then the base is chosen from the leading characters of string:
 // "0x" means hex, "0" means octal, anything else means decimal.
 $$__device__$$
-unsigned long int at_illecker_strtoul(const char *string, char **end_ptr, int base) {
+unsigned long long at_illecker_strtoul(const char *string, char **end_ptr, int base) {
   register const char *p;
-  register unsigned long int result = 0;
+  register unsigned long long result = 0;
   register unsigned digit;
   int anyDigits = 0;
   int negative=0;
@@ -1782,7 +1782,7 @@ unsigned long int at_illecker_strtoul(const char *string, char **end_ptr, int ba
   // Sorry this code is so messy, but speed seems important. Do
   // different things for base 8, 10, 16, and other.
   if (base == 8) {
-    unsigned long maxres = 0xFFFFFFFFUL >> 3; // ULONG_MAX = 0xFFFFFFFFUL
+    unsigned long long maxres = 0xFFFFFFFFUL >> 3; // ULONG_MAX = 0xFFFFFFFFUL
     for ( ; ; p += 1) {
       digit = *p - '0';
       if (digit > 7) {
@@ -1799,7 +1799,7 @@ unsigned long int at_illecker_strtoul(const char *string, char **end_ptr, int ba
       anyDigits = 1;
     }
   } else if (base == 10) {
-    unsigned long maxres = 0xFFFFFFFFUL / 10; // ULONG_MAX = 0xFFFFFFFFUL
+    unsigned long long maxres = 0xFFFFFFFFUL / 10; // ULONG_MAX = 0xFFFFFFFFUL
     for ( ; ; p += 1) {
       digit = *p - '0';
       if (digit > 9) {
@@ -1816,7 +1816,7 @@ unsigned long int at_illecker_strtoul(const char *string, char **end_ptr, int ba
       anyDigits = 1;
     }
   } else if (base == 16) {
-    unsigned long maxres = 0xFFFFFFFFUL >> 4;
+    unsigned long long maxres = 0xFFFFFFFFUL >> 4;
     for ( ; ; p += 1) {
       digit = *p - '0';
       if (digit > ('z' - '0')) {
@@ -1837,7 +1837,7 @@ unsigned long int at_illecker_strtoul(const char *string, char **end_ptr, int ba
       anyDigits = 1;
     }
   } else if ( base >= 2 && base <= 36 ) {
-    unsigned long maxres = 0xFFFFFFFFUL / base;
+    unsigned long long maxres = 0xFFFFFFFFUL / base;
     for ( ; ; p += 1) {
       digit = *p - '0';
       if (digit > ('z' - '0')) {

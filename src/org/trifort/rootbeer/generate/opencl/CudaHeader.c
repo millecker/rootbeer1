@@ -64,7 +64,7 @@ void at_illecker_threadfence_system(){
 /*
 __device__ int global_mutex = 0;
 __device__
-void at_illecker_syncblocks(int goal_value){
+void at_illecker_syncblocks(int goal_value) {
   int tid_in_block = threadIdx.x; // * blockDim.y + threadIdx.y
   int count = 0;
   
@@ -94,7 +94,7 @@ void at_illecker_syncblocks(int goal_value){
 __device__ int *barrier_array_in;
 __device__ int *barrier_array_out;
 __device__
-void at_illecker_syncblocks(int goal_value){
+void at_illecker_syncblocks(int goal_value) {
   int tid_in_block = threadIdx.x; // * blockDim.y + threadIdx.y
   int bid = blockIdx.x; // * gridDim.y + blockIdx.y
   int blockCount = gridDim.x; // * gridDim.y
@@ -159,33 +159,7 @@ void at_illecker_syncblocks(int goal_value){
 
 /*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_START*/
 
-/* before HostDeviceInterface
-nvcc generated.cu --ptxas-options=-v
-ptxas info    : 8 bytes gmem, 4 bytes cmem[14]
-ptxas info    : Compiling entry function '_Z5entryPcS_PiPxS1_S0_S0_i' for 'sm_10'
-ptxas info    : Used 5 registers, 104 bytes smem, 20 bytes cmem[1]
-
-after HostDeviceInterface
-
-nvcc generated.cu --ptxas-options=-v
-
-ptxas info    : 72 bytes gmem, 36 bytes cmem[14]
-ptxas info    : Compiling entry function '_Z5entryPcS_PiPxS1_S0_S0_iS0_' for 'sm_10'
-ptxas info    : Used 5 registers, 112 bytes smem, 20 bytes cmem[1]
-
-
-nvcc generated.cu --ptxas-options=-v -arch sm_20
-
-ptxas info    : 72 bytes gmem, 72 bytes cmem[14]
-ptxas info    : Compiling entry function '_Z5entryPcS_PiPxS1_S0_S0_iS0_' for 'sm_20'
-ptxas info    : Function properties for _Z5entryPcS_PiPxS1_S0_S0_iS0_
-    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
-ptxas info    : Used 12 registers, 24 bytes smem, 104 bytes cmem[0]
-
-*/
-
 #include <string>
-
 #define STR_SIZE 1024
 
 using std::string;
@@ -243,8 +217,8 @@ public:
   volatile int int_val1;
   volatile int int_val2;
   volatile int int_val3;
-  volatile long long_val1;
-  volatile long long_val2;
+  volatile long long long_val1;
+  volatile long long long_val2;
   volatile float float_val1;
   volatile float float_val2;
   volatile double double_val1;
