@@ -97,6 +97,29 @@ public class DontDfsMethods {
     m_methods.add("<java.lang.Long: long parseLong(java.lang.String)>");
     m_methods.add("<java.lang.Float: float parseFloat(java.lang.String)>");
     m_methods.add("<java.lang.Double: double parseDouble(java.lang.String)>");
+    // HamaPeer methods
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: void send(java.lang.String,java.lang.Object)>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: int getCurrentIntMessage()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: long getCurrentLongMessage()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: float getCurrentFloatMessage()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: double getCurrentDoubleMessage()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: java.lang.String getCurrentStringMessage()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: int getNumCurrentMessages()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: void sync()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: long getSuperstepCount()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: java.lang.String getPeerName()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: java.lang.String getPeerName(int)>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: int getPeerIndex()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: java.lang.String[] getAllPeerNames()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: int getNumPeers()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: void clear()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: void reopenInput()>");    
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean readNext(edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");  
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: void write(java.lang.Object,java.lang.Object)>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: int sequenceFileOpen(java.lang.String,char,java.lang.String,java.lang.String)>");
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileReadNext(int,edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");    
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileAppend(int,java.lang.Object,java.lang.Object)>");  
+    m_methods.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileClose(int)>");
   }
   
   public Set<String> get(){
