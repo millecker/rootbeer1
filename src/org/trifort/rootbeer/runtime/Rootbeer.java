@@ -21,6 +21,8 @@ public class Rootbeer {
   
   private List<GpuDevice> m_cards;
   
+  private HamaPeer m_hamaPeer = null;
+  
   static {
     CUDALoader loader = new CUDALoader();
     loader.load();
@@ -32,14 +34,7 @@ public class Rootbeer {
   
   public Rootbeer(Map<String, String> env){
     this();
-    
-    int port = Integer.parseInt(env.get("hama.pipes.command.port"));
-    boolean debugging = (Integer.parseInt(env.get("hama.pipes.logging")) == 0)? false : true;
-    if (debugging) {
-      System.out.println("Starting Rootbeer using port: " + port+" debugging: "+debugging);
-    }
-    // TODO
-    // CudaRuntime2.v().connect(port, debugging);
+    m_hamaPeer = new HamaPeer(env);
   }
   
   public List<GpuDevice> getDevices(){
@@ -115,20 +110,24 @@ public class Rootbeer {
   public void run(List<Kernel> work) {
     Context context = createDefaultContext();
     ThreadConfig thread_config = getThreadConfig(work, context.getDevice());
+    context.setHamaPeer(m_hamaPeer);
     context.run(work, thread_config);
     context.close();
   }
   
-  public void run(Kernel template, ThreadConfig thread_config, Context context){
+  public void run(Kernel template, ThreadConfig thread_config, Context context) {
+    context.setHamaPeer(m_hamaPeer);
     context.run(template, thread_config);
   }
 
   public void run(List<Kernel> work, ThreadConfig thread_config, Context context) {
+    context.setHamaPeer(m_hamaPeer);
     context.run(work, thread_config);
   }
 
   public void run(List<Kernel> work, Context context) {
     ThreadConfig thread_config = getThreadConfig(work, context.getDevice());
+    context.setHamaPeer(m_hamaPeer);
     context.run(work, thread_config);
   } 
   

@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   (JNIEnv *env, jobject this_ref, jint device_index, jbyteArray cubin_file, 
    jint cubin_length, jint block_shape_x, jint grid_shape_x, jint num_threads, 
    jobject object_mem, jobject handles_mem, jobject exceptions_mem, 
-   jobject class_mem)
+   jobject class_mem, jobject hama_peer)
 {
   CUresult status;
   CUdevice device;
@@ -70,7 +70,10 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CUdeviceptr gpu_class_mem;
   CUdeviceptr gpu_heap_end;
   CUdeviceptr gpu_buffer_size;
-
+  CUdeviceptr gpu_blocksync_barrier_array_in;
+  CUdeviceptr gpu_blocksync_barrier_array_out;
+  CUdeviceptr gpu_host_device_interface;
+  
   void * cpu_object_mem;
   void * cpu_handles_mem;
   void * cpu_exceptions_mem;
@@ -80,14 +83,21 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   jlong cpu_exceptions_mem_size;
   jlong cpu_class_mem_size;
   jlong cpu_heap_end;
+  HostDeviceInterface *cpu_host_device_interface = NULL;
 
   jclass cuda_memory_class;
   jmethodID get_address_method;
   jmethodID get_size_method;
   jmethodID get_heap_end_method;
   
+  jclass hama_peer_class;
+  jmethodID get_port_method;
+  jmethodID is_debugging_method;
+  
   jlong * info_space;
-
+  
+  HostMonitor *host_monitor = NULL;
+  
   //----------------------------------------------------------------------------
   //init device and function
   //----------------------------------------------------------------------------
@@ -105,7 +115,12 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env, "Error in cuModuleLoad", status, device)
   free(fatcubin);
 
-  status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiPxS1_S0_S0_i"); 
+  if (hama_peer == NULL) {
+    status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiPxS1_S0_S0_i");
+  } else {
+    // HamaPeer - Modify function name (from _Z5entryPcS_PiPxS1_S0_S0_i)
+    status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiPxS1_S0_S0_P19HostDeviceInterfaceS0_S0_i");
+  }
   CHECK_STATUS(env, "Error in cuModuleGetFunction", status, device)
 
   //----------------------------------------------------------------------------
@@ -159,11 +174,52 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   status = cuMemAlloc(&gpu_buffer_size, 8);
   CHECK_STATUS(env, "Error in cuMemAlloc: gpu_buffer_size", status, device)
 
+  if (hama_peer != NULL) {
+    // HamaPeer - Allocate gpuBarrierArrayIn for Inter-Block Lock-Free Synchronization
+    printf("CUDAContext_cudaRun - allocate gpu_blocksync_barrier_array_in sizeof: %ld bytes\n", grid_shape_x * sizeof(jint));
+    status = cuMemAlloc(&gpu_blocksync_barrier_array_in, grid_shape_x * sizeof(jint));
+    CHECK_STATUS(env, "Error in cuMemAlloc: gpu_blocksync_barrier_array_in", status, device)
+    printf("CUDAContext_cudaRun - gpu_blocksync_barrier_array_in.ptr: %p\n", gpu_blocksync_barrier_array_in);
+    
+    // HamaPeer - Allocate gpuBarrierArrayOut for Inter-Block Lock-Free Synchronization
+    printf("CUDAContext_cudaRun - allocate gpu_blocksync_barrier_array_out sizeof: %ld bytes\n", grid_shape_x * sizeof(jint));
+    status = cuMemAlloc(&gpu_blocksync_barrier_array_out, grid_shape_x * sizeof(jint));
+    CHECK_STATUS(env, "Error in cuMemAlloc: gpu_blocksync_barrier_array_out", status, device)
+    printf("CUDAContext_cudaRun - gpu_blocksync_barrier_array_out.ptr: %p\n", gpu_blocksync_barrier_array_out);
+    
+    // HamaPeer - Allocate HostDeviceInterface Pinned Memory
+    printf("CUDAContext_cudaRun - allocate cpu_host_device_interface sizeof: %ld bytes\n", sizeof(HostDeviceInterface));
+    status = cuMemHostAlloc((void**)&cpu_host_device_interface, sizeof(HostDeviceInterface),
+                          CU_MEMHOSTALLOC_WRITECOMBINED | CU_MEMHOSTALLOC_DEVICEMAP);
+    CHECK_STATUS(env, "Error in cuMemHostAlloc: cpu_host_device_interface", status, device)
+    
+    // HamaPeer - initialize cpu_hostDeviceInterface
+    cpu_host_device_interface->init();
+    
+    jclass hama_peer_class = (*env)->FindClass(env, "org/trifort/rootbeer/runtime/HamaPeer");
+    get_port_method = (*env)->GetMethodID(env, hama_peer_class, "getPort", "()I");
+    is_debugging_method = (*env)->GetMethodID(env, hama_peer_class, "isDebugging", "()Z");
+    
+    // HamaPeer - init HostMonitor and connect
+    host_monitor = new HostMonitor(cpu_host_device_interface,
+                                   (*env)->CallIntMethod(env, hama_peer, get_port_method),
+                                   (*env)->CallBooleanMethod(env, hama_peer, is_debugging_method));
+    
+    // HamaPeer - Get device pointer of HostDeviceInterface object
+    status = cuMemHostGetDevicePointer(&gpu_host_device_interface, cpu_host_device_interface, 0);
+    CHECK_STATUS(env, "Error in cuMemHostGetDevicePointer: gpu_host_device_interface", status, device)
+    printf("CUDAContext_cudaRun - gpu_host_device_interface: %p\n", gpu_host_device_interface);
+  }
   //----------------------------------------------------------------------------
   //set function parameters
   //----------------------------------------------------------------------------
 
-  status = cuParamSetSize(function, (7 * sizeof(CUdeviceptr) + sizeof(int))); 
+  if (hama_peer == NULL) {
+    status = cuParamSetSize(function, (7 * sizeof(CUdeviceptr) + sizeof(int)));
+  } else {
+    // HamaPeer - Align argument count
+    status = cuParamSetSize(function, (10 * sizeof(CUdeviceptr) + sizeof(int)));
+  }
   CHECK_STATUS(env, "Error in cuParamSetSize", status, device)
 
   offset = 0;
@@ -195,6 +251,23 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_class_mem", status, device)
   offset += sizeof(CUdeviceptr);
 
+  if (hama_peer != NULL) {
+    // HamaPeer - Pass PinnedMemory gpu_host_device_interface to kernel function
+    status = cuParamSetv(cuFunction, offset, (void *) &gpu_host_device_interface, sizeof(CUdeviceptr));
+    CHECK_STATUS(env, "Error in cuParamSetv: gpu_host_device_interface", status, device)
+    offset += sizeof(CUdeviceptr);
+    
+    // HamaPeer - Pass gpu_blocksync_barrier_array_in to kernel function (Inter-Block Lock-Free Synchronization)
+    status = cuParamSetv(cuFunction, offset, (void *) &gpu_blocksync_barrier_array_in, sizeof(CUdeviceptr));
+    CHECK_STATUS(env, "Error in cuParamSetv: gpu_blocksync_barrier_array_in", status, device)
+    offset += sizeof(CUdeviceptr);
+    
+    // HamaPeer - Pass gpu_blocksync_barrier_array_out to kernel function (Inter-Block Lock-Free Synchronization)
+    status = cuParamSetv(cuFunction, offset, (void *) &gpu_blocksync_barrier_array_out, sizeof(CUdeviceptr));
+    CHECK_STATUS(env, "Error in cuParamSetv: gpu_blocksync_barrier_array_out", status, device)
+    offset += sizeof(CUdeviceptr);
+  }
+  
   status = cuParamSeti(function, offset, num_threads); 
   CHECK_STATUS(env, "Error in cuParamSetv: num_threads", status, device)
   offset += sizeof(int);
@@ -222,6 +295,22 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env, "Error in cuMemcpyHtoD: gpu_buffer_size", status, device)
 
   //----------------------------------------------------------------------------
+  // HamaPeer - start HostMonitor
+  //----------------------------------------------------------------------------
+  if (host_monitor != NULL) {
+    if (host_monitor->host_device_interface->is_debugging) {
+      printf("CUDAContext_cudaRun - startMonitoring...\n");
+    }
+    
+    host_monitor->startMonitoring();
+    
+    if (host_monitor->host_device_interface->is_debugging) {
+      printf("CUDAContext_cudaRun - startMonitoring finished!\n");
+      fflush(stdout);
+    }
+  }
+  
+  //----------------------------------------------------------------------------
   //launch
   //----------------------------------------------------------------------------
 
@@ -234,6 +323,22 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   status = cuCtxSynchronize();  
   CHECK_STATUS(env, "Error in cuCtxSynchronize", status, device)
 
+  //----------------------------------------------------------------------------
+  // HamaPeer - stop HostMonitor
+  //----------------------------------------------------------------------------
+  if (host_monitor != NULL) {
+    if (host_monitor->host_device_interface->is_debugging) {
+      printf("CUDAContext_cudaRun - stopMonitoring...\n");
+    }
+    
+    host_monitor->stopMonitoring();
+    
+    if (host_monitor->host_device_interface->is_debugging) {
+      printf("CUDAContext_cudaRun - stopMonitoring finished!\n");
+      fflush(stdout);
+    }
+  }
+  
   //----------------------------------------------------------------------------
   //copy data back
   //----------------------------------------------------------------------------
@@ -253,6 +358,7 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   //free resources
   //----------------------------------------------------------------------------
   
+  free(host_monitor);
   free(info_space);
 
   cuMemFree(gpu_info_space);
@@ -262,6 +368,9 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   cuMemFree(gpu_class_mem);
   cuMemFree(gpu_heap_end);
   cuMemFree(gpu_buffer_size);
-
+  cuMemFree(gpu_blocksync_barrier_array_in);
+  cuMemFree(gpu_blocksync_barrier_array_out);
+  cuMemFree(gpu_host_device_interface);
+  
   cuCtxDestroy(context);
 }

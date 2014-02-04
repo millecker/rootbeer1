@@ -38,6 +38,8 @@ public class CUDAContext implements Context, Runnable {
   private BlockingQueue<KernelLaunch> m_toThread;
   private BlockingQueue<KernelLaunch> m_fromThread;
   
+  private HamaPeer m_hamaPeer = null;
+  
   public CUDAContext(GpuDevice device){
     m_device = device;    
        
@@ -97,6 +99,11 @@ public class CUDAContext implements Context, Runnable {
   @Override
   public GpuDevice getDevice() {
     return m_device;
+  }
+  
+  @Override
+  public void setHamaPeer(HamaPeer hamaPeer) {
+    this.m_hamaPeer = hamaPeer;
   }
 
   @Override
@@ -327,7 +334,7 @@ public class CUDAContext implements Context, Runnable {
     KernelLaunch item = new KernelLaunch(m_device.getDeviceId(), cubin_file, 
       cubin_file.length, thread_config.getBlockShapeX(), 
       thread_config.getGridShapeX(), thread_config.getNumThreads(), 
-      m_objectMemory, m_handlesMemory, m_exceptionsMemory, m_classMemory);
+      m_objectMemory, m_handlesMemory, m_exceptionsMemory, m_classMemory, m_hamaPeer);
     
     m_toThread.put(item);
     m_fromThread.take();
@@ -372,7 +379,7 @@ public class CUDAContext implements Context, Runnable {
         cudaRun(item.getDeviceIndex(), item.getCubinFile(), item.getCubinLength(),
           item.getBlockShapeX(), item.getGridShapeX(), item.getNumThreads(), 
           item.getObjectMem(), item.getHandlesMem(), item.getExceptionsMem(),
-          item.getClassMem());
+          item.getClassMem(), item.getHamaPeer());
         
         m_fromThread.put(item);
       } catch(Exception ex){
@@ -383,5 +390,5 @@ public class CUDAContext implements Context, Runnable {
   
   private native void cudaRun(int device_index, byte[] cubin_file, int cubin_length,
     int block_shape_x, int grid_shape_x, int num_threads, Memory object_mem,
-    Memory handles_mem, Memory exceptions_mem, Memory class_mem);
+    Memory handles_mem, Memory exceptions_mem, Memory class_mem, HamaPeer hama_peer);
 }

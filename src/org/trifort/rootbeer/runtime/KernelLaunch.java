@@ -12,11 +12,12 @@ public class KernelLaunch {
   private Memory m_handlesMem;
   private Memory m_exceptionsMem;
   private Memory m_classMem;
+  private HamaPeer m_hamaPeer;
   private boolean m_quit;
   
   public KernelLaunch(int device_index, byte[] cubin_file, int cubin_file_length, 
     int block_shape_x, int grid_shape_x, int num_threads, Memory object_mem, 
-    Memory handles_mem, Memory exceptions_mem, Memory class_mem){
+    Memory handles_mem, Memory exceptions_mem, Memory class_mem, HamaPeer hama_peer) {
     
     m_deviceIndex = device_index;
     m_cubinFile = cubin_file;
@@ -28,6 +29,7 @@ public class KernelLaunch {
     m_handlesMem = handles_mem;
     m_exceptionsMem = exceptions_mem;
     m_classMem = class_mem;
+    m_hamaPeer = hama_peer;
     m_quit = false;
   }
   
@@ -77,5 +79,9 @@ public class KernelLaunch {
 
   public Memory getClassMem() {
     return m_classMem;
+  }
+  
+  public HamaPeer getHamaPeer() {
+    return m_hamaPeer;
   }
 }
