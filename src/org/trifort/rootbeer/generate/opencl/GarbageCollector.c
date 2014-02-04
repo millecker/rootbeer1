@@ -582,6 +582,16 @@ void org_trifort_rootbeer_runtime_RootbeerGpu_threadfenceBlock($$__global$$ char
   org_trifort_threadfence_block();
 }
 
+$$__device__$$ 
+void org_trifort_rootbeer_runtime_RootbeerGpu_threadfenceSystem($$__global$$ char * gc_info, int * exception){
+  at_illecker_threadfence_system();
+}
+
+$$__device__$$ 
+void org_trifort_rootbeer_runtime_RootbeerGpu_syncblocks($$__global$$ char * gc_info, int goal_value, int * exception){
+  at_illecker_syncblocks(goal_value);
+}
+
 $$__device__$$ char
 org_trifort_cmp(long long lhs, long long rhs){
   if(lhs > rhs)
