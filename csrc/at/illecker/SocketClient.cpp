@@ -17,11 +17,6 @@
  */
 
 #include "SocketClient.h"
-#include "HostDeviceInterface.h"
-
-#include <errno.h>
-#include <netinet/in.h>
-//#include <sys/socket.h>
 
 SocketClient::SocketClient(bool is_debugging) {
   is_debugging = is_debugging;
@@ -315,3 +310,4 @@ KeyValuePair<K,V> SocketClient::getKeyValueResult(int32_t expected_response_cmd,
   }
   return key_value_pair;
 }
+

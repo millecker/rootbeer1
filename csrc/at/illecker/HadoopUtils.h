@@ -19,7 +19,13 @@
 #ifndef HADOOP_UTILS_H
 #define HADOOP_UTILS_H
 
+#include <errno.h>
+#include <typeinfo> /* typeid */
 #include <string>
+#include <string.h>
+#include <sstream> /* ostringstream */
+#include <rpc/types.h>
+#include <rpc/xdr.h>
 
 using std::string;
 
@@ -164,3 +170,4 @@ namespace HadoopUtils {
 }
 
 #endif
+

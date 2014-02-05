@@ -56,3 +56,23 @@ void HostDeviceInterface::init() {
   end_of_data = true;
   is_result_available = false;
 }
+
+const char* messageTypeNames[] = {
+  stringify( START_MESSAGE ), stringify( SET_BSPJOB_CONF ), stringify( SET_INPUT_TYPES ),
+  stringify( RUN_SETUP ), stringify( RUN_BSP ), stringify( RUN_CLEANUP ),
+  stringify( READ_KEYVALUE ), stringify( WRITE_KEYVALUE ),
+  stringify( GET_MSG ), stringify( GET_MSG_COUNT ),
+  stringify( SEND_MSG ), stringify( SYNC ),
+  stringify( GET_ALL_PEERNAME ), stringify( GET_PEERNAME ),
+  stringify( GET_PEER_INDEX ), stringify( GET_PEER_COUNT ), stringify( GET_SUPERSTEP_COUNT ),
+  stringify( REOPEN_INPUT ), stringify( CLEAR ),
+  stringify( CLOSE ), stringify( ABORT ),
+  stringify( DONE ), stringify( TASK_DONE ),
+  stringify( REGISTER_COUNTER ), stringify( INCREMENT_COUNTER ),
+  stringify( SEQFILE_OPEN ), stringify( SEQFILE_READNEXT ),
+  stringify( SEQFILE_APPEND ), stringify( SEQFILE_CLOSE ),
+  stringify( PARTITION_REQUEST ), stringify( PARTITION_RESPONSE ),
+  stringify( LOG ), stringify( END_OF_DATA ),
+  stringify( UNDEFINED )
+};
+

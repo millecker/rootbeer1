@@ -20,35 +20,16 @@
 #define SOCKET_CLIENT_H
 
 #include "HadoopUtils.h"
+#include "HostDeviceInterface.h"
 
+#include <errno.h>
+#include <netinet/in.h>
 #include <vector>
 
 using std::pair;
 using std::vector;
 
 using namespace HadoopUtils;
-
-#define stringify( name ) # name
-
-/* Only needed for debugging output */
-const char* messageTypeNames[] = {
-  stringify( START_MESSAGE ), stringify( SET_BSPJOB_CONF ), stringify( SET_INPUT_TYPES ),
-  stringify( RUN_SETUP ), stringify( RUN_BSP ), stringify( RUN_CLEANUP ),
-  stringify( READ_KEYVALUE ), stringify( WRITE_KEYVALUE ),
-  stringify( GET_MSG ), stringify( GET_MSG_COUNT ),
-  stringify( SEND_MSG ), stringify( SYNC ),
-  stringify( GET_ALL_PEERNAME ), stringify( GET_PEERNAME ),
-  stringify( GET_PEER_INDEX ), stringify( GET_PEER_COUNT ), stringify( GET_SUPERSTEP_COUNT ),
-  stringify( REOPEN_INPUT ), stringify( CLEAR ),
-  stringify( CLOSE ), stringify( ABORT ),
-  stringify( DONE ), stringify( TASK_DONE ),
-  stringify( REGISTER_COUNTER ), stringify( INCREMENT_COUNTER ),
-  stringify( SEQFILE_OPEN ), stringify( SEQFILE_READNEXT ),
-  stringify( SEQFILE_APPEND ), stringify( SEQFILE_CLOSE ),
-  stringify( PARTITION_REQUEST ), stringify( PARTITION_RESPONSE ),
-  stringify( LOG ), stringify( END_OF_DATA ),
-  stringify( UNDEFINED )
-};
 
 /**
  * Generic KeyValuePair including is_empty
@@ -123,3 +104,4 @@ public:
 };
 
 #endif
+

@@ -1769,3 +1769,4 @@ void HostMonitor::processCommand() volatile {
     }
   }
 }
+

@@ -21,6 +21,8 @@
 
 #define STR_SIZE 1024
 
+#define stringify( name ) # name
+
 class HostDeviceInterface {
 public:
   volatile bool is_debugging; 
@@ -103,4 +105,8 @@ public:
   void init();
 };
 
+/* Only needed for debugging output */
+extern const char* messageTypeNames[];
+
 #endif
+

@@ -18,13 +18,6 @@
 
 #include "HadoopUtils.h"
 
-#include <string>
-#include <sstream> /* ostringstream */
-#include <rpc/types.h>
-#include <rpc/xdr.h>
-
-using std::string;
-
 namespace HadoopUtils {
   
   /**
@@ -381,3 +374,4 @@ namespace HadoopUtils {
   }
 
 }
+
