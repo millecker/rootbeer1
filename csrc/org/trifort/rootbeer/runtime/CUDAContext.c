@@ -1,4 +1,6 @@
 #include "CUDARuntime.h"
+#include "../../../../at/illecker/HostDeviceInterface.h"
+#include "../../../../at/illecker/HostMonitor.h"
 #include <cuda.h>
 
 #define CHECK_STATUS(env,msg,status,device) \
@@ -26,7 +28,7 @@ void throw_cuda_errror_exception(JNIEnv *env, const char *message, int error,
     return;
   }
 
-  exp = (*env)->FindClass(env,"org/trifort/rootbeer/runtime/CudaErrorException");
+  exp = env->FindClass("org/trifort/rootbeer/runtime/CudaErrorException");
 
   // we truncate the message to 900 characters to stop any buffer overflow
   switch(error){
@@ -42,9 +44,9 @@ void throw_cuda_errror_exception(JNIEnv *env, const char *message, int error,
       sprintf(msg, "ERROR STATUS:%i : %.900s", error, message);
   }
 
-  fid = (*env)->GetFieldID(env,exp, "cudaError_enum", "I");
-  (*env)->SetLongField(env,exp,fid, (jint)error);
-  (*env)->ThrowNew(env,exp,msg);
+  fid = env->GetFieldID(exp, "cudaError_enum", "I");
+  env->SetLongField(exp, fid, (jint)error);
+  env->ThrowNew(exp, msg);
   return;
 }
 
@@ -109,7 +111,7 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env,"Error in cuCtxCreate", status, device)
 
   fatcubin = malloc(cubin_length);
-  (*env)->GetByteArrayRegion(env, cubin_file, 0, cubin_length, fatcubin);
+  env->GetByteArrayRegion(cubin_file, 0, cubin_length, (jbyte *)fatcubin);
 
   status = cuModuleLoadFatBinary(&module, fatcubin);
   CHECK_STATUS(env, "Error in cuModuleLoad", status, device)
@@ -127,27 +129,27 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   //get handles from java
   //----------------------------------------------------------------------------
 
-  cuda_memory_class = (*env)->FindClass(env, "org/trifort/rootbeer/runtime/FixedMemory");
-  get_address_method = (*env)->GetMethodID(env, cuda_memory_class, "getAddress", "()J");
-  get_size_method = (*env)->GetMethodID(env, cuda_memory_class, "getSize", "()J");
-  get_heap_end_method = (*env)->GetMethodID(env, cuda_memory_class, "getHeapEndPtr", "()J");
+  cuda_memory_class = env->FindClass("org/trifort/rootbeer/runtime/FixedMemory");
+  get_address_method = env->GetMethodID(cuda_memory_class, "getAddress", "()J");
+  get_size_method = env->GetMethodID(cuda_memory_class, "getSize", "()J");
+  get_heap_end_method = env->GetMethodID(cuda_memory_class, "getHeapEndPtr", "()J");
 
-  cpu_object_mem = (void *) (*env)->CallLongMethod(env, object_mem, get_address_method);
-  cpu_object_mem_size = (*env)->CallLongMethod(env, object_mem, get_size_method);
-  cpu_heap_end = (*env)->CallLongMethod(env, object_mem, get_heap_end_method);
+  cpu_object_mem = (void *) env->CallLongMethod(object_mem, get_address_method);
+  cpu_object_mem_size = env->CallLongMethod(object_mem, get_size_method);
+  cpu_heap_end = env->CallLongMethod(object_mem, get_heap_end_method);
 
-  cpu_handles_mem = (void *) (*env)->CallLongMethod(env, handles_mem, get_address_method);
-  cpu_handles_mem_size = (*env)->CallLongMethod(env, handles_mem, get_heap_end_method);
+  cpu_handles_mem = (void *) env->CallLongMethod(handles_mem, get_address_method);
+  cpu_handles_mem_size = env->CallLongMethod(handles_mem, get_heap_end_method);
 
-  cpu_exceptions_mem = (void *) (*env)->CallLongMethod(env, exceptions_mem, get_address_method);
-  cpu_exceptions_mem_size = (*env)->CallLongMethod(env, exceptions_mem, get_size_method);
+  cpu_exceptions_mem = (void *) env->CallLongMethod(exceptions_mem, get_address_method);
+  cpu_exceptions_mem_size = env->CallLongMethod(exceptions_mem, get_size_method);
 
-  cpu_class_mem = (void *) (*env)->CallLongMethod(env, class_mem, get_address_method);
-  cpu_class_mem_size = (*env)->CallLongMethod(env, class_mem, get_heap_end_method);
+  cpu_class_mem = (void *) env->CallLongMethod(class_mem, get_address_method);
+  cpu_class_mem_size = env->CallLongMethod(class_mem, get_heap_end_method);
 
   info_space_size = 1024;
   info_space = (jlong *) malloc(info_space_size);
-  info_space[1] = (*env)->CallLongMethod(env, object_mem, get_heap_end_method);
+  info_space[1] = env->CallLongMethod(object_mem, get_heap_end_method);
 
   //----------------------------------------------------------------------------
   //allocate mem
@@ -179,13 +181,13 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
     printf("CUDAContext_cudaRun - allocate gpu_blocksync_barrier_array_in sizeof: %ld bytes\n", grid_shape_x * sizeof(jint));
     status = cuMemAlloc(&gpu_blocksync_barrier_array_in, grid_shape_x * sizeof(jint));
     CHECK_STATUS(env, "Error in cuMemAlloc: gpu_blocksync_barrier_array_in", status, device)
-    printf("CUDAContext_cudaRun - gpu_blocksync_barrier_array_in.ptr: %p\n", gpu_blocksync_barrier_array_in);
+    printf("CUDAContext_cudaRun - gpu_blocksync_barrier_array_in.ptr: %llu\n", gpu_blocksync_barrier_array_in);
     
     // HamaPeer - Allocate gpuBarrierArrayOut for Inter-Block Lock-Free Synchronization
     printf("CUDAContext_cudaRun - allocate gpu_blocksync_barrier_array_out sizeof: %ld bytes\n", grid_shape_x * sizeof(jint));
     status = cuMemAlloc(&gpu_blocksync_barrier_array_out, grid_shape_x * sizeof(jint));
     CHECK_STATUS(env, "Error in cuMemAlloc: gpu_blocksync_barrier_array_out", status, device)
-    printf("CUDAContext_cudaRun - gpu_blocksync_barrier_array_out.ptr: %p\n", gpu_blocksync_barrier_array_out);
+    printf("CUDAContext_cudaRun - gpu_blocksync_barrier_array_out.ptr: %llu\n", gpu_blocksync_barrier_array_out);
     
     // HamaPeer - Allocate HostDeviceInterface Pinned Memory
     printf("CUDAContext_cudaRun - allocate cpu_host_device_interface sizeof: %ld bytes\n", sizeof(HostDeviceInterface));
@@ -196,19 +198,19 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
     // HamaPeer - initialize cpu_hostDeviceInterface
     cpu_host_device_interface->init();
     
-    jclass hama_peer_class = (*env)->FindClass(env, "org/trifort/rootbeer/runtime/HamaPeer");
-    get_port_method = (*env)->GetMethodID(env, hama_peer_class, "getPort", "()I");
-    is_debugging_method = (*env)->GetMethodID(env, hama_peer_class, "isDebugging", "()Z");
+    jclass hama_peer_class = env->FindClass("org/trifort/rootbeer/runtime/HamaPeer");
+    get_port_method = env->GetMethodID(hama_peer_class, "getPort", "()I");
+    is_debugging_method = env->GetMethodID(hama_peer_class, "isDebugging", "()Z");
     
     // HamaPeer - init HostMonitor and connect
     host_monitor = new HostMonitor(cpu_host_device_interface,
-                                   (*env)->CallIntMethod(env, hama_peer, get_port_method),
-                                   (*env)->CallBooleanMethod(env, hama_peer, is_debugging_method));
+                                   env->CallIntMethod(hama_peer, get_port_method),
+                                   env->CallBooleanMethod(hama_peer, is_debugging_method));
     
     // HamaPeer - Get device pointer of HostDeviceInterface object
     status = cuMemHostGetDevicePointer(&gpu_host_device_interface, cpu_host_device_interface, 0);
     CHECK_STATUS(env, "Error in cuMemHostGetDevicePointer: gpu_host_device_interface", status, device)
-    printf("CUDAContext_cudaRun - gpu_host_device_interface: %p\n", gpu_host_device_interface);
+    printf("CUDAContext_cudaRun - gpu_host_device_interface: %llu\n", gpu_host_device_interface);
   }
   //----------------------------------------------------------------------------
   //set function parameters
@@ -253,17 +255,17 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
 
   if (hama_peer != NULL) {
     // HamaPeer - Pass PinnedMemory gpu_host_device_interface to kernel function
-    status = cuParamSetv(cuFunction, offset, (void *) &gpu_host_device_interface, sizeof(CUdeviceptr));
+    status = cuParamSetv(function, offset, (void *) &gpu_host_device_interface, sizeof(CUdeviceptr));
     CHECK_STATUS(env, "Error in cuParamSetv: gpu_host_device_interface", status, device)
     offset += sizeof(CUdeviceptr);
     
     // HamaPeer - Pass gpu_blocksync_barrier_array_in to kernel function (Inter-Block Lock-Free Synchronization)
-    status = cuParamSetv(cuFunction, offset, (void *) &gpu_blocksync_barrier_array_in, sizeof(CUdeviceptr));
+    status = cuParamSetv(function, offset, (void *) &gpu_blocksync_barrier_array_in, sizeof(CUdeviceptr));
     CHECK_STATUS(env, "Error in cuParamSetv: gpu_blocksync_barrier_array_in", status, device)
     offset += sizeof(CUdeviceptr);
     
     // HamaPeer - Pass gpu_blocksync_barrier_array_out to kernel function (Inter-Block Lock-Free Synchronization)
-    status = cuParamSetv(cuFunction, offset, (void *) &gpu_blocksync_barrier_array_out, sizeof(CUdeviceptr));
+    status = cuParamSetv(function, offset, (void *) &gpu_blocksync_barrier_array_out, sizeof(CUdeviceptr));
     CHECK_STATUS(env, "Error in cuParamSetv: gpu_blocksync_barrier_array_out", status, device)
     offset += sizeof(CUdeviceptr);
   }
