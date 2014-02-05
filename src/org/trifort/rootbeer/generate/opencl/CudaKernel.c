@@ -91,7 +91,24 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
   syncblocks_barrier_array_out = syncblocks_barrier_arr_out;
   printf("syncblocks_barrier_array_out.ptr: %p\n", syncblocks_barrier_array_out);
   
-  entry(gc_info, to_space, handles,to_space_free_ptr, space_size,
-        exceptions, java_lang_class_refs, num_blocks);
+  org_trifort_gc_init(to_space, *space_size, java_lang_class_refs);
+  __syncthreads();
+
+  int loop_control = blockIdx.x * blockDim.x + threadIdx.x;
+  if(loop_control >= num_blocks){
+    return;
+  } else {
+    int handle = handles[loop_control];
+    int exception = 0;   
+    %%invoke_run%%(gc_info, handle, &exception);
+    exceptions[loop_control] = exception;
+
+    __syncthreads();
+
+    if(loop_control == 0){
+      unsigned long long * addr = ( unsigned long long * ) (gc_info + TO_SPACE_FREE_POINTER_OFFSET);
+      *to_space_free_ptr = *addr;    
+    }
+  }
 }
 
