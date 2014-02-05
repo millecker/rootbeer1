@@ -91,8 +91,8 @@ void at_illecker_syncblocks(int goal_value) {
 */
 
 // Inter-Block Lock-Free Synchronization
-__device__ int *barrier_array_in;
-__device__ int *barrier_array_out;
+__device__ int *syncblocks_barrier_array_in;
+__device__ int *syncblocks_barrier_array_out;
 __device__
 void at_illecker_syncblocks(int goal_value) {
   int tid_in_block = threadIdx.x; // * blockDim.y + threadIdx.y

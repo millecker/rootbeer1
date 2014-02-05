@@ -75,3 +75,23 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
     }
   }
 }
+
+__global__ void entry(char * gc_info, char * to_space, int * handles,
+  long long * to_space_free_ptr, long long * space_size, int * exceptions,
+  int * java_lang_class_refs, HostDeviceInterface * h_d_interface,
+  int * syncblocks_barrier_arr_in, int * syncblocks_barrier_arr_out, int num_blocks) {
+  
+  // HamaPeer - host_device_interface pinned memory parameter
+  host_device_interface = h_d_interface;
+  printf("host_device_interface.ptr: %p\n", host_device_interface);
+  
+  // Barrier arrays (size of blocks) for Inter-Block Lock-Free Synchronization
+  syncblocks_barrier_array_in = syncblocks_barrier_arr_in;
+  printf("syncblocks_barrier_array_in.ptr: %p\n", syncblocks_barrier_array_in);
+  syncblocks_barrier_array_out = syncblocks_barrier_arr_out;
+  printf("syncblocks_barrier_array_out.ptr: %p\n", syncblocks_barrier_array_out);
+  
+  entry(gc_info, to_space, handles,to_space_free_ptr, space_size,
+        exceptions, java_lang_class_refs, num_blocks);
+}
+
