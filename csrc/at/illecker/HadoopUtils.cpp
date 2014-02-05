@@ -21,16 +21,6 @@
 namespace HadoopUtils {
   
   /**
-   * Generic toString
-   */
-  template <class T>
-  string toString(const T& t) {
-    std::ostringstream oss;
-    oss << t;
-    return oss.str();
-  }
-
-  /**
    * Generic toString template specializations
    */
   template <> string toString<string>(const string& t) {
@@ -219,14 +209,6 @@ namespace HadoopUtils {
   // Serialization and Deserialization
   /*****************************************************************************/
   /**
-   * Generic serialization
-   */
-  template<class T>
-  void serialize(T t, FileOutStream& stream) {
-    serialize<string>(toString<T>(t), stream);
-  }
-
-  /**
    * Generic serialization template specializations
    */
   template <> void serialize<int64_t>(int64_t t, FileOutStream& stream) {
@@ -284,15 +266,6 @@ namespace HadoopUtils {
     if (t.length() > 0) {
       stream.write(t.data(), t.length());
     }
-  }
-
-  /**
-   * Generic deserialization
-   */
-  template<class T>
-  T deserialize(FileInStream& stream) {
-    string str = "Not able to deserialize type: ";
-    throw Error(str.append(typeid(T).name()));
   }
 
   /**
