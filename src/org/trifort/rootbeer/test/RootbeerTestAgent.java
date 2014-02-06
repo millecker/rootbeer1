@@ -240,11 +240,17 @@ public class RootbeerTestAgent {
       watch.stop();
       m_gpuTime = watch.elapsedTimeMillis();
       watch.start();
+      RootbeerGpu.setBlockDimx(thread_config.getBlockShapeX());
+      RootbeerGpu.setGridDimx(thread_config.getGridShapeX());
       for(int block = 0; block < thread_config.getGridShapeX(); ++block){
         for(int thread = 0; thread < thread_config.getBlockShapeX(); ++thread){
-          RootbeerGpu.setBlockIdxx(block);
-          RootbeerGpu.setThreadIdxx(thread);
-          known_good_item.gpuMethod();
+          int thread_id = block*thread_config.getBlockShapeX()+thread;
+          if(thread_id < thread_config.getNumThreads()){
+            RootbeerGpu.setBlockIdxx(block);
+            RootbeerGpu.setThreadIdxx(thread);
+            RootbeerGpu.setThreadId(thread_id);
+            known_good_item.gpuMethod();
+          }
         }
       }
       watch.stop();

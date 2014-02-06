@@ -10,13 +10,19 @@ package org.trifort.rootbeer.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateBuilderTest;
+import org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateTest;
 import org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.FastMatrixTest;
+import org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.GpuParametersTest;
 
 public class KernelTemplateMain implements TestKernelTemplateFactory {
 
   public List<TestKernelTemplate> getProviders() {
     List<TestKernelTemplate> ret = new ArrayList<TestKernelTemplate>();
     //ret.add(new FastMatrixTest());
+    ret.add(new DoubleToStringKernelTemplateTest());
+    ret.add(new DoubleToStringKernelTemplateBuilderTest());
+    ret.add(new GpuParametersTest());
     return ret;
   }
 
