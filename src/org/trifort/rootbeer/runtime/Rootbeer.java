@@ -34,7 +34,12 @@ public class Rootbeer {
   
   public Rootbeer(Map<String, String> env){
     this();
-    m_hamaPeer = new HamaPeer(env);
+    int port = Integer.parseInt(env.get("hama.pipes.command.port"));
+    boolean isDebugging = false;
+    if (Integer.parseInt(env.get("hama.pipes.logging")) != 0) {
+      isDebugging = true;
+    }
+    m_hamaPeer = new HamaPeer(port, isDebugging);
   }
   
   public List<GpuDevice> getDevices(){

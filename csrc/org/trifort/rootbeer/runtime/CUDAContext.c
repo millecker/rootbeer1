@@ -50,6 +50,10 @@ void throw_cuda_errror_exception(JNIEnv *env, const char *message, int error,
   return;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   (JNIEnv *env, jobject this_ref, jint device_index, jbyteArray cubin_file, 
    jint cubin_length, jint block_shape_x, jint grid_shape_x, jint num_threads, 
@@ -91,13 +95,11 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   jmethodID get_address_method;
   jmethodID get_size_method;
   jmethodID get_heap_end_method;
-  
-  jclass hama_peer_class;
-  jmethodID get_port_method;
-  jmethodID is_debugging_method;
-  
+   
   jlong * info_space;
   
+  jclass hama_peer_class;
+  jfieldID host_monitor_field;
   HostMonitor *host_monitor = NULL;
   
   //----------------------------------------------------------------------------
@@ -198,14 +200,13 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
     // HamaPeer - initialize cpu_hostDeviceInterface
     cpu_host_device_interface->init();
     
-    jclass hama_peer_class = env->FindClass("org/trifort/rootbeer/runtime/HamaPeer");
-    get_port_method = env->GetMethodID(hama_peer_class, "getPort", "()I");
-    is_debugging_method = env->GetMethodID(hama_peer_class, "isDebugging", "()Z");
+    hama_peer_class = env->GetObjectClass(hama_peer);
+    host_monitor_field = env->GetFieldID(hama_peer_class, "m_hostMonitor", "J");
+    host_monitor = (HostMonitor*) env->GetLongField(hama_peer, host_monitor_field);
+    printf("CUDAContext_cudaRun - host_monitor.ptr: %ld\n", (long)host_monitor);
     
-    // HamaPeer - init HostMonitor and connect
-    host_monitor = new HostMonitor(cpu_host_device_interface,
-                                   env->CallIntMethod(hama_peer, get_port_method),
-                                   env->CallBooleanMethod(hama_peer, is_debugging_method));
+    // Set cpu_host_device_interface in HostMonitor
+    host_monitor->updateHostDeviceInterface(cpu_host_device_interface);
     
     // HamaPeer - Get device pointer of HostDeviceInterface object
     status = cuMemHostGetDevicePointer(&gpu_host_device_interface, cpu_host_device_interface, 0);
@@ -300,13 +301,13 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   // HamaPeer - start HostMonitor
   //----------------------------------------------------------------------------
   if (host_monitor != NULL) {
-    if (host_monitor->host_device_interface->is_debugging) {
+    if (host_monitor->isDebugging()) {
       printf("CUDAContext_cudaRun - startMonitoring...\n");
     }
     
     host_monitor->startMonitoring();
     
-    if (host_monitor->host_device_interface->is_debugging) {
+    if (host_monitor->isDebugging()) {
       printf("CUDAContext_cudaRun - startMonitoring finished!\n");
       fflush(stdout);
     }
@@ -329,13 +330,13 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   // HamaPeer - stop HostMonitor
   //----------------------------------------------------------------------------
   if (host_monitor != NULL) {
-    if (host_monitor->host_device_interface->is_debugging) {
+    if (host_monitor->isDebugging()) {
       printf("CUDAContext_cudaRun - stopMonitoring...\n");
     }
     
     host_monitor->stopMonitoring();
     
-    if (host_monitor->host_device_interface->is_debugging) {
+    if (host_monitor->isDebugging()) {
       printf("CUDAContext_cudaRun - stopMonitoring finished!\n");
       fflush(stdout);
     }
@@ -376,3 +377,8 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   
   cuCtxDestroy(context);
 }
+
+#ifdef __cplusplus
+}
+#endif
+

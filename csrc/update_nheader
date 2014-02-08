@@ -18,4 +18,7 @@ rm org_trifort_rootbeer_runtime_FixedMemory_MemPointer.h
 javah org.trifort.rootbeer.runtime.OpenCLRuntime
 mv org_trifort_rootbeer_runtime_OpenCLRuntime.h ../../csrc/org/trifort/rootbeer/runtime/OpenCLRuntime.h
 
+javah org.trifort.rootbeer.runtime.HamaPeer
+mv org_trifort_rootbeer_runtime_HamaPeer.h ../../csrc/org/trifort/rootbeer/runtime/HamaPeer.h
+
 cd ../../csrc

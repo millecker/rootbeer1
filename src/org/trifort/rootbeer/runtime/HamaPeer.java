@@ -17,33 +17,33 @@
  */
 package org.trifort.rootbeer.runtime;
 
-import java.util.Map;
-
 public class HamaPeer {
 
   private int m_port;
   private boolean m_isDebugging;
+  private long m_hostMonitor; // native pointer
 
-  public HamaPeer(Map<String, String> env) {
-    m_port = Integer.parseInt(env.get("hama.pipes.command.port"));
-    if (Integer.parseInt(env.get("hama.pipes.logging")) == 0) {
-      m_isDebugging = false;
-    } else {
-      m_isDebugging = true;
-    }
+  public HamaPeer(int port, boolean isDebugging) {
+    this.m_port = port;
+    this.m_isDebugging = isDebugging;
     if (m_isDebugging) {
       System.out.println("HamaPeer uses port: " + m_port + " debugging: "
           + m_port);
     }
+    m_hostMonitor = connect(m_port, m_isDebugging);
   }
 
-  public int getPort() {
-    return m_port;
+  public HamaPeer(int port) {
+    this(port, false);
   }
 
-  public boolean isDebugging() {
-    return m_isDebugging;
-  }
+  /**
+   * Init socket connection to Hama Pipes
+   * 
+   * @param port of socket connection
+   * @param debugging write debug outputs
+   */
+  private native long connect(int port, boolean is_debugging);
 
   /**
    * Send a data with a tag to another BSPSlave corresponding to hostname.
