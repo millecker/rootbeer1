@@ -18,26 +18,39 @@
 
 #include "HostMonitor.h"
 
-HostMonitor::HostMonitor(HostDeviceInterface *h_d_interface, int port, bool is_debugging) {
-  host_device_interface = h_d_interface;
-  host_device_interface->is_debugging = is_debugging;
-  
-  is_monitoring = false;
+HostMonitor::HostMonitor(int port, bool is_debugging) {
+  is_debugging_ = is_debugging;
+  is_monitoring_ = false;
   pthread_mutex_init(&mutex_process_command_, NULL);
+
+  // create SocketClient
   socket_client_ = new SocketClient(is_debugging);
   
   // connect SocketClient
   socket_client_->connectSocket(port);
-  
-  reset();
-  
-  if (host_device_interface->is_debugging) {
-    printf("HostMonitor init finished...\n");
+   
+  if (is_debugging_) {
+    printf("HostMonitor SocketClient connected...\n");
   }
 }
 
 HostMonitor::~HostMonitor() {
   pthread_mutex_destroy(&mutex_process_command_);
+}
+
+bool HostMonitor::isDebugging() {
+  return is_debugging_;
+}
+
+void HostMonitor::updateHostDeviceInterface(HostDeviceInterface *h_d_interface) {
+  host_device_interface = h_d_interface;
+  host_device_interface->is_debugging = is_debugging_;
+  
+  reset();
+  
+  if (is_debugging_) {
+    printf("HostMonitor HostDeviceInterface updated...\n");
+  }
 }
 
 void HostMonitor::reset() volatile {
@@ -52,27 +65,27 @@ void HostMonitor::reset() volatile {
 }
 
 void HostMonitor::startMonitoring() {
-  if ( (host_device_interface != NULL) && (!is_monitoring) ) {
+  if ( (host_device_interface != NULL) && (!is_monitoring_) ) {
     if (host_device_interface->is_debugging) {
       printf("HostMonitor.startMonitoring...\n");
     }
     pthread_create(&monitor_thread_, NULL, &HostMonitor::thread, this);
     
     // wait for monitoring
-    //while (!is_monitoring) {
+    //while (!is_monitoring_) {
     //  printf("HostMonitor.startMonitoring is_monitoring: %s\n",
-    //    (is_monitoring) ? "true" : "false");
+    //    (is_monitoring_) ? "true" : "false");
     //}
     
     if (host_device_interface->is_debugging) {
       printf("HostMonitor.startMonitoring started thread! is_monitoring: %s\n",
-             (is_monitoring) ? "true" : "false");
+             (is_monitoring_) ? "true" : "false");
     }
   }
 }
 
 void HostMonitor::stopMonitoring() {
-  if ( (host_device_interface != NULL) && (is_monitoring) ) {
+  if ( (host_device_interface != NULL) && (is_monitoring_) ) {
     if (host_device_interface->is_debugging) {
       printf("HostMonitor.stopMonitoring...\n");
     }
@@ -80,9 +93,9 @@ void HostMonitor::stopMonitoring() {
     host_device_interface->done = true;
     
     // wait for monitoring to end
-    //while (is_monitoring) {
+    //while (is_monitoring_) {
     //  printf("HostMonitor.stopMonitoring is_monitoring: %s\n",
-    //    (is_monitoring) ? "true" : "false");
+    //    (is_monitoring_) ? "true" : "false");
     //}
     
     if (host_device_interface->is_debugging) {
@@ -102,10 +115,10 @@ void* HostMonitor::thread(void *context) {
   }
   
   while (!_this->host_device_interface->done) {
-    _this->is_monitoring = true;
+    _this->is_monitoring_ = true;
     
-    //printf("HostMonitorThread is_monitoring: %s\n",
-    //      (_this->is_monitoring) ? "true" : "false");
+    //printf("HostMonitorThread is_monitoring_: %s\n",
+    //      (_this->is_monitoring_) ? "true" : "false");
     //fflush(stdout);
     
     //printf("HostMonitor thread running... has_task: %s lock_thread_id: %d command: %d\n",
@@ -136,7 +149,7 @@ void* HostMonitor::thread(void *context) {
       }
     }
   }
-  _this->is_monitoring = false;
+  _this->is_monitoring_ = false;
   return NULL;
 }
 

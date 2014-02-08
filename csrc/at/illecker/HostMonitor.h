@@ -29,17 +29,20 @@ private:
   pthread_t monitor_thread_;
   pthread_mutex_t mutex_process_command_;
   SocketClient *socket_client_;
+  volatile bool is_monitoring_;
+  volatile bool is_debugging_;
+
+  volatile HostDeviceInterface *host_device_interface;
   
   static void* thread(void *context);
   void processCommand() volatile;
 
 public:
-  volatile bool is_monitoring;
-  volatile HostDeviceInterface *host_device_interface;
-
-  HostMonitor(HostDeviceInterface *h_d_interface, int port, bool is_debugging);
+  HostMonitor(int port, bool is_debugging);
   ~HostMonitor();
 
+  bool isDebugging();
+  void updateHostDeviceInterface(HostDeviceInterface *h_d_interface);
   void reset() volatile;
   void startMonitoring();
   void stopMonitoring();
