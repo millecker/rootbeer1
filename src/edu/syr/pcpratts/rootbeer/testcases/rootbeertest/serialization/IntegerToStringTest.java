@@ -13,19 +13,19 @@ import java.util.List;
 import edu.syr.pcpratts.rootbeer.runtime.Kernel;
 import edu.syr.pcpratts.rootbeer.test.TestSerialization;
 
-public class DoubleToStringTest implements TestSerialization {
+public class IntegerToStringTest implements TestSerialization {
 
   public List<Kernel> create() {
     List<Kernel> ret = new ArrayList<Kernel>();
     for(int i = 0; i < 5; ++i){
-      ret.add(new DoubleToStringRunOnGpu(i + 0.125));
+      ret.add(new IntegerToStringRunOnGpu(i));
     }
     return ret;
   }
 
   public boolean compare(Kernel original, Kernel from_heap) {
-    DoubleToStringRunOnGpu lhs = (DoubleToStringRunOnGpu) original;
-    DoubleToStringRunOnGpu rhs = (DoubleToStringRunOnGpu) from_heap;
+    IntegerToStringRunOnGpu lhs = (IntegerToStringRunOnGpu) original;
+    IntegerToStringRunOnGpu rhs = (IntegerToStringRunOnGpu) from_heap;
     return lhs.compare(rhs);
   }
 }
