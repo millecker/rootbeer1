@@ -19,7 +19,7 @@
 #include "SocketClient.h"
 
 SocketClient::SocketClient(bool is_debugging) {
-  is_debugging = is_debugging;
+  is_debugging_ = is_debugging;
   sock_ = -1;
   in_stream_ = NULL;
   out_stream_ = NULL;
@@ -50,10 +50,6 @@ SocketClient::~SocketClient() {
 }
 
 void SocketClient::connectSocket(int port) {
-  if (is_debugging) {
-    printf("SocketClient started\n");
-  }
-  
   if (port <= 0) {
     printf("SocketClient: invalid port number!\n");
     return;
@@ -84,7 +80,7 @@ void SocketClient::connectSocket(int port) {
   file_out_stream_ = new FileOutStream();
   file_out_stream_->open(out_stream);
   
-  if (is_debugging) {
+  if (is_debugging_) {
     printf("SocketClient is connected to port %d ...\n", port);
   }
 }
@@ -92,7 +88,7 @@ void SocketClient::connectSocket(int port) {
 bool SocketClient::sendCMD(int32_t cmd, bool verify_response) volatile {
   serialize<int32_t>(cmd, *file_out_stream_);
   file_out_stream_->flush();
-  if (is_debugging) {
+  if (is_debugging_) {
     printf("SocketClient sent CMD %s\n", messageTypeNames[cmd]);
   }
   if (verify_response) {
@@ -108,7 +104,7 @@ void SocketClient::sendCMD(int32_t cmd, const string values[], int size) volatil
   serialize<int32_t>(cmd, *file_out_stream_);
   for (int i = 0; i < size; i++) {
     serialize<string>(values[i], *file_out_stream_);
-    if (is_debugging) {
+    if (is_debugging_) {
       printf("SocketClient sent CMD: %s with Param%d: %s\n",
              messageTypeNames[cmd], i + 1, values[i].c_str());
     }

@@ -25,8 +25,10 @@ JNIEXPORT jlong JNICALL Java_org_trifort_rootbeer_runtime_HamaPeer_connect
   
   // HamaPeer - init HostMonitor and connect
   HostMonitor *host_monitor = new HostMonitor(port, is_debugging);
-  printf("HamaPeer_connect host_monitor.ptr: %ld\n", (long)host_monitor);
-
+  if (host_monitor->isDebugging()) {
+    printf("HamaPeer_connect finished. host_monitor.ptr: %p\n", host_monitor);
+  }
+  
   return (long)host_monitor;
 }
 

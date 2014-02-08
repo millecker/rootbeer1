@@ -72,7 +72,7 @@ private:
   FILE* out_stream_;
   FileInStream* file_in_stream_;
   FileOutStream* file_out_stream_;
-  bool is_debugging;
+  bool is_debugging_;
 
 public:
   SocketClient(bool is_debugging);
@@ -88,7 +88,7 @@ public:
     serialize<int32_t>(cmd, *file_out_stream_);
     serialize<T>(value, *file_out_stream_);
     file_out_stream_->flush();
-    if (is_debugging) {
+    if (is_debugging_) {
       printf("SocketClient sent CMD: %s with Value: '%s'\n", messageTypeNames[cmd],
              toString<T>(value).c_str());
     }
@@ -107,7 +107,7 @@ public:
     serialize<T1>(value1, *file_out_stream_);
     serialize<T2>(value2, *file_out_stream_);
     file_out_stream_->flush();
-    if (is_debugging) {
+    if (is_debugging_) {
       printf("SocketClient sent CMD: %s with Value1: '%s' and Value2: '%s'\n", messageTypeNames[cmd],
              toString<T1>(value1).c_str(), toString<T2>(value2).c_str());
     }
@@ -127,7 +127,7 @@ public:
     serialize<T2>(value2, *file_out_stream_);
     serialize<T3>(value3, *file_out_stream_);
     file_out_stream_->flush();
-    if (is_debugging) {
+    if (is_debugging_) {
       printf("SocketClient sent CMD: %s with Value1: '%s', Value2: '%s' and Value3: '%s'\n", messageTypeNames[cmd],
              toString<T1>(value1).c_str(), toString<T2>(value2).c_str(), toString<T3>(value3).c_str());
     }
@@ -205,7 +205,7 @@ public:
           vector<T> peernames;
           T peername;
           int32_t peername_count = deserialize<int32_t>(*file_in_stream_);
-          if (is_debugging) {
+          if (is_debugging_) {
             printf("SocketClient.getVectorResult peername_count: %d\n",
                    peername_count);
           }
@@ -213,7 +213,7 @@ public:
           for (int i=0; i<peername_count; i++)  {
             peername = deserialize<T>(*file_in_stream_);
             peernames.push_back(peername);
-            if (is_debugging) {
+            if (is_debugging_) {
               printf("SocketClient.getVectorResult peername: '%s'\n",
                      toString<T>(peername).c_str());
             }
@@ -264,7 +264,7 @@ public:
         }
         case HostDeviceInterface::END_OF_DATA: {
           key_value_pair = KeyValuePair<K,V>(true);
-          if (is_debugging) {
+          if (is_debugging_) {
             printf("SocketClient.getKeyValueResult - got END_OF_DATA\n");
           }
         }

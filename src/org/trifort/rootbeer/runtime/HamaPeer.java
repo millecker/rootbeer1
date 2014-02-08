@@ -27,8 +27,8 @@ public class HamaPeer {
     this.m_port = port;
     this.m_isDebugging = isDebugging;
     if (m_isDebugging) {
-      System.out.println("HamaPeer uses port: " + m_port + " debugging: "
-          + m_port);
+      System.out.println("Rootbeer uses HamaPeer with port: " + m_port
+          + " debugging: " + m_isDebugging);
     }
     m_hostMonitor = connect(m_port, m_isDebugging);
   }

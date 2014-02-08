@@ -83,13 +83,15 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
   
   // HamaPeer - host_device_interface pinned memory parameter
   host_device_interface = h_d_interface;
-  printf("host_device_interface.ptr: %p\n", host_device_interface);
-  
   // Barrier arrays (size of blocks) for Inter-Block Lock-Free Synchronization
   syncblocks_barrier_array_in = syncblocks_barrier_arr_in;
-  printf("syncblocks_barrier_array_in.ptr: %p\n", syncblocks_barrier_array_in);
   syncblocks_barrier_array_out = syncblocks_barrier_arr_out;
-  printf("syncblocks_barrier_array_out.ptr: %p\n", syncblocks_barrier_array_out);
+  
+  if (host_device_interface->is_debugging) {
+    printf("host_device_interface.ptr: %p\n", host_device_interface);
+    printf("syncblocks_barrier_array_in.ptr: %p\n", syncblocks_barrier_array_in);
+    printf("syncblocks_barrier_array_out.ptr: %p\n", syncblocks_barrier_array_out);
+  }
   
   org_trifort_gc_init(to_space, *space_size, java_lang_class_refs);
   __syncthreads();
