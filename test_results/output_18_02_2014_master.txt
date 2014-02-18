@@ -1,0 +1,2570 @@
+caching package names for: /home/martin/workspace/rootbeer2/Rootbeer.jar
+caching package names for: /usr/local/java/jdk1.6.0_45/jre/lib/rt.jar
+building class hierarchy...
+caching virtual methods...
+finding entry points...
+loading follows strings...
+loading to_signatures strings...
+entry point: <org.trifort.rootbeer.testcases.everything.EverythingRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.everything.EverythingRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.everything.EverythingRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.SuperClassRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.SuperClassRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.SuperClassRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.arraysum.ArraySum: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.arraysum.ArraySum: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.arraysum.ArraySum: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.baseconversion.BaseConversionRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.baseconversion.BaseConversionRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.baseconversion.BaseConversionRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer1RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer1RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer1RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer2RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer2RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer2RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer3RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer3RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer3RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer4RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer4RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer4RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.AtomicLongRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.AtomicLongRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.AtomicLongRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BarrierRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BarrierRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BarrierRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BitwiseRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BitwiseRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BitwiseRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BruteForceFFTRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BruteForceFFTRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BruteForceFFTRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ChangeThreadRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ChangeThreadRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ChangeThreadRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.DotClassRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.DotClassRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.DotClassRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.LargeMemTestRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.LargeMemTestRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.LargeMemTestRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.MultiArrayRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.MultiArrayRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.MultiArrayRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.NewOnGpuRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.NewOnGpuRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.NewOnGpuRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.PrintRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.PrintRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.PrintRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SharedMemSimpleRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SharedMemSimpleRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SharedMemSimpleRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ShiftRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ShiftRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ShiftRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SimpleSynchronizedRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SimpleSynchronizedRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SimpleSynchronizedRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest1RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest1RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest1RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest2RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest2RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest2RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest3RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest3RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest3RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StepFilterRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StepFilterRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StepFilterRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod3RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod3RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod3RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethodRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethodRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethodRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedObjectRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedObjectRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedObjectRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.WhileTrueRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.WhileTrueRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.WhileTrueRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateBuilderRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateBuilderRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateBuilderRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.GpuParametersRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.GpuParametersRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.GpuParametersRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.math.BigDecimalRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.math.BigDecimalRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.math.BigDecimalRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.ofcoarse.GpuWorkItem: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.ofcoarse.GpuWorkItem: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.ofcoarse.GpuWorkItem: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.remaptest.RemapRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.remaptest.RemapRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.remaptest.RemapRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayCloneRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayCloneRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayCloneRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayLengthRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayLengthRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayLengthRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteByteValueRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteByteValueRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteByteValueRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CharArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CharArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CharArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CmplInfRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CmplInfRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CmplInfRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CovarientRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CovarientRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CovarientRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleToStringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleToStringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleToStringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.EmptyRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.EmptyRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.EmptyRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatToStringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatToStringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatToStringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuListRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuListRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuListRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuMethodKernel: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuMethodKernel: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuMethodKernel: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.InstanceofRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.InstanceofRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.InstanceofRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntegerToStringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntegerToStringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntegerToStringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongToStringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongToStringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongToStringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.MMultRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.MMultRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.MMultRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.NativeStrictMathRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.NativeStrictMathRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.NativeStrictMathRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClass3RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClass3RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClass3RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu$OuterClassRunOnGpu2: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu$OuterClassRunOnGpu2: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu$OuterClassRunOnGpu2: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.PairHmmJimpleRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.PairHmmJimpleRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.PairHmmJimpleRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.RefTypeArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.RefTypeArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.RefTypeArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu1: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu1: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu1: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu2: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu2: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu2: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ShortArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ShortArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ShortArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SimpleTestRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SimpleTestRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SimpleTestRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringArrayTest1RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringArrayTest1RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringArrayTest1RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu1: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu1: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu1: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu2: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu2: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu2: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringConstantKernel: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringConstantKernel: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringConstantKernel: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringIndexOfRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringIndexOfRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringIndexOfRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringSplitRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringSplitRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringSplitRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SubstringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SubstringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SubstringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ZeroLengthArrayRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ZeroLengthArrayRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ZeroLengthArrayRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.everything.EverythingRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.everything.EverythingRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.everything.EverythingRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.SuperClassRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.SuperClassRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.SuperClassRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.arraysum.ArraySum: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.arraysum.ArraySum: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.arraysum.ArraySum: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.baseconversion.BaseConversionRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.baseconversion.BaseConversionRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.baseconversion.BaseConversionRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer1RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer1RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer1RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer2RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer2RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer2RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer3RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer3RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer3RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer4RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer4RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer4RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.AtomicLongRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.AtomicLongRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.AtomicLongRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BarrierRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BarrierRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BarrierRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BitwiseRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BitwiseRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BitwiseRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BruteForceFFTRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BruteForceFFTRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BruteForceFFTRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ChangeThreadRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ChangeThreadRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ChangeThreadRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.DotClassRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.DotClassRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.DotClassRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.LargeMemTestRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.LargeMemTestRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.LargeMemTestRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.MultiArrayRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.MultiArrayRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.MultiArrayRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.NewOnGpuRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.NewOnGpuRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.NewOnGpuRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.PrintRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.PrintRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.PrintRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SharedMemSimpleRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SharedMemSimpleRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SharedMemSimpleRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ShiftRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ShiftRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ShiftRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SimpleSynchronizedRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SimpleSynchronizedRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SimpleSynchronizedRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest1RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest1RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest1RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest2RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest2RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest2RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest3RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest3RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest3RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StepFilterRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StepFilterRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StepFilterRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod3RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod3RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod3RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethodRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethodRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethodRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedObjectRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedObjectRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedObjectRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.WhileTrueRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.WhileTrueRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.WhileTrueRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateBuilderRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateBuilderRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateBuilderRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.GpuParametersRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.GpuParametersRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.GpuParametersRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.math.BigDecimalRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.math.BigDecimalRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.math.BigDecimalRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.ofcoarse.GpuWorkItem: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.ofcoarse.GpuWorkItem: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.ofcoarse.GpuWorkItem: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.remaptest.RemapRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.remaptest.RemapRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.remaptest.RemapRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayCloneRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayCloneRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayCloneRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayLengthRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayLengthRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayLengthRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteByteValueRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteByteValueRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteByteValueRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CharArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CharArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CharArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CmplInfRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CmplInfRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CmplInfRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CovarientRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CovarientRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CovarientRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleToStringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleToStringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleToStringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.EmptyRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.EmptyRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.EmptyRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatToStringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatToStringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatToStringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuListRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuListRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuListRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuMethodKernel: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuMethodKernel: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuMethodKernel: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.InstanceofRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.InstanceofRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.InstanceofRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntegerToStringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntegerToStringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntegerToStringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongToStringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongToStringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongToStringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.MMultRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.MMultRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.MMultRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.NativeStrictMathRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.NativeStrictMathRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.NativeStrictMathRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClass3RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClass3RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClass3RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu$OuterClassRunOnGpu2: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu$OuterClassRunOnGpu2: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu$OuterClassRunOnGpu2: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.PairHmmJimpleRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.PairHmmJimpleRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.PairHmmJimpleRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.RefTypeArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.RefTypeArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.RefTypeArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu1: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu1: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu1: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu2: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu2: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu2: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ShortArraysRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ShortArraysRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ShortArraysRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SimpleTestRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SimpleTestRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SimpleTestRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringArrayTest1RunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringArrayTest1RunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringArrayTest1RunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu1: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu1: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu1: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu2: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu2: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu2: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringConstantKernel: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringConstantKernel: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringConstantKernel: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringIndexOfRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringIndexOfRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringIndexOfRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringSplitRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringSplitRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringSplitRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SubstringRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SubstringRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SubstringRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetRunOnGpu: void gpuMethod()>...
+entry point: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ZeroLengthArrayRunOnGpu: void gpuMethod()>
+loading forward string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ZeroLengthArrayRunOnGpu: void gpuMethod()>...
+loading reverse string call graph for: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ZeroLengthArrayRunOnGpu: void gpuMethod()>...
+building array types...
+numbering types...
+loading scene...
+finding hierarchy classes reachable from dfs walk...
+creating empty classes according to type number...
+filling in outer classes...
+collecting fields for classes and adding to declaring class...
+adding empty methods...
+adding method bodies...
+Total loaded classes: 1483
+Total loaded methods: 4911
+getEntryPoints: <org.trifort.rootbeer.testcases.everything.EverythingRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.SuperClassRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.arraysum.ArraySum: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.baseconversion.BaseConversionRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer1RunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer2RunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer3RunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer4RunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.AtomicLongRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BarrierRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BitwiseRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BruteForceFFTRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ChangeThreadRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.DotClassRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.LargeMemTestRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.MultiArrayRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.NewOnGpuRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.PrintRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SharedMemSimpleRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ShiftRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SimpleSynchronizedRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest1RunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest2RunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest3RunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StepFilterRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod3RunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethodRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedObjectRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.WhileTrueRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateBuilderRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.GpuParametersRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.math.BigDecimalRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.ofcoarse.GpuWorkItem: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.remaptest.RemapRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayCloneRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayLengthRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteArraysRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteByteValueRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CharArraysRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CmplInfRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CovarientRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleArraysRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleToStringRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.EmptyRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatArraysRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatToStringRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuListRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuMethodKernel: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.InstanceofRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntArraysRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntegerToStringRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongArraysRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongToStringRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.MMultRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.NativeStrictMathRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClass3RunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu$OuterClassRunOnGpu2: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.PairHmmJimpleRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.RefTypeArraysRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu1: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu2: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ShortArraysRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SimpleTestRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringArrayTest1RunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu1: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu2: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringConstantKernel: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringIndexOfRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringSplitRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SubstringRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetRunOnGpu: void gpuMethod()>
+getEntryPoints: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ZeroLengthArrayRunOnGpu: void gpuMethod()>
+running transform2 on: <org.trifort.rootbeer.testcases.everything.EverythingRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.SuperClassRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.arraysum.ArraySum: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.baseconversion.BaseConversionRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer1RunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer2RunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer3RunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer4RunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.AtomicLongRunOnGpu: void gpuMethod()>...
+error creating method body: <sun.misc.Unsafe: boolean compareAndSwapLong(java.lang.Object,long,long,long)>
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BarrierRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BitwiseRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.BruteForceFFTRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ChangeThreadRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.DotClassRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.LargeMemTestRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.MultiArrayRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.NewOnGpuRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.PrintRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SharedMemSimpleRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ShiftRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SimpleSynchronizedRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest1RunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest2RunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest3RunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StepFilterRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod3RunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethodRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedObjectRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.gpurequired.WhileTrueRunOnGpu: void gpuMethod()>...
+error creating method body: <sun.misc.Unsafe: boolean compareAndSwapLong(java.lang.Object,long,long,long)>
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateBuilderRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.GpuParametersRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.MatrixKernel: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.math.BigDecimalRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+/home/martin/.rootbeer/generated.cu(844): warning: variable "r0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(845): warning: variable "r1" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(846): warning: variable "i0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(847): warning: variable "$r2" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(977): warning: expression has no effect
+
+/home/martin/.rootbeer/generated.cu(977): warning: expression has no effect
+
+/home/martin/.rootbeer/generated.cu(986): warning: expression has no effect
+
+/home/martin/.rootbeer/generated.cu(986): warning: expression has no effect
+
+/home/martin/.rootbeer/generated.cu(1025): warning: variable "new_str" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(1340): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1329): warning: variable "z0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1398): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1418): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1525): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1440): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1564): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1619): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2093): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1637): warning: variable "z0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1638): warning: variable "z1" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2176): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2193): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2356): error: identifier "java_lang_Error_initab850b60f96d11de8a390800200c9a66_body0_9_" is undefined
+
+/home/martin/.rootbeer/generated.cu(2360): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2399): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2483): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2402): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2550): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2578): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2581): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2619): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2987): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3600): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3633): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3709): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3785): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3835): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3982): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3998): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4025): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4020): warning: variable "i0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(4021): warning: variable "i1" was set but never used
+
+/home/martin/.rootbeer/generated.cu(4196): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4329): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4354): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4362): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4538): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4599): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4804): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4817): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4852): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4912): warning: variable "i46" was set but never used
+
+/home/martin/.rootbeer/generated.cu(5192): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5255): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5263): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5258): warning: variable "i0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(5259): warning: variable "i1" was set but never used
+
+/home/martin/.rootbeer/generated.cu(5341): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5378): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5427): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5476): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5547): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5646): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(5728): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5925): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5968): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5979): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6017): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6020): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(6078): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6153): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(6491): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6674): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6512): warning: variable "z0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(6738): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6681): warning: variable "z0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(6787): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6890): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7273): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7342): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7536): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7631): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7634): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(7678): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7681): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(7967): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8008): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8105): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8120): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8190): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8225): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8286): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8228): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(8320): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8369): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8389): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8519): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8669): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8522): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(8765): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8814): error: identifier "java_lang_IllegalStateException_initab850b60f96d11de8a390800200c9a660_9_" is undefined
+
+/home/martin/.rootbeer/generated.cu(8903): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8952): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8980): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9043): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9137): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9178): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9202): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9247): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9288): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9372): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9524): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9556): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9644): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9647): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(9662): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9675): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9693): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9716): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9696): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(9731): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9774): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9815): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9824): warning: variable "l5" was set but never used
+
+/home/martin/.rootbeer/generated.cu(10003): warning: statement is unreachable
+
+2 errors detected in the compilation of "/tmp/tmpxft_00004206_00000000-12_generated.compute_20.cpp1.ii".
+/home/martin/.rootbeer/generated.cu(844): warning: variable "r0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(845): warning: variable "r1" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(846): warning: variable "i0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(847): warning: variable "$r2" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(977): warning: expression has no effect
+
+/home/martin/.rootbeer/generated.cu(977): warning: expression has no effect
+
+/home/martin/.rootbeer/generated.cu(986): warning: expression has no effect
+
+/home/martin/.rootbeer/generated.cu(986): warning: expression has no effect
+
+/home/martin/.rootbeer/generated.cu(1025): warning: variable "new_str" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(1340): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1329): warning: variable "z0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1398): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1418): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1525): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1440): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1564): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1619): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2093): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1637): warning: variable "z0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1638): warning: variable "z1" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2176): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2193): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2356): error: identifier "java_lang_Error_initab850b60f96d11de8a390800200c9a66_body0_9_" is undefined
+
+/home/martin/.rootbeer/generated.cu(2360): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2399): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2483): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2402): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2550): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2578): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2581): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2619): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2987): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3600): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3633): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3709): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3785): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3835): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3982): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(3998): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4025): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4020): warning: variable "i0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(4021): warning: variable "i1" was set but never used
+
+/home/martin/.rootbeer/generated.cu(4196): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4329): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4354): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4362): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4538): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4599): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4804): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4817): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4852): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(4912): warning: variable "i46" was set but never used
+
+/home/martin/.rootbeer/generated.cu(5192): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5255): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5263): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5258): warning: variable "i0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(5259): warning: variable "i1" was set but never used
+
+/home/martin/.rootbeer/generated.cu(5341): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5378): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5427): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5476): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5547): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5646): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(5728): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5925): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5968): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(5979): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6017): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6020): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(6078): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6153): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(6491): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6674): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6512): warning: variable "z0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(6738): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6681): warning: variable "z0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(6787): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(6890): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7273): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7342): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7536): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7631): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7634): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(7678): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(7681): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(7967): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8008): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8105): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8120): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8190): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8225): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8286): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8228): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(8320): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8369): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8389): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8519): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8669): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8522): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(8765): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8814): error: identifier "java_lang_IllegalStateException_initab850b60f96d11de8a390800200c9a660_9_" is undefined
+
+/home/martin/.rootbeer/generated.cu(8903): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8952): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(8980): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9043): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9137): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9178): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9202): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9247): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9288): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9372): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9524): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9556): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9644): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9647): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(9662): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9675): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9693): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9716): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9696): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(9731): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9774): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9815): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(9824): warning: variable "l5" was set but never used
+
+/home/martin/.rootbeer/generated.cu(10003): warning: statement is unreachable
+
+2 errors detected in the compilation of "/tmp/tmpxft_00004205_00000000-12_generated.compute_20.cpp1.ii".
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.ofcoarse.GpuWorkItem: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.remaptest.RemapRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractRunOnGpu: void gpuMethod()>...
+error creating method body: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractTestBaseClass: int add(int,int)>
+compiling CUDA code for 32bit and 64bit...
+/home/martin/.rootbeer/generated.cu(229): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(252): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(267): error: identifier "invoke_org_trifort_rootbeer_testcases_rootbeertest_serialization_AbstractTestBaseClass_add5_5_5_" is undefined
+
+/home/martin/.rootbeer/generated.cu(290): warning: variable "r0" was set but never used
+
+1 error detected in the compilation of "/tmp/tmpxft_00004387_00000000-12_generated.compute_20.cpp1.ii".
+/home/martin/.rootbeer/generated.cu(229): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(252): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(267): error: identifier "invoke_org_trifort_rootbeer_testcases_rootbeertest_serialization_AbstractTestBaseClass_add5_5_5_" is undefined
+
+/home/martin/.rootbeer/generated.cu(290): warning: variable "r0" was set but never used
+
+1 error detected in the compilation of "/tmp/tmpxft_00004388_00000000-12_generated.compute_20.cpp1.ii".
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayCloneRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayLengthRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListRunOnGpu: void gpuMethod()>...
+error creating method body: <java.util.List: boolean add(java.lang.Object)>
+compiling CUDA code for 32bit and 64bit...
+/home/martin/.rootbeer/generated.cu(295): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(322): error: identifier "invoke_java_util_List_add1_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(371): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_000044fa_00000000-12_generated.compute_20.cpp1.ii".
+/home/martin/.rootbeer/generated.cu(295): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(322): error: identifier "invoke_java_util_List_add1_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(371): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_000044f9_00000000-12_generated.compute_20.cpp1.ii".
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorRunOnGpu: void gpuMethod()>...
+error creating method body: <java.lang.Comparable: int compareTo(java.lang.Object)>
+error creating method body: <java.util.Comparator: int compare(java.lang.Object,java.lang.Object)>
+error creating method body: <java.io.FileSystem: int compare(java.io.File,java.io.File)>
+compiling CUDA code for 32bit and 64bit...
+/home/martin/.rootbeer/generated.cu(911): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1049): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1208): error: identifier "invoke_java_util_Comparator_compare5_13_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(1488): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1492): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1556): error: identifier "invoke_java_lang_Comparable_compareTo5_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(1669): warning: statement is unreachable
+
+2 errors detected in the compilation of "/tmp/tmpxft_0000451e_00000000-12_generated.compute_20.cpp1.ii".
+/home/martin/.rootbeer/generated.cu(911): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1049): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1208): error: identifier "invoke_java_util_Comparator_compare5_13_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(1488): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1492): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1556): error: identifier "invoke_java_lang_Comparable_compareTo5_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(1669): warning: statement is unreachable
+
+2 errors detected in the compilation of "/tmp/tmpxft_0000451d_00000000-12_generated.compute_20.cpp1.ii".
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteArraysRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteByteValueRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CharArraysRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CmplInfRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.CovarientRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleArraysRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleToStringRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.EmptyRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatArraysRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatToStringRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuListRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuMethodKernel: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapRunOnGpu: void gpuMethod()>...
+error creating method body: <java.util.Map: java.lang.Object put(java.lang.Object,java.lang.Object)>
+error creating method body: <java.util.Map: java.lang.Object remove(java.lang.Object)>
+error creating method body: <java.lang.System: int identityHashCode(java.lang.Object)>
+compiling CUDA code for 32bit and 64bit...
+/home/martin/.rootbeer/generated.cu(716): warning: variable "r0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(717): warning: variable "r1" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(718): warning: variable "i0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(719): warning: variable "$r2" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(1030): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1221): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1369): error: identifier "invoke_java_util_Map_put13_13_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(1475): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1479): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1533): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_00004e6c_00000000-12_generated.compute_20.cpp1.ii".
+/home/martin/.rootbeer/generated.cu(716): warning: variable "r0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(717): warning: variable "r1" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(718): warning: variable "i0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(719): warning: variable "$r2" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(1030): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1221): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1369): error: identifier "invoke_java_util_Map_put13_13_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(1475): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1479): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1533): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_00004e6a_00000000-12_generated.compute_20.cpp1.ii".
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetRunOnGpu: void gpuMethod()>...
+error creating method body: <java.util.Set: boolean add(java.lang.Object)>
+compiling CUDA code for 32bit and 64bit...
+/home/martin/.rootbeer/generated.cu(530): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(556): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(586): error: identifier "invoke_java_util_Set_add1_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(765): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(770): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(778): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(809): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(904): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(952): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_00004e90_00000000-12_generated.compute_20.cpp1.ii".
+/home/martin/.rootbeer/generated.cu(530): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(556): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(586): error: identifier "invoke_java_util_Set_add1_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(765): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(770): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(778): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(809): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(904): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(952): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_00004e8f_00000000-12_generated.compute_20.cpp1.ii".
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.InstanceofRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntArraysRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.IntegerToStringRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapRunOnGpu: void gpuMethod()>...
+error creating method body: <java.util.Map: java.lang.Object put(java.lang.Object,java.lang.Object)>
+error creating method body: <java.util.Map: java.lang.Object remove(java.lang.Object)>
+error creating method body: <java.lang.System: int identityHashCode(java.lang.Object)>
+compiling CUDA code for 32bit and 64bit...
+/home/martin/.rootbeer/generated.cu(724): warning: variable "r0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(725): warning: variable "r1" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(726): warning: variable "i0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(727): warning: variable "$r2" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(1073): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1106): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1367): error: identifier "invoke_java_util_Map_put13_13_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(1531): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1535): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1571): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_000050aa_00000000-12_generated.compute_20.cpp1.ii".
+/home/martin/.rootbeer/generated.cu(724): warning: variable "r0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(725): warning: variable "r1" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(726): warning: variable "i0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(727): warning: variable "$r2" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(1073): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1106): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1367): error: identifier "invoke_java_util_Map_put13_13_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(1531): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1535): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1571): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_000050a9_00000000-12_generated.compute_20.cpp1.ii".
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetRunOnGpu: void gpuMethod()>...
+error creating method body: <java.util.Set: boolean add(java.lang.Object)>
+compiling CUDA code for 32bit and 64bit...
+/home/martin/.rootbeer/generated.cu(552): warning: variable "r0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(553): warning: variable "r1" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(554): warning: variable "i0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(555): warning: variable "$r2" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(699): warning: variable "new_str" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(1153): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1182): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1211): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1625): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1680): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1695): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1778): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1806): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1974): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2079): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2155): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2161): warning: variable "z0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2223): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2247): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2292): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2295): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2300): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2327): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2391): error: identifier "invoke_java_util_Set_add1_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(2403): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2421): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2424): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2446): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_000050ce_00000000-12_generated.compute_20.cpp1.ii".
+/home/martin/.rootbeer/generated.cu(552): warning: variable "r0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(553): warning: variable "r1" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(554): warning: variable "i0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(555): warning: variable "$r2" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(699): warning: variable "new_str" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(1153): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1182): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(1211): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1625): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1680): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1695): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1778): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1806): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1974): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2079): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2155): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2161): warning: variable "z0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2223): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2247): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2292): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2295): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2300): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2327): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2391): error: identifier "invoke_java_util_Set_add1_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(2403): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2421): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(2424): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(2446): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_000050cd_00000000-12_generated.compute_20.cpp1.ii".
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListRunOnGpu: void gpuMethod()>...
+error creating method body: <java.util.List: boolean add(java.lang.Object)>
+compiling CUDA code for 32bit and 64bit...
+/home/martin/.rootbeer/generated.cu(311): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(350): error: identifier "invoke_java_util_List_add1_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(362): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(368): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(398): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_000050f2_00000000-12_generated.compute_20.cpp1.ii".
+/home/martin/.rootbeer/generated.cu(311): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(350): error: identifier "invoke_java_util_List_add1_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(362): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(368): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(398): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_000050f0_00000000-12_generated.compute_20.cpp1.ii".
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongArraysRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.LongToStringRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.MMultRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.NativeStrictMathRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClass3RunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu$OuterClassRunOnGpu2: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.PairHmmJimpleRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.RefTypeArraysRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu1: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceRunOnGpu2: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ShortArraysRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SimpleTestRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringArrayTest1RunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu1: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderRunOnGpu2: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringConstantKernel: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringIndexOfRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.StringSplitRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.SubstringRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapRunOnGpu: void gpuMethod()>...
+error creating method body: <java.util.Map: java.lang.Object put(java.lang.Object,java.lang.Object)>
+error creating method body: <java.util.Map: java.lang.Object remove(java.lang.Object)>
+error creating method body: <java.lang.System: int identityHashCode(java.lang.Object)>
+compiling CUDA code for 32bit and 64bit...
+/home/martin/.rootbeer/generated.cu(738): warning: variable "r0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(739): warning: variable "r1" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(740): warning: variable "i0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(741): warning: variable "$r2" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(1122): error: identifier "invoke_java_util_Map_put13_13_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(1235): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1308): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1561): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1565): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_00005f7f_00000000-12_generated.compute_20.cpp1.ii".
+/home/martin/.rootbeer/generated.cu(738): warning: variable "r0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(739): warning: variable "r1" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(740): warning: variable "i0" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(741): warning: variable "$r2" was declared but never referenced
+
+/home/martin/.rootbeer/generated.cu(1122): error: identifier "invoke_java_util_Map_put13_13_13_" is undefined
+
+/home/martin/.rootbeer/generated.cu(1235): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1308): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1561): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(1565): warning: statement is unreachable
+
+1 error detected in the compilation of "/tmp/tmpxft_00005f7d_00000000-12_generated.compute_20.cpp1.ii".
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetRunOnGpu: void gpuMethod()>...
+error creating method body: <java.util.Set: boolean add(java.lang.Object)>
+compiling CUDA code for 32bit and 64bit...
+/home/martin/.rootbeer/generated.cu(654): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(657): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(662): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(827): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(862): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(892): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(935): error: identifier "invoke_java_util_Set_add1_13_" is undefined
+
+1 error detected in the compilation of "/tmp/tmpxft_00005fa3_00000000-12_generated.compute_20.cpp1.ii".
+/home/martin/.rootbeer/generated.cu(654): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(657): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(662): warning: variable "r0" was set but never used
+
+/home/martin/.rootbeer/generated.cu(827): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(862): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(892): warning: statement is unreachable
+
+/home/martin/.rootbeer/generated.cu(935): error: identifier "invoke_java_util_Set_add1_13_" is undefined
+
+1 error detected in the compilation of "/tmp/tmpxft_00005fa2_00000000-12_generated.compute_20.cpp1.ii".
+generating serialization bytecode...
+added interface CompiledKernel
+running transform2 on: <org.trifort.rootbeer.testcases.rootbeertest.serialization.ZeroLengthArrayRunOnGpu: void gpuMethod()>...
+compiling CUDA code for 32bit and 64bit...
+generating serialization bytecode...
+added interface CompiledKernel
+writing classes out...
+Packing up to: output.jar
+[TEST 1/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.NewOnGpu@3c062b72
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1414 ms
+[TEST 2/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.SimpleTest@5de6c641
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1002 ms
+[TEST 3/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.LongArrays@265f39f1
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1005 ms
+[TEST 4/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteArrays@17b04d27
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1033 ms
+[TEST 5/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteArrays@e6626ba
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1032 ms
+[TEST 6/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.CharArrays@75c93233
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1021 ms
+[TEST 7/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.ShortArrays@321750fc
+  PASSED
+  Cpu time: 1 ms
+  Gpu time: 1120 ms
+[TEST 8/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.IntArrays@2a662476
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1009 ms
+[TEST 9/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatArrays@37b86fd4
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1015 ms
+[TEST 10/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleArrays@39c345f8
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1098 ms
+[TEST 11/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest1@22cdb9cf
+  PASSED
+  Cpu time: 1 ms
+  Gpu time: 1018 ms
+[TEST 12/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest2@2de6fe9f
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1017 ms
+[TEST 13/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StaticsTest3@1b80cf4f
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1028 ms
+[TEST 14/76] org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer4Test@53c8a67f
+  PASSED
+  Cpu time: 34 ms
+  Gpu time: 1020 ms
+[TEST 15/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.MultiArrayTest@42409d8c
+  PASSED
+  Cpu time: 5 ms
+  Gpu time: 1158 ms
+[TEST 16/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassTest@19d521a1
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1022 ms
+[TEST 17/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassTest2@3f487c5a
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1039 ms
+[TEST 18/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.OuterClassTest3@79479695
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1011 ms
+[TEST 19/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceTest1@2de14cf4
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1014 ms
+[TEST 20/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.SameClassUsedTwiceTest2@3f95b34
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1013 ms
+[TEST 21/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.RefTypeArrays@3c737f07
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1160 ms
+[TEST 22/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathTest@11872017
+  FAILED
+  Compare failed at: 0
+[TEST 23/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.NativeStrictMathTest@1af5a90f
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1002 ms
+[TEST 24/76] org.trifort.rootbeer.testcases.rootbeertest.SuperClass@56757bd7
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1043 ms
+[TEST 25/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.StringTest@6c3931f
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1009 ms
+[TEST 26/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.StepFilterTest@a28914d
+  PASSED
+  Cpu time: 51 ms
+  Gpu time: 1121 ms
+[TEST 27/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuListTest@6b68d2b0
+  PASSED
+  Cpu time: 2 ms
+  Gpu time: 1048 ms
+[TEST 28/76] org.trifort.rootbeer.testcases.rootbeertest.arraysum.ArraySumTest@2162df81
+  PASSED
+  Cpu time: 2 ms
+  Gpu time: 1017 ms
+[TEST 29/76] org.trifort.rootbeer.testcases.rootbeertest.remaptest.RemapTest@20ad9370
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 996 ms
+[TEST 30/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.InstanceofTest@77f4ca3c
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1018 ms
+[TEST 31/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.PrintTest@5bd602ae
+hello world
+hello world
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1006 ms
+[TEST 32/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SharedMemSimpleTest@44d50a9a
+  PASSED
+  Cpu time: 1 ms
+  Gpu time: 1024 ms
+[TEST 33/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.StringConstantTest@6c398cc1
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1004 ms
+[TEST 34/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractTest@77e3677
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+
+[TEST 35/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.PairHmmJimpleTest@2f613440
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1017 ms
+[TEST 36/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingTest@1df5acf6
+m_int0
+lhs: -30.0
+rhs: 30.0
+  FAILED
+  Compare failed at: 0
+[TEST 37/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ChangeThreadTest@49d3d6fb
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1007 ms
+[TEST 38/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ShiftTest@504c8041
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1012 ms
+[TEST 39/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListTest@40957d64
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+
+[TEST 40/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayLengthTest@5b18a936
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1016 ms
+[TEST 41/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.ByteByteValueTest@65024b4c
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1004 ms
+[TEST 42/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.StringArrayTest1@21612a4
+  PASSED
+  Cpu time: 11 ms
+  Gpu time: 4810 ms
+[TEST 43/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.CmplInfTest@173fc8d2
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1005 ms
+[TEST 44/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListTest@5795c65e
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+
+[TEST 45/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetTest@7950798d
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+
+[TEST 46/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetTest@1a6063e8
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+
+[TEST 47/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetTest@1d84a5a2
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+
+[TEST 48/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapTest@1d62f9a3
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+
+[TEST 49/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapTest@286b9722
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+
+[TEST 50/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapTest@1c48cef1
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+
+[TEST 51/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.CovarientTest@181a07be
+  PASSED
+  Cpu time: 1 ms
+  Gpu time: 1018 ms
+[TEST 52/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.GpuMethodTest@5d5b768f
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1004 ms
+[TEST 53/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderTest1@11e1845e
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1014 ms
+[TEST 54/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.StringBuilderTest2@69c1734b
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1028 ms
+[TEST 55/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleToStringTest@7e3ba6f
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1016 ms
+[TEST 56/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatToStringTest@d92aac1
+  PASSED
+  Cpu time: 1 ms
+  Gpu time: 1027 ms
+[TEST 57/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.ZeroLengthArrayTest@4f3701d5
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1012 ms
+[TEST 58/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortTest@6b1c0def
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1007 ms
+[TEST 59/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayCloneTest@221a6b59
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1014 ms
+[TEST 60/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.StringSplitTest@24e1ef42
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1030 ms
+[TEST 61/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.StringIndexOfTest@41556feb
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1009 ms
+[TEST 62/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.SubstringTest@29911247
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1010 ms
+[TEST 63/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorTest@52f4429e
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: CUDA code compiled with error
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:159)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+
+[TEST 64/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.IntegerToStringTest@167c2874
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1014 ms
+[TEST 65/76] org.trifort.rootbeer.testcases.rootbeertest.serialization.LongToStringTest@2ad6de92
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1015 ms
+[TEST 66/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SimpleSynchronizedTest@37009ec1
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1006 ms
+[TEST 67/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2Test@13cba7f8
+java.lang.RuntimeException: java.lang.RuntimeException
+	at org.trifort.rootbeer.runtime.CUDAContext.readBlocks(CUDAContext.java:269)
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:180)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+Caused by: java.lang.RuntimeException
+	at org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpuSerializer.doReadFromHeap(Jasmin)
+	at org.trifort.rootbeer.runtime.Serializer.readFromHeap(Serializer.java:155)
+	at org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpuSerializer.doReadFromHeap(Jasmin)
+	at org.trifort.rootbeer.runtime.Serializer.readFromHeap(Serializer.java:155)
+	at org.trifort.rootbeer.runtime.CUDAContext.readBlocks(CUDAContext.java:260)
+	... 11 more
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: java.lang.RuntimeException
+	at org.trifort.rootbeer.runtime.CUDAContext.readBlocks(CUDAContext.java:269)
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:180)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+Caused by: java.lang.RuntimeException
+	at org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpuSerializer.doReadFromHeap(Jasmin)
+	at org.trifort.rootbeer.runtime.Serializer.readFromHeap(Serializer.java:155)
+	at org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2RunOnGpuSerializer.doReadFromHeap(Jasmin)
+	at org.trifort.rootbeer.runtime.Serializer.readFromHeap(Serializer.java:155)
+	at org.trifort.rootbeer.runtime.CUDAContext.readBlocks(CUDAContext.java:260)
+	... 11 more
+
+[TEST 68/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodTest@5b3f7d82
+java.lang.RuntimeException: java.lang.RuntimeException
+	at org.trifort.rootbeer.runtime.CUDAContext.readBlocks(CUDAContext.java:269)
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:180)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+Caused by: java.lang.RuntimeException
+	at org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpuSerializer.doReadFromHeap(Jasmin)
+	at org.trifort.rootbeer.runtime.Serializer.readFromHeap(Serializer.java:155)
+	at org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpuSerializer.doReadFromHeap(Jasmin)
+	at org.trifort.rootbeer.runtime.Serializer.readFromHeap(Serializer.java:155)
+	at org.trifort.rootbeer.runtime.CUDAContext.readBlocks(CUDAContext.java:260)
+	... 11 more
+  FAILED
+  Exception thrown at index: 0
+java.lang.RuntimeException: java.lang.RuntimeException
+	at org.trifort.rootbeer.runtime.CUDAContext.readBlocks(CUDAContext.java:269)
+	at org.trifort.rootbeer.runtime.CUDAContext.run(CUDAContext.java:180)
+	at org.trifort.rootbeer.runtime.Rootbeer.run(Rootbeer.java:105)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:195)
+	at org.trifort.rootbeer.test.RootbeerTestAgent.test(RootbeerTestAgent.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:52)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+Caused by: java.lang.RuntimeException
+	at org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpuSerializer.doReadFromHeap(Jasmin)
+	at org.trifort.rootbeer.runtime.Serializer.readFromHeap(Serializer.java:155)
+	at org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodRunOnGpuSerializer.doReadFromHeap(Jasmin)
+	at org.trifort.rootbeer.runtime.Serializer.readFromHeap(Serializer.java:155)
+	at org.trifort.rootbeer.runtime.CUDAContext.readBlocks(CUDAContext.java:260)
+	... 11 more
+
+[TEST 69/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedObjectTest@28ec3711
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1021 ms
+[TEST 70/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicTest@6743d1bb
+  FAILED
+  Exception is: java.lang.ClassCastException: java.lang.RuntimeException cannot be cast to java.lang.String
+[TEST 71/76] org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer1Test@328e807e
+  PASSED
+[TEST 72/76] org.trifort.rootbeer.testcases.rootbeertest.exception.NullPointer2Test@e5b0d9c
+  PASSED
+[TEST 73/76] org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ChangeThreadTest@cabda9b
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1019 ms
+[TEST 74/76] org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateTest@66b3cd1e
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 999 ms
+[TEST 75/76] org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateBuilderTest@1071916d
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1021 ms
+[TEST 76/76] org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.GpuParametersTest@313297f2
+  PASSED
+  Cpu time: 0 ms
+  Gpu time: 1012 ms
+61/76 tests PASS
+Failing tests:
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathTest@11872017
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractTest@77e3677
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingTest@1df5acf6
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListTest@40957d64
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListTest@5795c65e
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetTest@7950798d
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetTest@1a6063e8
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetTest@1d84a5a2
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapTest@1d62f9a3
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapTest@286b9722
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapTest@1c48cef1
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorTest@52f4429e
+  org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2Test@13cba7f8
+  org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodTest@5b3f7d82
+  org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicTest@6743d1bb

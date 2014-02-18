@@ -1,7 +1,7 @@
 Test-Results
 ================
 
-| ID | Test Case |  Old Runtime (dd341e4510)  | New Runtime (1.1.3, d035107a1c) |
+| ID | Test Case |  Old Runtime (dd341e4510)  | New Runtime (1.1.4, 4075dd1c1d) |
 | :-: | ------------- | :-------------: | :-------------: |
 | 1 | NewOnGpu      |     PASS      |     PASS      |
 | 2 | SimpleTest    |     PASS      |     PASS      |
@@ -39,8 +39,8 @@ Test-Results
 | 34 | PrintTest      |     PASS      |     PASS      |
 | 35 | BarrierTest      |     **FAILED**      |     **FAILED**      |
 | 36 | SharedMemSimpleTest      |     PASS      |     PASS      |
-| 37 | StringConstantTest      |     PASS      |     **FAILED**      |
-| 38 | AbstractTest      |     PASS      |     PASS      |
+| 37 | StringConstantTest      |     PASS      |     PASS      |
+| 38 | AbstractTest      |     PASS      |     **FAILED**      |
 | 39 | PairHmmJimpleTest      |     PASS      |     PASS      |
 | 40 | AutoboxingTest      |     **FAILED**      |     **FAILED**      |
 | 41 | ChangeThreadTest      |     PASS      |     PASS      |
@@ -62,17 +62,17 @@ Test-Results
 | 57 | RegularExpressionTest      |     **FAILED**      |     **BREAKS COMPILATION**      |
 | 58 | StringBuilderTest1      |     PASS      |     PASS      |
 | 59 | StringBuilderTest2      |     PASS      |     PASS      |
-| 60 | DoubleToStringTest      |     **FAILED**      |     **FAILED**      |
-| 61 | FloatToStringTest      |     **FAILED**      |     **FAILED**      |
+| 60 | DoubleToStringTest      |     **FAILED**      |     PASS      |
+| 61 | FloatToStringTest      |     **FAILED**      |     PASS      |
 | 62 | ZeroLengthArrayTest      |     PASS      |     PASS      |
 | 63 | ArraysSortTest      |     PASS      |     PASS      |
-| 64 | ArrayCloneTest      |     PASS      |     **FAILED**      |
-| 65 | StringSplitTest      |     *N/A*      |     **FAILED**      |
-| 66 | StringIndexOfTest      |     *N/A*      |     **FAILED**      |
-| 67 | SubstringTest      |     *N/A*      |     **FAILED**      |
+| 64 | ArrayCloneTest      |     PASS      |     PASS      |
+| 65 | StringSplitTest      |     *N/A*      |     PASS      |
+| 66 | StringIndexOfTest      |     *N/A*      |     PASS      |
+| 67 | SubstringTest      |     *N/A*      |     PASS      |
 | 68 | ArraysSortComparatorTest      |     *N/A*      |     **FAILED**      |
-| 69 | IntegerToStringTest      |     *N/A*      |     **FAILED**      |
-| 70 | LongToStringTest      |     *N/A*      |     **FAILED**      |
+| 69 | IntegerToStringTest      |     *N/A*      |     PASS      |
+| 70 | LongToStringTest      |     *N/A*      |     PASS      |
 | 71 | SimpleSynchronizedTest      |     PASS      |     PASS      |
 | 72 | SynchronizedMethodTest      |     **GPU HANGS**      |     **GPU HANGS**      |
 | 73 | SynchronizedMethod2Test      |     **FAILED**      |     **FAILED**      |
@@ -88,28 +88,19 @@ Test-Results
 | 83 | GpuParametersTest      |     *N/A*      |    PASS      |
 
 Failing tests:
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathTest@fbc8d03
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.StringConstantTest@8bf53bb
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingTest@6cd5ca7
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListTest@30752131
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListTest@663b689
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetTest@15d8e103
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetTest@4bf99133
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetTest@24e97155
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapTest@3cd85d70
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapTest@5328f8d1
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapTest@6648035c
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.DoubleToStringTest@4a1f1c2
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.FloatToStringTest@307b06da
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayCloneTest@22c8c810
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.StringSplitTest@3a25e608
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.StringIndexOfTest@5e3e9c10
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.SubstringTest@3023946f
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorTest@357e3846
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.IntegerToStringTest@58afe8e3
-  org.trifort.rootbeer.testcases.rootbeertest.serialization.LongToStringTest@1d3e9c7c
-  org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2Test@72213fdf
-  org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodTest@190a87b9
-  org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicTest@1ea3ff85
-  org.trifort.rootbeer.testcases.rootbeertest.kerneltemplate.DoubleToStringKernelTemplateTest@430d7a29
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathTest@11872017
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.AbstractTest@77e3677
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.AutoboxingTest@1df5acf6
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.ArrayListTest@40957d64
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedListTest@5795c65e
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.HashSetTest@7950798d
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeSetTest@1a6063e8
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashSetTest@1d84a5a2
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.HashMapTest@1d62f9a3
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.TreeMapTest@286b9722
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.LinkedHashMapTest@1c48cef1
+  org.trifort.rootbeer.testcases.rootbeertest.serialization.ArraysSortComparatorTest@52f4429e
+  org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedMethod2Test@13cba7f8
+  org.trifort.rootbeer.testcases.rootbeertest.gpurequired.SynchronizedStaticMethodTest@5b3f7d82
+  org.trifort.rootbeer.testcases.rootbeertest.gpurequired.ExceptionBasicTest@6743d1bb
 
