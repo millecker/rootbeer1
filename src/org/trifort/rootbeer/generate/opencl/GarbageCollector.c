@@ -2421,8 +2421,6 @@ T at_illecker_getResult($$__global$$ char * gc_info,
   
   int key_obj_ref = 0;
   int value_obj_ref = 0;
-  char * key_obj_deref;
-  char * value_obj_deref;
   
   // loop until done == true
   while (count < 100) {
@@ -2561,44 +2559,41 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         // Update key
         key_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_key(gc_info,
                                                                                       key_value_pair_ref, exception);
-        key_obj_deref = org_trifort_gc_deref(gc_info, key_obj_ref);
         
         if (key_type == HostDeviceInterface::INT) {
-          *(( int *) &key_obj_deref[32]) = host_device_interface->int_val1;
+          instance_setter_java_lang_Integer_value(gc_info, key_obj_ref, host_device_interface->int_val1, exception);
         } else if (key_type == HostDeviceInterface::LONG) {
-          *(( long long *) &key_obj_deref[32]) = host_device_interface->long_val1;
+          instance_setter_java_lang_Long_value(gc_info, key_obj_ref, host_device_interface->long_val1, exception);
         } else if (key_type == HostDeviceInterface::FLOAT) {
-          *(( float *) &key_obj_deref[32]) = host_device_interface->float_val1;
+          instance_setter_java_lang_Float_value(gc_info, key_obj_ref, host_device_interface->float_val1, exception);
         } else if (key_type == HostDeviceInterface::DOUBLE) {
-          *(( double *) &key_obj_deref[32]) = host_device_interface->double_val1;
+          instance_setter_java_lang_Double_value(gc_info, key_obj_ref, host_device_interface->double_val1, exception);
         } else if (key_type == HostDeviceInterface::STRING) {
-          int i;
           int len = at_illecker_strlen(host_device_interface->str_val1);
           int characters = char__array_new(gc_info, len, exception);
-          for(i = 0; i < len; ++i) {
+          for(int i = 0; i < len; ++i) {
             char__array_set(gc_info, characters, i, host_device_interface->str_val1[i], exception);
           }
-          // Set new value
-          *(( int *) &key_obj_deref[32]) = characters;
           // Set new length
-          *(( int *) &key_obj_deref[40]) = len;
-          // Set new offset to 0
-          *(( int *) &key_obj_deref[44]) = 0;
+          // char * key_obj_deref = org_trifort_gc_deref(gc_info, key_obj_ref);
+          // *(( int *) &key_obj_deref[40]) = len;
+          
+          // Set new value
+          org_trifort_rootbeer_set_string_char_array(gc_info, key_obj_ref, characters, exception);
         }
         
         // Update value
         value_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_value(gc_info,
                                                                                           key_value_pair_ref, exception);
-        value_obj_deref = org_trifort_gc_deref(gc_info, value_obj_ref);
         
         if (value_type == HostDeviceInterface::INT) {
-          *(( int *) &value_obj_deref[32]) = host_device_interface->int_val2;
+          instance_setter_java_lang_Integer_value(gc_info, value_obj_ref, host_device_interface->int_val2, exception);
         } else if (value_type == HostDeviceInterface::LONG) {
-          *(( long long *) &value_obj_deref[32]) = host_device_interface->long_val2;
+          instance_setter_java_lang_Long_value(gc_info, value_obj_ref, host_device_interface->long_val2, exception);
         } else if (value_type == HostDeviceInterface::FLOAT) {
-          *(( float *) &value_obj_deref[32]) = host_device_interface->float_val2;
+          instance_setter_java_lang_Float_value(gc_info, value_obj_ref, host_device_interface->float_val2, exception);
         } else if (value_type == HostDeviceInterface::DOUBLE) {
-          *(( double *) &value_obj_deref[32]) = host_device_interface->double_val2;
+          instance_setter_java_lang_Double_value(gc_info, value_obj_ref, host_device_interface->double_val2, exception);
         } else if (value_type == HostDeviceInterface::STRING) {
           int i;
           int len = at_illecker_strlen(host_device_interface->str_val2);
@@ -2606,12 +2601,12 @@ T at_illecker_getResult($$__global$$ char * gc_info,
           for(i = 0; i < len; ++i) {
             char__array_set(gc_info, characters, i, host_device_interface->str_val2[i], exception);
           }
-          // Set new value
-          *(( int *) &value_obj_deref[32]) = characters;
           // Set new length
-          *(( int *) &value_obj_deref[40]) = len;
-          // Set new offset to 0
-          *(( int *) &value_obj_deref[44]) = 0;
+          // char * value_obj_deref = org_trifort_gc_deref(gc_info, value_obj_ref);
+          // *(( int *) &value_obj_deref[40]) = len;
+          
+          // Set new value
+          org_trifort_rootbeer_set_string_char_array(gc_info, value_obj_ref, characters, exception);
         }
         
         // true if more data is available
@@ -2776,7 +2771,6 @@ T at_illecker_getResult($$__global$$ char * gc_info,
 $$__device__$$
 void org_trifort_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info,
                                                 int peer_name_str_ref, int message_obj_ref, int * exception) {
-  
   int int_value = 0;
   bool use_int_value = false;
   long long long_value = 0;
@@ -2787,7 +2781,6 @@ void org_trifort_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info,
   bool use_double_value = false;
   int string_value = 0;
   bool use_string_value = false;
-  char * message_obj_deref;
   
   // check key value
   if (message_obj_ref == -1) {
@@ -2797,23 +2790,19 @@ void org_trifort_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info,
   } else {
     // check message type
     if (at_illecker_typeof_Integer(gc_info, message_obj_ref)) {
-      message_obj_deref = org_trifort_gc_deref(gc_info, message_obj_ref);
-      int_value = *(( int *) &message_obj_deref[32]);
+      int_value = instance_getter_java_lang_Integer_value(gc_info, message_obj_ref, exception);
       use_int_value = true;
       
     } else if (at_illecker_typeof_Long(gc_info, message_obj_ref)) {
-      message_obj_deref = org_trifort_gc_deref(gc_info, message_obj_ref);
-      long_value = *(( long long *) &message_obj_deref[32]);
+      long_value = instance_getter_java_lang_Long_value(gc_info, message_obj_ref, exception);
       use_long_value = true;
       
     } else if (at_illecker_typeof_Float(gc_info, message_obj_ref)) {
-      message_obj_deref = org_trifort_gc_deref(gc_info, message_obj_ref);
-      float_value = *(( float *) &message_obj_deref[32]);
+      float_value = instance_getter_java_lang_Float_value(gc_info, message_obj_ref, exception);
       use_float_value = true;
       
     } else if (at_illecker_typeof_Double(gc_info, message_obj_ref)) {
-      message_obj_deref = org_trifort_gc_deref(gc_info, message_obj_ref);
-      double_value = *(( double *) &message_obj_deref[32]);
+      double_value = instance_getter_java_lang_Double_value(gc_info, message_obj_ref, exception);
       use_double_value = true;
       
     } else if (at_illecker_typeof_String(gc_info, message_obj_ref)) {
@@ -3318,31 +3307,25 @@ void org_trifort_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info,
   HostDeviceInterface::TYPE key_type;
   HostDeviceInterface::TYPE value_type;
   
-  char * key_obj_deref;
-  char * value_obj_deref;
-  
   // check key value
   if (key_obj_ref == -1) {
     key_type = HostDeviceInterface::NULL_TYPE;
-    
-  } else {
-    key_obj_deref = org_trifort_gc_deref(gc_info, key_obj_ref);
-    
+  } else {   
     // check key type
     if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
-      int_val1 = *(( int *) &key_obj_deref[32]);
+      int_val1 = instance_getter_java_lang_Integer_value(gc_info, key_obj_ref, exception);
       use_int_val1 = true;
       key_type = HostDeviceInterface::INT;
     } else if (at_illecker_typeof_Long(gc_info, key_obj_ref)) {
-      long_val1 = *(( long long *) &key_obj_deref[32]);
+      long_val1 = instance_getter_java_lang_Long_value(gc_info, key_obj_ref, exception);
       use_long_val1 = true;
       key_type = HostDeviceInterface::LONG;
     } else if (at_illecker_typeof_Float(gc_info, key_obj_ref)) {
-      float_val1 = *(( float *) &key_obj_deref[32]);
+      float_val1 = instance_getter_java_lang_Float_value(gc_info, key_obj_ref, exception);
       use_float_val1 = true;
       key_type = HostDeviceInterface::FLOAT;
     } else if (at_illecker_typeof_Double(gc_info, key_obj_ref)) {
-      double_val1 = *(( double *) &key_obj_deref[32]);
+      double_val1 = instance_getter_java_lang_Double_value(gc_info, key_obj_ref, exception);
       use_double_val1 = true;
       key_type = HostDeviceInterface::DOUBLE;
     } else if (at_illecker_typeof_String(gc_info, key_obj_ref)) {
@@ -3359,25 +3342,22 @@ void org_trifort_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info,
   // check value value
   if (value_obj_ref == -1) {
     value_type = HostDeviceInterface::NULL_TYPE;
-    
   } else {
-    value_obj_deref = org_trifort_gc_deref(gc_info, value_obj_ref);
-    
     // check value type
     if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
-      int_val2 = *(( int *) &value_obj_deref[32]);
+      int_val2 = instance_getter_java_lang_Integer_value(gc_info, value_obj_ref, exception);
       use_int_val2 = true;
       value_type = HostDeviceInterface::INT;
     } else if (at_illecker_typeof_Long(gc_info, value_obj_ref)) {
-      long_val2 = *(( long long *) &value_obj_deref[32]);
+      long_val2 = instance_getter_java_lang_Long_value(gc_info, value_obj_ref, exception);
       use_long_val2 = true;
       value_type = HostDeviceInterface::LONG;
     } else if (at_illecker_typeof_Float(gc_info, value_obj_ref)) {
-      float_val2 = *(( float *) &value_obj_deref[32]);
+      float_val2 = instance_getter_java_lang_Float_value(gc_info, value_obj_ref, exception);
       use_float_val2 = true;
       value_type = HostDeviceInterface::FLOAT;
     } else if (at_illecker_typeof_Double(gc_info, value_obj_ref)) {
-      double_val2 = *(( double *) &value_obj_deref[32]);
+      double_val2 = instance_getter_java_lang_Double_value(gc_info, value_obj_ref, exception);
       use_double_val2 = true;
       value_type = HostDeviceInterface::DOUBLE;
     } else if (at_illecker_typeof_String(gc_info, value_obj_ref)) {
@@ -3525,32 +3505,26 @@ bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char 
   
   HostDeviceInterface::TYPE key_type;
   HostDeviceInterface::TYPE value_type;
-  
-  char * key_obj_deref;
-  char * value_obj_deref;
-  
+   
   // check key value
   if (key_obj_ref == -1) {
     key_type = HostDeviceInterface::NULL_TYPE;
-    
   } else {
-    key_obj_deref = org_trifort_gc_deref(gc_info, key_obj_ref);
-    
     // check key type
     if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
-      int_val1 = *(( int *) &key_obj_deref[32]);
+      int_val1 = instance_getter_java_lang_Integer_value(gc_info, key_obj_ref, exception);
       use_int_val1 = true;
       key_type = HostDeviceInterface::INT;
     } else if (at_illecker_typeof_Long(gc_info, key_obj_ref)) {
-      long_val1 = *(( long long *) &key_obj_deref[32]);
+      long_val1 = instance_getter_java_lang_Long_value(gc_info, key_obj_ref, exception);
       use_long_val1 = true;
       key_type = HostDeviceInterface::LONG;
     } else if (at_illecker_typeof_Float(gc_info, key_obj_ref)) {
-      float_val1 = *(( float *) &key_obj_deref[32]);
+      float_val1 = instance_getter_java_lang_Float_value(gc_info, key_obj_ref, exception);
       use_float_val1 = true;
       key_type = HostDeviceInterface::FLOAT;
     } else if (at_illecker_typeof_Double(gc_info, key_obj_ref)) {
-      double_val1 = *(( double *) &key_obj_deref[32]);
+      double_val1 = instance_getter_java_lang_Double_value(gc_info, key_obj_ref, exception);
       use_double_val1 = true;
       key_type = HostDeviceInterface::DOUBLE;
     } else if (at_illecker_typeof_String(gc_info, key_obj_ref)) {
@@ -3567,25 +3541,22 @@ bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char 
   // check value value
   if (value_obj_ref == -1) {
     value_type = HostDeviceInterface::NULL_TYPE;
-    
   } else {
-    value_obj_deref = org_trifort_gc_deref(gc_info, value_obj_ref);
-    
     // check value type
     if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
-      int_val2 = *(( int *) &value_obj_deref[32]);
+      int_val2 = instance_getter_java_lang_Integer_value(gc_info, value_obj_ref, exception);
       use_int_val2 = true;
       value_type = HostDeviceInterface::INT;
     } else if (at_illecker_typeof_Long(gc_info, value_obj_ref)) {
-      long_val2 = *(( long long *) &value_obj_deref[32]);
+      long_val2 = instance_getter_java_lang_Long_value(gc_info, value_obj_ref, exception);
       use_long_val2 = true;
       value_type = HostDeviceInterface::LONG;
     } else if (at_illecker_typeof_Float(gc_info, value_obj_ref)) {
-      float_val2 = *(( float *) &value_obj_deref[32]);
+      float_val2 = instance_getter_java_lang_Float_value(gc_info, value_obj_ref, exception);
       use_float_val2 = true;
       value_type = HostDeviceInterface::FLOAT;
     } else if (at_illecker_typeof_Double(gc_info, value_obj_ref)) {
-      double_val2 = *(( double *) &value_obj_deref[32]);
+      double_val2 = instance_getter_java_lang_Double_value(gc_info, value_obj_ref, exception);
       use_double_val2 = true;
       value_type = HostDeviceInterface::DOUBLE;
     } else if (at_illecker_typeof_String(gc_info, value_obj_ref)) {
