@@ -73,19 +73,25 @@ Test-Results
 | 68 | ArraysSortComparatorTest      |     *N/A*      |     **FAILED**      |     **FAILED**      |
 | 69 | IntegerToStringTest      |     *N/A*      |     PASS      |     PASS      |
 | 70 | LongToStringTest      |     *N/A*      |     PASS      |     PASS      |
-| 71 | SimpleSynchronizedTest      |     PASS      |     PASS      |     PASS      |
-| 72 | SynchronizedMethodTest      |     **GPU HANGS**      |     **GPU HANGS**      |     **GPU HANGS**      |
-| 73 | SynchronizedMethod2Test      |     **FAILED**      |     **FAILED**      |     **FAILED**      |
-| 74 | SynchronizedMethod3Test      |     **GPU HANGS**      |     **GPU HANGS**      |     **GPU HANGS**      |
-| 75 | SynchronizedStaticMethodTest      |     **FAILED**      |     **FAILED**      |     **FAILED**      |
-| 76 | SynchronizedObjectTest      |     PASS      |     PASS      |     PASS      |
-| 77 | ExceptionBasicTest      |     **FAILED**      |     **FAILED**      |     **FAILED**      |
-| 78 | NullPointer1Test      |     PASS      |     PASS      |     PASS      |
-| 79 | NullPointer2Test      |     PASS      |     PASS      |     PASS      |
-| 80 | ChangeThreadTest      |     PASS      |     PASS      |     PASS      |
-| 81 | DoubleToStringKernelTemplateTest      |     *N/A*      |     PASS      |     PASS      |
-| 82 | DoubleToStringKernelTemplateBuilderTest      |     *N/A*      |     PASS      |     PASS      |
-| 83 | GpuParametersTest      |     *N/A*      |    PASS      |     PASS      |
+| 71 | StringToIntegerTest      |     *N/A*      |     *N/A*      |     PASS      |
+| 72 | StringToLongTest      |     *N/A*      |     *N/A*      |     PASS      |
+| 73 | StringToFloatTest      |     *N/A*      |     *N/A*      |     PASS      |
+| 74 | StringToDoubleTest      |     *N/A*      |     *N/A*      |     PASS      |
+| 75 | ObjectToStringTest      |     *N/A*      |     *N/A*      |     PASS      |
+| 76 | StringBuilderTest3      |     *N/A*      |     *N/A*      |     PASS      |
+| 77 | SimpleSynchronizedTest      |     PASS      |     PASS      |     PASS      |
+| 78 | SynchronizedMethodTest      |     **GPU HANGS**      |     **GPU HANGS**      |     **GPU HANGS**      |
+| 79 | SynchronizedMethod2Test      |     **FAILED**      |     **FAILED**      |     **FAILED**      |
+| 80 | SynchronizedMethod3Test      |     **GPU HANGS**      |     **GPU HANGS**      |     **GPU HANGS**      |
+| 81 | SynchronizedStaticMethodTest      |     **FAILED**      |     **FAILED**      |     **FAILED**      |
+| 82 | SynchronizedObjectTest      |     PASS      |     PASS      |     PASS      |
+| 83 | ExceptionBasicTest      |     **FAILED**      |     **FAILED**      |     **FAILED**      |
+| 84 | NullPointer1Test      |     PASS      |     PASS      |     PASS      |
+| 85 | NullPointer2Test      |     PASS      |     PASS      |     PASS      |
+| 86 | ChangeThreadTest      |     PASS      |     PASS      |     PASS      |
+| 87 | DoubleToStringKernelTemplateTest      |     *N/A*      |     PASS      |     PASS      |
+| 88 | DoubleToStringKernelTemplateBuilderTest      |     *N/A*      |     PASS      |     PASS      |
+| 89 | GpuParametersTest      |     *N/A*      |    PASS      |     PASS      |
 
 Failing tests:
   org.trifort.rootbeer.testcases.rootbeertest.serialization.StrictMathTest@11872017

@@ -108,6 +108,12 @@ public class Main implements TestSerializationFactory {
     ret.add(new ArraysSortComparatorTest());
     ret.add(new IntegerToStringTest());
     ret.add(new LongToStringTest());
+    ret.add(new StringToIntegerTest());
+    ret.add(new StringToLongTest());
+    ret.add(new StringToFloatTest());
+    ret.add(new StringToDoubleTest());
+    ret.add(new ObjectToStringTest());
+    ret.add(new StringBuilderTest3());
             
     if(m_hardTests){
       ret.add(new SimpleSynchronizedTest());
