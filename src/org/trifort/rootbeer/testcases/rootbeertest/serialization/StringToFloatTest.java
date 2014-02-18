@@ -17,8 +17,8 @@ public class StringToFloatTest implements TestSerialization {
 
   public List<Kernel> create() {
     List<Kernel> ret = new ArrayList<Kernel>();
-    for(int i = 0; i < 5; ++i) {
-      ret.add(new StringToFloatRunOnGpu(Float.toString((float)Math.sqrt(i + 0.125f))));
+    for(int i = 0; i < 1; ++i) {
+      ret.add(new StringToFloatRunOnGpu(Float.toString((float)Math.pow(0.125, i))));
     }
     return ret;
   }

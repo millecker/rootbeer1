@@ -17,7 +17,7 @@ public class StringToLongTest implements TestSerialization {
 
   public List<Kernel> create() {
     List<Kernel> ret = new ArrayList<Kernel>();
-    for(long l = 0; l < 5; ++l) {
+    for(long l = 0; l < 1; ++l) {
       ret.add(new StringToLongRunOnGpu(Long.toString(l)));
     }
     return ret;
