@@ -82,7 +82,7 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
 }
 
 __global__ void entry(char * gc_info, char * to_space, int * handles,
-  long long * to_space_free_ptr, long long * space_size, int * exceptions,
+  long long * free_ptr, long long * space_size, int * exceptions,
   int * java_lang_class_refs, HostDeviceInterface * h_d_interface,
   int * syncblocks_barrier_arr_in, int * syncblocks_barrier_arr_out, int num_blocks) {
   
@@ -98,7 +98,7 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
     printf("syncblocks_barrier_array_out.ptr: %p\n", syncblocks_barrier_array_out);
   }
   
-  org_trifort_gc_init(to_space, *space_size, java_lang_class_refs);
+  org_trifort_gc_init(to_space, *space_size, java_lang_class_refs, *free_ptr);
   __syncthreads();
 
   int loop_control = blockIdx.x * blockDim.x + threadIdx.x;
@@ -113,8 +113,8 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
     __syncthreads();
 
     if(loop_control == 0){
-      unsigned long long * addr = ( unsigned long long * ) (gc_info + TO_SPACE_FREE_POINTER_OFFSET);
-      *to_space_free_ptr = *addr;    
+      unsigned long long * global_free_ptr = ( unsigned long long * ) (gc_info + TO_SPACE_FREE_POINTER_OFFSET);
+      *free_ptr = *global_free_ptr;    
     }
   }
 }
