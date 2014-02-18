@@ -17,6 +17,7 @@ public class ObjectToStringRunOnGpu implements Kernel {
   private String m_toString3;
   private String m_toString4;
   private String m_toString5;
+  private String m_toString6;
   
   public ObjectToStringRunOnGpu(){
     m_toString0 = "";
@@ -25,6 +26,7 @@ public class ObjectToStringRunOnGpu implements Kernel {
     m_toString3 = "";
     m_toString4 = "";
     m_toString5 = "";
+    m_toString6 = "";
   }
   
   public void gpuMethod() {
@@ -34,6 +36,7 @@ public class ObjectToStringRunOnGpu implements Kernel {
     m_toString3 = String.valueOf(returnObject3());
     m_toString4 = String.valueOf(returnObject4());
     m_toString5 = String.valueOf(returnObject5());
+    m_toString6 = String.valueOf(returnObject6());
   }
   
   private Object returnObject0() {
@@ -41,23 +44,27 @@ public class ObjectToStringRunOnGpu implements Kernel {
   }
   
   private Object returnObject1() {
-    return new Integer(0); // Autoboxing int
+    return new Integer(0);
   }
   
   private Object returnObject2() {
-    return new Long(0); // Autoboxing long
+    return new Long(0);
   }
   
   private Object returnObject3() {
-    return new Float(0.125678f); // Autoboxing float
+    return new Float(0.125678f);
   }
   
   private Object returnObject4() {
-    return new Double(0.125678); // Autoboxing double
+    return new Double(0.125678);
   }
   
   private Object returnObject5() {
     return new String("");
+  }
+  
+  private Object returnObject6() {
+    return new Boolean(true);
   }
 
   public boolean compare(ObjectToStringRunOnGpu rhs) {
@@ -119,6 +126,16 @@ public class ObjectToStringRunOnGpu implements Kernel {
       System.out.println("m_toString5");
       System.out.println("  lhs: "+m_toString5);
       System.out.println("  rhs: "+rhs.m_toString5);
+      return false;
+    }
+    if(rhs.m_toString6 == null){
+      System.out.println("rhs.m_toString6 == null");
+      return false;
+    }
+    if(rhs.m_toString6.equals(m_toString6) == false){
+      System.out.println("m_toString6");
+      System.out.println("  lhs: "+m_toString6);
+      System.out.println("  rhs: "+rhs.m_toString6);
       return false;
     }
     return true;
