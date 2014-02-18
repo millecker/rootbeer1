@@ -510,7 +510,6 @@ $$__device__$$
 void java_io_PrintStream_println0_9_($$__global$$ char * gc_info, int thisref, int str_ret, int * exception){
   int valueref;
   int count;
-  int offset;
   int i;
   int curr_offset;
 
@@ -582,7 +581,6 @@ $$__device__$$
 void java_io_PrintStream_print0_9_($$__global$$ char * gc_info, int thisref, int str_ret, int * exception){
   int valueref;
   int count;
-  int offset;
   int i;
 
   char * valueref_deref;
