@@ -246,3 +246,24 @@ error creating method body: <java.nio.charset.CharsetEncoder: java.nio.charset.C
 error creating method body: <java.nio.charset.Charset: java.nio.charset.CharsetEncoder newEncoder()>
 error creating method body: <java.lang.System: java.lang.String mapLibraryName(java.lang.String)>
 soot_method: <java.lang.ClassLoader: boolean loadLibrary0(java.lang.Class,java.io.File)>
+
+java.lang.ArrayIndexOutOfBoundsException: -1
+	at java.util.ArrayList.remove(ArrayList.java:390)
+	at org.trifort.rootbeer.util.Stack.pop(Stack.java:27)
+	at org.trifort.rootbeer.generate.opencl.body.MonitorGroups.getItems(MonitorGroups.java:46)
+	at org.trifort.rootbeer.generate.opencl.body.OpenCLBody.writeMethodBody(OpenCLBody.java:132)
+	at org.trifort.rootbeer.generate.opencl.body.OpenCLBody.writeBody(OpenCLBody.java:270)
+	at org.trifort.rootbeer.generate.opencl.body.OpenCLBody.getBodyNoLocals(OpenCLBody.java:98)
+	at org.trifort.rootbeer.generate.opencl.OpenCLMethod.getMethodBody(OpenCLMethod.java:237)
+	at org.trifort.rootbeer.generate.opencl.OpenCLScene.methodBodiesString(OpenCLScene.java:475)
+	at org.trifort.rootbeer.generate.opencl.OpenCLScene.makeSourceCode(OpenCLScene.java:275)
+	at org.trifort.rootbeer.generate.opencl.OpenCLScene.getCudaCode(OpenCLScene.java:371)
+	at org.trifort.rootbeer.generate.bytecode.GenerateRuntimeBasicBlock.makeGpuBody(GenerateRuntimeBasicBlock.java:153)
+	at org.trifort.rootbeer.generate.bytecode.GenerateRuntimeBasicBlock.makeClass(GenerateRuntimeBasicBlock.java:56)
+	at org.trifort.rootbeer.compiler.Transform2.run(Transform2.java:39)
+	at org.trifort.rootbeer.entry.RootbeerCompiler.compileForKernels(RootbeerCompiler.java:262)
+	at org.trifort.rootbeer.entry.RootbeerCompiler.compile(RootbeerCompiler.java:237)
+	at org.trifort.rootbeer.entry.RootbeerTest.runTests(RootbeerTest.java:31)
+	at org.trifort.rootbeer.entry.Main.run(Main.java:170)
+	at org.trifort.rootbeer.entry.Main.main(Main.java:211)
+
