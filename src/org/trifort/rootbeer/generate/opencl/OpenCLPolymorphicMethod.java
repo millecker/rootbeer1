@@ -31,10 +31,15 @@ public class OpenCLPolymorphicMethod {
 
   private final SootMethod m_sootMethod;
   private MethodSignatureUtil m_util;
+  
+  private Set<String> m_extraMethods;
 
   public OpenCLPolymorphicMethod(SootMethod soot_method){
     m_sootMethod = soot_method;
     m_util = new MethodSignatureUtil();
+    
+    m_extraMethods = new HashSet<String>();
+    m_extraMethods.add("<java.lang.Object: int hashCode()>");
   }
 
   public String getMethodPrototypes(){
@@ -50,6 +55,9 @@ public class OpenCLPolymorphicMethod {
   }
 
   private List<String> getMethodDecls(){
+    if(shouldOutput() == false){
+      return new ArrayList<String>();
+    }
     List<SootMethod> virtual_methods = getVirtualMethods();
     
     List<String> ret = new ArrayList<String>();
@@ -68,6 +76,9 @@ public class OpenCLPolymorphicMethod {
   }
 
   public Set<String> getMethodBodies(){
+    if(shouldOutput() == false){
+      return new HashSet<String>();
+    }
     if(m_sootMethod.getName().equals("<init>"))
       return new HashSet<String>();
     List<String> decls = getMethodDecls();
@@ -117,7 +128,7 @@ public class OpenCLPolymorphicMethod {
       ret.append(address_qual+" char * thisref_deref;\n");
       ret.append("GC_OBJ_TYPE_TYPE derived_type;\n");
       ret.append("if(thisref == -1){\n");
-      ret.append("  *exception = -2;\n");
+      ret.append("  *exception = %%java_lang_NullPointerException_TypeNumber%%;\n");
       ret.append("return ");
       if(m_sootMethod.getReturnType() instanceof VoidType == false)
         ret.append("-1");
@@ -227,5 +238,12 @@ public class OpenCLPolymorphicMethod {
       Integer rhs_number = RootbeerClassLoader.v().getClassNumber(rhs_class);
       return lhs_number.compareTo(rhs_number);
     }
+  }
+  
+  private boolean shouldOutput(){
+    if(m_extraMethods.contains(m_sootMethod.getSignature())){
+      return true;
+    }
+    return m_sootMethod.isConcrete();
   }
 }

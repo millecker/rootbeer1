@@ -8,6 +8,13 @@
 #define COLOR_BLACK 1
 #define COLOR_WHITE 2
 
+#define OBJECT_HEADER_POSITION_GC_COUNT         0
+#define OBJECT_HEADER_POSITION_GC_COLOR         1
+#define OBJECT_HEADER_POSITION_CTOR_USED        3
+#define OBJECT_HEADER_POSITION_CLASS_NUMBER     4
+#define OBJECT_HEADER_POSITION_OBJECT_SIZE      8
+#define OBJECT_HEADER_POSITION_MONITOR          16
+
 $$__device__$$ void org_trifort_gc_collect($$__global$$ char * gc_info);
 $$__device__$$ void org_trifort_gc_assign($$__global$$ char * gc_info, int * lhs, int rhs);
 $$__device__$$ $$__global$$ char * org_trifort_gc_deref($$__global$$ char * gc_info, int handle);
@@ -22,6 +29,98 @@ $$__device__$$ long long java_lang_System_nanoTime($$__global$$ char * gc_info, 
 
 #define TO_SPACE_OFFSET               0
 #define TO_SPACE_FREE_POINTER_OFFSET  8
+
+$$__device__$$ char org_trifort_getchar($$__global$$ char * buffer, int pos){
+  return buffer[pos];
+}
+
+$$__device__$$ void org_trifort_setchar($$__global$$ char * buffer, int pos, char value){
+  buffer[pos] = value;
+}
+
+$$__device__$$ short org_trifort_getshort($$__global$$ char * buffer, int pos){
+  return *(($$__global$$ short *) &buffer[pos]);
+}
+
+$$__device__$$ void org_trifort_setshort($$__global$$ char * buffer, int pos, short value){
+  *(($$__global$$ short *) &buffer[pos]) = value;
+}
+
+$$__device__$$ int org_trifort_getint($$__global$$ char * buffer, int pos){
+  return *(($$__global$$ int *) &buffer[pos]);
+}
+
+$$__device__$$ void org_trifort_setint($$__global$$ char * buffer, int pos, int value){
+  *(($$__global$$ int *) &buffer[pos]) = value;
+}
+
+$$__device__$$ long long org_trifort_getlong($$__global$$ char * buffer, int pos){
+  return *(($$__global$$ long *) &buffer[pos]);
+}
+
+$$__device__$$ void org_trifort_setlong($$__global$$ char * buffer, int pos, long long value){
+  *(($$__global$$ long long *) &buffer[pos]) = value;
+}
+
+$$__device__$$ size_t org_trifort_getsize_t($$__global$$ char * buffer, int pos){
+  return *(($$__global$$ size_t *) &buffer[pos]);
+}
+
+$$__device__$$ void org_trifort_setsize_t($$__global$$ char * buffer, int pos, size_t value){
+  *(($$__global$$ size_t *) &buffer[pos]) = value;
+}
+
+$$__device__$$
+int org_trifort_rootbeer_get_string_char_array($$__global$$ char * gc_info,
+  int thisref, int * exception)
+{
+  char * thisref_deref;
+  if(thisref == -1){
+    *exception = %%java_lang_NullPointerException_TypeNumber%%; 
+    return -1;
+  }
+  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
+  return *(( int *) &thisref_deref[32]);
+}
+
+$$__device__$$
+void org_trifort_rootbeer_set_string_char_array($$__global$$ char * gc_info,
+  int thisref, int value, int * exception)
+{
+  char * thisref_deref;
+  if(thisref == -1){
+    *exception = %%java_lang_NullPointerException_TypeNumber%%; 
+    return;
+  }
+  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
+  *(( int *) &thisref_deref[32]) = value;
+}
+
+
+$$__device__$$ int
+org_trifort_strlen(char * str_constant){
+  int ret = 0;
+  while(1){
+    if(str_constant[ret] != '\0'){
+      ret++;
+    } else {
+      return ret;
+    }
+  }
+}
+
+$$__device__$$ int
+org_trifort_array_length($$__global$$ char * gc_info, int thisref, int * exception){
+  $$__global$$ char * thisref_deref;
+  
+  if(thisref == -1){
+    *exception = %%java_lang_NullPointerException_TypeNumber%%; 
+    return 0;
+  }
+  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
+  int ret = org_trifort_getint(thisref_deref, 12);
+  return ret;
+}
 
 $$__device__$$
 void org_trifort_exitMonitorRef($$__global$$ char * gc_info, int thisref, int old){
@@ -417,20 +516,17 @@ void java_io_PrintStream_println0_9_($$__global$$ char * gc_info, int thisref, i
 
   char * valueref_deref;
 
-  valueref = instance_getter_java_lang_String_value(gc_info, str_ret, exception);  
+  valueref = org_trifort_rootbeer_get_string_char_array(gc_info, str_ret, exception);  
   if(*exception != 0){
     return; 
   } 
-  count = instance_getter_java_lang_String_count(gc_info, str_ret, exception);
-  if(*exception != 0){
-    return; 
-  } 
-  offset = instance_getter_java_lang_String_offset(gc_info, str_ret, exception);
+  
+  count = org_trifort_array_length(gc_info, valueref, exception);
   if(*exception != 0){
     return; 
   } 
   valueref_deref = (char *) org_trifort_gc_deref(gc_info, valueref);
-  for(i = offset; i < count; ++i){
+  for(i = 0; i < count; ++i){
     curr_offset = 32 + (i * 4);
     printf("%c", valueref_deref[curr_offset]);
   }
@@ -488,24 +584,20 @@ void java_io_PrintStream_print0_9_($$__global$$ char * gc_info, int thisref, int
   int count;
   int offset;
   int i;
-  int curr_offset;
 
   char * valueref_deref;
 
-  valueref = instance_getter_java_lang_String_value(gc_info, str_ret, exception);  
+  valueref = org_trifort_rootbeer_get_string_char_array(gc_info, str_ret, exception);  
   if(*exception != 0){
     return; 
   } 
-  count = instance_getter_java_lang_String_count(gc_info, str_ret, exception);
-  if(*exception != 0){
-    return; 
-  } 
-  offset = instance_getter_java_lang_String_offset(gc_info, str_ret, exception);
+  
+  count = org_trifort_array_length(gc_info, valueref, exception);
   if(*exception != 0){
     return; 
   } 
   valueref_deref = (char *) org_trifort_gc_deref(gc_info, valueref);
-  for(i = offset; i < count; ++i){
+  for(i = 0; i < count; ++i){
     curr_offset = 32 + (i * 4);
     printf("%c", valueref_deref[curr_offset]);
   }
@@ -623,7 +715,6 @@ org_trifort_cmpg(double lhs, double rhs){
   return 1;
 }
 
-
 $$__device__$$ void
 org_trifort_gc_memcpy($$__global$$ char * dest, $$__global$$ char * src, int len) {
   int i;
@@ -716,46 +807,6 @@ org_trifort_gc_get_size($$__global$$ char * mem_loc){
   return *(($$__global$$ GC_OBJ_TYPE_SIZE *) &mem_loc[0]);
 }
 
-$$__device__$$ char org_trifort_getchar($$__global$$ char * buffer, int pos){
-  return buffer[pos];
-}
-
-$$__device__$$ void org_trifort_setchar($$__global$$ char * buffer, int pos, char value){
-  buffer[pos] = value;
-}
-
-$$__device__$$ short org_trifort_getshort($$__global$$ char * buffer, int pos){
-  return *(($$__global$$ short *) &buffer[pos]);
-}
-
-$$__device__$$ void org_trifort_setshort($$__global$$ char * buffer, int pos, short value){
-  *(($$__global$$ short *) &buffer[pos]) = value;
-}
-
-$$__device__$$ int org_trifort_getint($$__global$$ char * buffer, int pos){
-  return *(($$__global$$ int *) &buffer[pos]);
-}
-
-$$__device__$$ void org_trifort_setint($$__global$$ char * buffer, int pos, int value){
-  *(($$__global$$ int *) &buffer[pos]) = value;
-}
-
-$$__device__$$ long long org_trifort_getlong($$__global$$ char * buffer, int pos){
-  return *(($$__global$$ long *) &buffer[pos]);
-}
-
-$$__device__$$ void org_trifort_setlong($$__global$$ char * buffer, int pos, long long value){
-  *(($$__global$$ long long *) &buffer[pos]) = value;
-}
-
-$$__device__$$ size_t org_trifort_getsize_t($$__global$$ char * buffer, int pos){
-  return *(($$__global$$ size_t *) &buffer[pos]);
-}
-
-$$__device__$$ void org_trifort_setsize_t($$__global$$ char * buffer, int pos, size_t value){
-  *(($$__global$$ size_t *) &buffer[pos]) = value;
-}
-
 $$__device__$$ void
 org_trifort_gc_set_to_space_address($$__global$$ char * gc_info, $$__global$$ char * value){
   org_trifort_setlong(gc_info, TO_SPACE_OFFSET, (long long) value);
@@ -782,29 +833,16 @@ org_trifort_gc_get_space_size($$__global$$ char * gc_info){
   return org_trifort_getint(gc_info, SPACE_SIZE_OFFSET);
 }
 
-$$__device__$$ int
-org_trifort_strlen(char * str_constant){
-  int ret = 0;
-  while(1){
-    if(str_constant[ret] != '\0'){
-      ret++;
-    } else {
-      return ret;
-    }
+$$__device__$$ 
+int org_trifort_string_get_array(char * gc_infop, int thisref, int * exception)
+{
+  char * thisref_deref;
+  if(thisref == -1){
+    *exception = ;
+    return;
   }
-}
-
-$$__device__$$ int
-org_trifort_array_length($$__global$$ char * gc_info, int thisref){
-  //if(thisref & 0x1000000000000000L){
-  //  thisref &= 0x0fffffffffffffffL;
-  //  thisref += 8;
-  //  return org_trifort_cache_get_int(thisref);
-  //} else {
-    $$__global$$ char * thisref_deref = org_trifort_gc_deref(gc_info, thisref);
-    int ret = org_trifort_getint(thisref_deref, 12);
-    return ret;
-  //}
+thisref_deref = org_trifort_gc_deref(gc_info, thisref);
+*(( int *) &thisref_deref[36]) = parameter0;
 }
 
 $$__device__$$
@@ -834,15 +872,16 @@ int java_lang_String_initab850b60f96d11de8a390800200c9a66(char * gc_info, int pa
   org_trifort_gc_set_size(thisref_deref, 48); 
   org_trifort_gc_init_monitor(thisref_deref); 
 
-  len = org_trifort_array_length(gc_info, parameter0);
+  len = org_trifort_array_length(gc_info, parameter0, exception);
+  if(*exception != 0){
+    return 0;
+  }
   characters_copy = char__array_new(gc_info, len, exception);
   for(i = 0; i < len; ++i){
     ch = char__array_get(gc_info, parameter0, i, exception);
     char__array_set(gc_info, characters_copy, i, ch, exception);
   }
-  instance_setter_java_lang_String_value(gc_info, thisref, characters_copy, exception); 
-  instance_setter_java_lang_String_count(gc_info, thisref, len, exception); 
-  instance_setter_java_lang_String_offset(gc_info, thisref, 0, exception); 
+  org_trifort_rootbeer_set_string_char_array(gc_info, thisref, characters_copy, exception);
   return thisref; 
 } 
 
@@ -1061,8 +1100,8 @@ int java_lang_StringBuilder_initab850b60f96d11de8a390800200c9a6610_9_(char * gc_
   org_trifort_gc_set_size ( thisref_deref , 44 ) ; 
   org_trifort_gc_init_monitor ( thisref_deref ) ; 
 
-  str_value = instance_getter_java_lang_String_value(gc_info, str, exception);
-  str_count = instance_getter_java_lang_String_count(gc_info, str, exception);
+  str_value = org_trifort_rootbeer_get_string_char_array(gc_info, str, exception);
+  str_count = org_trifort_array_length(gc_info, str_value, exception);
 
   instance_setter_java_lang_AbstractStringBuilder_value(gc_info, thisref, str_value, exception); 
   instance_setter_java_lang_AbstractStringBuilder_count(gc_info, thisref, str_count, exception); 
@@ -1092,11 +1131,10 @@ int java_lang_StringBuilder_append10_9_(char * gc_info, int thisref,
     exception);
 
   //get string value and count
-  str_value = instance_getter_java_lang_String_value(gc_info, parameter0,
+  str_value = org_trifort_rootbeer_get_string_char_array(gc_info, parameter0, 
     exception);
-
-  str_count = instance_getter_java_lang_String_count(gc_info, parameter0,
-    exception);
+    
+  str_count = org_trifort_array_length(gc_info, str_value, exception);
 
   new_count = sb_count + str_count;
   new_sb_value = char__array_new(gc_info, new_count, exception);
@@ -1326,7 +1364,7 @@ int at_illecker_double_to_string(char * gc_info, double fvalue, int max, int * e
     fconvert[fplace++] = "0123456789abcdef"[fracpart % 10];
     fracpart = (fracpart / 10);
   } while(fracpart && (fplace < 20));
-
+  
   // Calculate preceding zeros
   // preceding zeros might be removed in fracpart
   zprelen = max - fplace;
@@ -1379,7 +1417,7 @@ int at_illecker_double_to_string(char * gc_info, double fvalue, int max, int * e
 }
 
 //<java.lang.Double: java.lang.String toString(double)>
-$$__device__$$
+$$__device__$$ 
 int java_lang_Double_toString9_8_(char * gc_info, double double_val, int * exception) {
 
   // Default is 6 digits after decimal point
@@ -1387,8 +1425,8 @@ int java_lang_Double_toString9_8_(char * gc_info, double double_val, int * excep
 }
 
 //<java.lang.Float: java.lang.String toString(float)>
-$$__device__$$
-int java_lang_Float_toString9_7_(char * gc_info, float float_val, int * exception) {
+$$__device__$$ 
+int java_lang_Float_toString9_7_(char * gc_info, float float_val, int * exception){
 
   // Default is 6 digits after decimal point
   return at_illecker_double_to_string(gc_info, (double)float_val, 6, exception);
@@ -1463,14 +1501,14 @@ int at_illecker_long_to_string(char * gc_info, long long value, int max, int bas
 }
 
 //<java.lang.Long: java.lang.String toString(long)>
-$$__device__$$
-int java_lang_Long_toString9_6_(char * gc_info, long long long_val, int * exception) {
+$$__device__$$ 
+int java_lang_Long_toString9_6_(char * gc_info, long long long_val, int * exception){
   return at_illecker_long_to_string(gc_info, long_val, 0, 10, exception);
 }
 
 //<java.lang.Integer: java.lang.String toString(int)>
-$$__device__$$
-int java_lang_Integer_toString9_5_(char * gc_info, int int_val, int * exception) {
+$$__device__$$ 
+int java_lang_Integer_toString9_5_(char * gc_info, int int_val, int * exception){
   return at_illecker_long_to_string(gc_info, (long long)int_val, 0, 10, exception);
 }
 
@@ -1517,10 +1555,11 @@ int java_lang_String_indexOf(char * gc_info, int str_obj_ref,
   int search_str_value = 0;
   int search_str_count = 0;
   
-  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
-  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
-  search_str_value = instance_getter_java_lang_String_value(gc_info, search_str_obj_ref, exception);
-  search_str_count = instance_getter_java_lang_String_count(gc_info, search_str_obj_ref, exception);
+  str_value = org_trifort_rootbeer_get_string_char_array(gc_info, str_obj_ref, exception);
+  str_count = org_trifort_array_length(gc_info, str_value, exception);
+  
+  search_str_value = org_trifort_rootbeer_get_string_char_array(gc_info, search_str_obj_ref, exception);
+  search_str_count = org_trifort_array_length(gc_info, search_str_value, exception);
   
   return at_illecker_strpos(gc_info, str_value, str_count, search_str_value, search_str_count, 0, exception);
 }
@@ -1534,10 +1573,11 @@ int java_lang_String_indexOf(char * gc_info, int str_obj_ref,
   int search_str_value = 0;
   int search_str_count = 0;
   
-  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
-  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
-  search_str_value = instance_getter_java_lang_String_value(gc_info, search_str_obj_ref, exception);
-  search_str_count = instance_getter_java_lang_String_count(gc_info, search_str_obj_ref, exception);
+  str_value = org_trifort_rootbeer_get_string_char_array(gc_info, str_obj_ref, exception);
+  str_count = org_trifort_array_length(gc_info, str_value, exception);
+  
+  search_str_value = org_trifort_rootbeer_get_string_char_array(gc_info, search_str_obj_ref, exception);
+  search_str_count = org_trifort_array_length(gc_info, search_str_value, exception);
   
   return at_illecker_strpos(gc_info, str_value, str_count, search_str_value, search_str_count, from_index, exception);
 }
@@ -1576,8 +1616,8 @@ int java_lang_String_substring(char * gc_info, int str_obj_ref, int begin_index,
   int str_value = 0;
   int str_count = 0;
   
-  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
-  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+  str_value = org_trifort_rootbeer_get_string_char_array(gc_info, str_obj_ref, exception);
+  str_count = org_trifort_array_length(gc_info, str_value, exception);
   
   return at_illecker_substring(gc_info, str_value, str_count, begin_index, -1, exception);
 }
@@ -1589,8 +1629,8 @@ int java_lang_String_substring(char * gc_info, int str_obj_ref, int begin_index,
   int str_value = 0;
   int str_count = 0;
   
-  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
-  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+  str_value = org_trifort_rootbeer_get_string_char_array(gc_info, str_obj_ref, exception);
+  str_count = org_trifort_array_length(gc_info, str_value, exception);
   
   return at_illecker_substring(gc_info, str_value, str_count, begin_index, end_index, exception);
 }
@@ -1640,11 +1680,11 @@ int at_illecker_split(char * gc_info, int str_obj_ref, int delim_str_obj_ref,
   int delim_str_count = 0;
   int delim_occurrences = 0;
   
-  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
-  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+  str_value = org_trifort_rootbeer_get_string_char_array(gc_info, str_obj_ref, exception);
+  str_count = org_trifort_array_length(gc_info, str_value, exception);
   
-  delim_str_value = instance_getter_java_lang_String_value(gc_info, delim_str_obj_ref, exception);
-  delim_str_count = instance_getter_java_lang_String_count(gc_info, delim_str_obj_ref, exception);
+  delim_str_value = org_trifort_rootbeer_get_string_char_array(gc_info, delim_str_obj_ref, exception);
+  delim_str_count = org_trifort_array_length(gc_info, delim_str_value, exception);
   
   // count delimiters, needed for array size
   delim_occurrences = at_illecker_strcnt(gc_info, str_value, str_count,
@@ -1700,6 +1740,32 @@ int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_re
 $$__device__$$
 int java_lang_String_split(char * gc_info, int str_obj_ref, int delim_str_obj_ref, int * exception) {
   return at_illecker_split(gc_info, str_obj_ref, delim_str_obj_ref, 0, exception);
+}
+
+$$__device__$$ int 
+java_lang_Object_clone(char * gc_info, int thisref, int * exception){
+  char * src_deref;
+  char * dest_deref;
+  int dest;
+  int size;
+  
+  if(thisref == -1){
+    *exception = %%java_lang_NullPointerException_TypeNumber%%;
+    return 0;
+  }
+  
+  src_deref = org_trifort_gc_deref(gc_info, thisref);
+  size = org_trifort_getint(src_deref, OBJECT_HEADER_POSITION_OBJECT_SIZE);
+  dest = org_trifort_gc_malloc(gc_info, size);
+  if(dest == -1){
+    //TODO: make this an OutOfMemoryException
+    *exception = %%java_lang_NullPointerException_TypeNumber%%;
+    return 0;
+  }
+  dest_deref = org_trifort_gc_deref(gc_info, dest);
+  org_trifort_gc_memcpy(dest_deref, src_deref, size);
+  org_trifort_gc_set_ctor_used(dest_deref, 1);
+  return dest;
 }
 
 $$__device__$$
@@ -2084,10 +2150,10 @@ long long java_lang_Long_parseLong(char * gc_info, int str_obj_ref, int * except
   int str_count = 0;
   char str_val[255]; // max len of 255
   
-  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
-  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+  str_value = org_trifort_rootbeer_get_string_char_array(gc_info, str_obj_ref, exception);
+  str_count = org_trifort_array_length(gc_info, str_value, exception);
   
-  // Check if str_count > 255
+  // Check if str_count > 255, then truncate
   if (str_count > 255) {
     str_count = 255;
   }
@@ -2114,10 +2180,10 @@ double java_lang_Double_parseDouble(char * gc_info, int str_obj_ref, int * excep
   int str_count = 0;
   char str_val[255]; // max len of 255
   
-  str_value = instance_getter_java_lang_String_value(gc_info, str_obj_ref, exception);
-  str_count = instance_getter_java_lang_String_count(gc_info, str_obj_ref, exception);
+  str_value = org_trifort_rootbeer_get_string_char_array(gc_info, str_obj_ref, exception);
+  str_count = org_trifort_array_length(gc_info, str_value, exception);
   
-  // Check if str_count > 255
+  // Check if str_count > 255, then truncate
   if (str_count > 255) {
     str_count = 255;
   }
@@ -2258,52 +2324,52 @@ int at_illecker_string_constant(char * gc_info, volatile char * str_constant, in
 // object HostDeviceInterface and fetches results
 template<class T>
 $$__device__$$
-T at_illecker_getResult($$__global$$ char * gc_info, 
-    HostDeviceInterface::MESSAGE_TYPE cmd, 
-    HostDeviceInterface::TYPE return_type, bool use_return_value,
-    int key_value_pair_ref, HostDeviceInterface::TYPE key_type, HostDeviceInterface::TYPE value_type,
-    int int_param1, bool use_int_param1,
-    int int_param2, bool use_int_param2,
-    int int_param3, bool use_int_param3,
-    long long long_param1, bool use_long_param1,
-    long long long_param2, bool use_long_param2,
-    float float_param1, bool use_float_param1,
-    float float_param2, bool use_float_param2,
-    double double_param1, bool use_double_param1,
-    double double_param2, bool use_double_param2,
-    int str_param1, bool use_str_param1,
-    int str_param2, bool use_str_param2,
-    int str_param3, bool use_str_param3,
-    int * exception) {
-
+T at_illecker_getResult($$__global$$ char * gc_info,
+                        HostDeviceInterface::MESSAGE_TYPE cmd,
+                        HostDeviceInterface::TYPE return_type, bool use_return_value,
+                        int key_value_pair_ref, HostDeviceInterface::TYPE key_type, HostDeviceInterface::TYPE value_type,
+                        int int_param1, bool use_int_param1,
+                        int int_param2, bool use_int_param2,
+                        int int_param3, bool use_int_param3,
+                        long long long_param1, bool use_long_param1,
+                        long long long_param2, bool use_long_param2,
+                        float float_param1, bool use_float_param1,
+                        float float_param2, bool use_float_param2,
+                        double double_param1, bool use_double_param1,
+                        double double_param2, bool use_double_param2,
+                        int str_param1, bool use_str_param1,
+                        int str_param2, bool use_str_param2,
+                        int str_param3, bool use_str_param3,
+                        int * exception) {
+  
   T return_value = 0;
-
+  
   int thread_id = getThreadId();
   int count = 0;
-
+  
   int str_param1_value = 0;
   int str_param1_count = 0;
   int str_param2_value = 0;
   int str_param2_count = 0;
   int str_param3_value = 0;
   int str_param3_count = 0;
-
+  
   int key_obj_ref = 0;
   int value_obj_ref = 0;
   char * key_obj_deref;
   char * value_obj_deref;
-
+  
   // loop until done == true
   while (count < 100) {
-
+    
     // (lock_thread_id == -1 ? thread_id : lock_thread_id)
     int old = atomicCAS((int *) &host_device_interface->lock_thread_id, -1, thread_id);
-
+    
     // printf("Thread %d old: %d\n", thread_id, old);
-
+    
     if (old == -1 || old == thread_id) {
       // critical section code, thread won race condition
-
+      
       if (host_device_interface->is_debugging) {
         printf("gpu_Thread %d GOT LOCK lock_thread_id: %d\n", thread_id,
                host_device_interface->lock_thread_id);
@@ -2311,12 +2377,12 @@ T at_illecker_getResult($$__global$$ char * gc_info,
       /***********************************************************************/
       // wait for possible old task to end
       while (host_device_interface->has_task) { }
-
+      
       /***********************************************************************/
       // Setup command
       host_device_interface->command = cmd;
       host_device_interface->return_type = return_type;
-
+      
       // Setup transfer variable as parameters
       if (use_int_param1) {
         host_device_interface->use_int_val1 = true;
@@ -2355,12 +2421,16 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         host_device_interface->double_val2 = double_param2;
       }
       if (use_str_param1) {
-        str_param1_value = instance_getter_java_lang_String_value(gc_info, str_param1,
-                          exception);
-        str_param1_count = instance_getter_java_lang_String_count(gc_info, str_param1,
-                          exception);
-
-        // TODO - check for max str_val1 size
+        str_param1_value = org_trifort_rootbeer_get_string_char_array(gc_info, str_param1,
+                                                                  exception);
+        str_param1_count = org_trifort_array_length(gc_info, str_param1_value,
+                                                                  exception);
+        
+        // Check if str_param1_count > max str_val1 size, then truncate
+        if (str_param1_count > STR_SIZE) {
+          str_param1_count = STR_SIZE;
+        }
+        
         for(int i = 0; i < str_param1_count; i++) {
           host_device_interface->str_val1[i] = char__array_get(gc_info, str_param1_value, i, exception);
         }
@@ -2368,12 +2438,16 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         host_device_interface->str_val1[str_param1_count] = '\0';
       }
       if (use_str_param2) {
-        str_param2_value = instance_getter_java_lang_String_value(gc_info, str_param2,
-                           exception);
-        str_param2_count = instance_getter_java_lang_String_count(gc_info, str_param2,
-                           exception);
-
-        // TODO - check for max str_val2 size
+        str_param2_value = org_trifort_rootbeer_get_string_char_array(gc_info, str_param2,
+                                                                  exception);
+        str_param2_count = org_trifort_array_length(gc_info, str_param2_value,
+                                                                  exception);
+        
+        // Check if str_param2_count > max str_val2 size, then truncate
+        if (str_param2_count > STR_SIZE) {
+          str_param2_count = STR_SIZE;
+        }
+        
         for(int i = 0; i < str_param2_count; i++) {
           host_device_interface->str_val2[i] = char__array_get(gc_info, str_param2_value, i, exception);
         }
@@ -2381,43 +2455,47 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         host_device_interface->str_val2[str_param2_count] = '\0';
       }
       if (use_str_param3) {
-        str_param3_value = instance_getter_java_lang_String_value(gc_info, str_param3,
-                           exception);
-        str_param3_count = instance_getter_java_lang_String_count(gc_info, str_param3,
-                           exception);
-
-        // TODO - check for max str_val3 size(255)
+        str_param3_value = org_trifort_rootbeer_get_string_char_array(gc_info, str_param3,
+                                                                  exception);
+        str_param3_count = org_trifort_array_length(gc_info, str_param3_value,
+                                                                  exception);
+        
+        // Check if str_param3_count > max str_val3 size(255), then truncate
+        if (str_param3_count > 255) {
+          str_param3_count = 255;
+        }
+        
         for(int i = 0; i < str_param3_count; i++) {
           host_device_interface->str_val3[i] = char__array_get(gc_info, str_param3_value, i, exception);
         }
         host_device_interface->use_str_val3 = true;
         host_device_interface->str_val3[str_param3_count] = '\0';
       }
-
+      
       // Set key and value type
       host_device_interface->key_type = key_type;
       host_device_interface->value_type = value_type;
-
+      
       /***********************************************************************/
       // Activate task for HostMonitor
       host_device_interface->has_task = true;
       __threadfence_system();
-
+      
       /***********************************************************************/
       // wait for socket communication to end
       while (!host_device_interface->is_result_available) {
         __threadfence_system();
       }
-
+      
       /***********************************************************************/
       // Get result from host device interface
-
+      
       if (return_type == HostDeviceInterface::KEY_VALUE_PAIR) {
         // Update KeyValuePair object
-
+        
         // Update key
-        key_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_key(gc_info, 
-                      key_value_pair_ref, exception);
+        key_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_key(gc_info,
+                                                                                      key_value_pair_ref, exception);
         key_obj_deref = org_trifort_gc_deref(gc_info, key_obj_ref);
         
         if (key_type == HostDeviceInterface::INT) {
@@ -2442,10 +2520,10 @@ T at_illecker_getResult($$__global$$ char * gc_info,
           // Set new offset to 0
           *(( int *) &key_obj_deref[44]) = 0;
         }
-
+        
         // Update value
-        value_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_value(gc_info, 
-                        key_value_pair_ref, exception);
+        value_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_value(gc_info,
+                                                                                          key_value_pair_ref, exception);
         value_obj_deref = org_trifort_gc_deref(gc_info, value_obj_ref);
         
         if (value_type == HostDeviceInterface::INT) {
@@ -2470,74 +2548,74 @@ T at_illecker_getResult($$__global$$ char * gc_info,
           // Set new offset to 0
           *(( int *) &value_obj_deref[44]) = 0;
         }
-
+        
         // true if more data is available
         return_value = !host_device_interface->end_of_data;
-
+        
       } else if (use_return_value) { // Update return_value
-
+        
         // Get right return type
         if (return_type == HostDeviceInterface::INT) {
           return_value = host_device_interface->int_val1;
-
+          
         } else if (return_type == HostDeviceInterface::LONG) {
           return_value = host_device_interface->long_val1;
-
+          
         } else if (return_type == HostDeviceInterface::FLOAT) {
           return_value = host_device_interface->float_val1;
-
+          
         } else if (return_type == HostDeviceInterface::DOUBLE) {
           return_value = host_device_interface->double_val1;
-
+          
         } else if (return_type == HostDeviceInterface::STRING) {
           // make new String object
           org_trifort_gc_assign(gc_info, (int*)&return_value,
-            at_illecker_string_constant(gc_info, host_device_interface->str_val1, exception));
-       
+                                at_illecker_string_constant(gc_info, host_device_interface->str_val1, exception));
+          
         } else if (return_type == HostDeviceInterface::STRING_ARRAY) {
-
+          
           int index = 0;
           int array_len = host_device_interface->int_val1;
-
+          
           if (array_len > 0) {
             // make new String[] object
             return_value = java_lang_String__array_new(gc_info, array_len, exception);
-
+            
             while ( (host_device_interface->use_int_val1) && (index < array_len) ) {
-
+              
               if (host_device_interface->use_str_val1) {
-                java_lang_String__array_set(gc_info, return_value, index, 
-                  at_illecker_string_constant(gc_info, host_device_interface->str_val1, exception), exception);
+                java_lang_String__array_set(gc_info, return_value, index,
+                                            at_illecker_string_constant(gc_info, host_device_interface->str_val1, exception), exception);
                 index++;
               }
               if (host_device_interface->use_str_val2) {
-                java_lang_String__array_set(gc_info, return_value, index, 
-                  at_illecker_string_constant(gc_info, host_device_interface->str_val2, exception), exception);
+                java_lang_String__array_set(gc_info, return_value, index,
+                                            at_illecker_string_constant(gc_info, host_device_interface->str_val2, exception), exception);
                 index++;
               }
               if (host_device_interface->use_str_val3) {
-                java_lang_String__array_set(gc_info, return_value, index, 
-                  at_illecker_string_constant(gc_info, host_device_interface->str_val3, exception), exception);
+                java_lang_String__array_set(gc_info, return_value, index,
+                                            at_illecker_string_constant(gc_info, host_device_interface->str_val3, exception), exception);
                 index++;
               }
-
+              
               // Notify HostMonitor that result was received
               host_device_interface->is_result_available = false;
               __threadfence_system();
-
+              
               // Wait for next result
               while (!host_device_interface->is_result_available) {
                 __threadfence_system();
               }
             }
-
+            
           } else {
             return_value = 0;
           }
         }
-
+        
       }
-
+      
       /***********************************************************************/
       // Reset transfer variables
       if ( (use_int_param1) || (return_type == HostDeviceInterface::INT) ) {
@@ -2598,23 +2676,23 @@ T at_illecker_getResult($$__global$$ char * gc_info,
         host_device_interface->str_val3[0] = '\0';
         host_device_interface->use_str_val3 = false;
       }
-
+      
       host_device_interface->command = HostDeviceInterface::UNDEFINED;
       host_device_interface->return_type = HostDeviceInterface::NOT_AVAILABLE;
       host_device_interface->key_type = HostDeviceInterface::NOT_AVAILABLE;
       host_device_interface->value_type = HostDeviceInterface::NOT_AVAILABLE;
-
-      /***********************************************************************/ 
+      
+      /***********************************************************************/
       // Notify HostMonitor that result was received
       host_device_interface->is_result_available = false;
       // host_device_interface->lock_thread_id = -1;
       __threadfence_system();
       atomicExch((int *) &host_device_interface->lock_thread_id, -1);
       
-      /***********************************************************************/ 
+      /***********************************************************************/
       // exit infinite loop
       return return_value;
-
+      
     } else {
       count++;
       if (count > 50) {
@@ -2632,8 +2710,8 @@ T at_illecker_getResult($$__global$$ char * gc_info,
 //<org.trifort.rootbeer.runtime.HamaPeer: void send(String peerName, Object message)>
 $$__device__$$
 void org_trifort_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info,
-     int peer_name_str_ref, int message_obj_ref, int * exception) {
-
+                                                int peer_name_str_ref, int message_obj_ref, int * exception) {
+  
   int int_value = 0;
   bool use_int_value = false;
   long long long_value = 0;
@@ -2650,7 +2728,7 @@ void org_trifort_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info,
   if (message_obj_ref == -1) {
     printf("Exception in HamaPeer.send: unsupported NULL Type\n");
     return;
-
+    
   } else {
     // check message type
     if (at_illecker_typeof_Integer(gc_info, message_obj_ref)) {
@@ -2683,403 +2761,403 @@ void org_trifort_rootbeer_runtime_HamaPeer_send($$__global$$ char * gc_info,
       return;
     }
   }
-
+  
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEND_MSG,
-    HostDeviceInterface::NOT_AVAILABLE, false, // do not use the return value
-    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-    int_value, use_int_value,
-    0, false,
-    0, false,
-    long_value, use_long_value,
-    0, false,
-    float_value, use_float_value,
-    0, false,
-    double_value, use_double_value,
-    0, false,
-    peer_name_str_ref, true,
-    string_value, use_string_value,
-    0, false,
-    exception);
+                             HostDeviceInterface::NOT_AVAILABLE, false, // do not use the return value
+                             0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                             int_value, use_int_value,
+                             0, false,
+                             0, false,
+                             long_value, use_long_value,
+                             0, false,
+                             float_value, use_float_value,
+                             0, false,
+                             double_value, use_double_value,
+                             0, false,
+                             peer_name_str_ref, true,
+                             string_value, use_string_value,
+                             0, false,
+                             exception);
 }
 
 // HamaPeer.getCurrentIntMessage
 //<org.trifort.rootbeer.runtime.HamaPeer: int getCurrentIntMessage()>
 $$__device__$$
-int org_trifort_rootbeer_runtime_HamaPeer_getCurrentIntMessage($$__global$$ char * gc_info, 
-    int * exception) {
-
+int org_trifort_rootbeer_runtime_HamaPeer_getCurrentIntMessage($$__global$$ char * gc_info,
+                                                               int * exception) {
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_MSG,
-           HostDeviceInterface::INT, true, // expecting integer return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                    HostDeviceInterface::INT, true, // expecting integer return value
+                                    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    exception);
 }
 
 // HamaPeer.getCurrentLongMessage
 //<org.trifort.rootbeer.runtime.HamaPeer: long getCurrentLongMessage()>
 $$__device__$$
-long org_trifort_rootbeer_runtime_HamaPeer_getCurrentLongMessage($$__global$$ char * gc_info, 
-    int * exception) {
-
+long org_trifort_rootbeer_runtime_HamaPeer_getCurrentLongMessage($$__global$$ char * gc_info,
+                                                                 int * exception) {
+  
   return at_illecker_getResult<long>(gc_info, HostDeviceInterface::GET_MSG,
-           HostDeviceInterface::LONG, true, // expecting long return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                     HostDeviceInterface::LONG, true, // expecting long return value
+                                     0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     exception);
 }
 
 // HamaPeer.getCurrentFloatMessage
 //<org.trifort.rootbeer.runtime.HamaPeer: float getCurrentFloatMessage()>
 $$__device__$$
-float org_trifort_rootbeer_runtime_HamaPeer_getCurrentFloatMessage($$__global$$ char * gc_info, 
-    int * exception) {
-
+float org_trifort_rootbeer_runtime_HamaPeer_getCurrentFloatMessage($$__global$$ char * gc_info,
+                                                                   int * exception) {
+  
   return at_illecker_getResult<float>(gc_info, HostDeviceInterface::GET_MSG,
-           HostDeviceInterface::FLOAT, true, // expecting float return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                      HostDeviceInterface::FLOAT, true, // expecting float return value
+                                      0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                      0, false,
+                                      0, false,
+                                      0, false,
+                                      0, false,
+                                      0, false,
+                                      0, false,
+                                      0, false,
+                                      0, false,
+                                      0, false,
+                                      0, false,
+                                      0, false,
+                                      0, false,
+                                      exception);
 }
 
 // HamaPeer.getCurrentDoubleMessage
 //<org.trifort.rootbeer.runtime.HamaPeer: double getCurrentDoubleMessage()>
 $$__device__$$
-double org_trifort_rootbeer_runtime_HamaPeer_getCurrentDoubleMessage($$__global$$ char * gc_info, 
-    int * exception) {
-
+double org_trifort_rootbeer_runtime_HamaPeer_getCurrentDoubleMessage($$__global$$ char * gc_info,
+                                                                     int * exception) {
+  
   return at_illecker_getResult<double>(gc_info, HostDeviceInterface::GET_MSG,
-           HostDeviceInterface::DOUBLE, true, // expecting double return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                       HostDeviceInterface::DOUBLE, true, // expecting double return value
+                                       0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                       0, false,
+                                       0, false,
+                                       0, false,
+                                       0, false,
+                                       0, false,
+                                       0, false,
+                                       0, false,
+                                       0, false,
+                                       0, false,
+                                       0, false,
+                                       0, false,
+                                       0, false,
+                                       exception);
 }
 
 // HamaPeer.getCurrentStringMessage
 //<org.trifort.rootbeer.runtime.HamaPeer: String getCurrentStringMessage()>
 $$__device__$$
-int org_trifort_rootbeer_runtime_HamaPeer_getCurrentStringMessage($$__global$$ char * gc_info, 
-    int * exception) {
-
+int org_trifort_rootbeer_runtime_HamaPeer_getCurrentStringMessage($$__global$$ char * gc_info,
+                                                                  int * exception) {
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_MSG,
-           HostDeviceInterface::STRING, true, // expecting string return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                    HostDeviceInterface::STRING, true, // expecting string return value
+                                    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    exception);
 }
 
 // HamaPeer.getNumCurrentMessages
 //<org.trifort.rootbeer.runtime.HamaPeer: int getNumCurrentMessages()>
 $$__device__$$
-int org_trifort_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$$ char * gc_info, 
-    int * exception) {
-
+int org_trifort_rootbeer_runtime_HamaPeer_getNumCurrentMessages($$__global$$ char * gc_info,
+                                                                int * exception) {
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_MSG_COUNT,
-           HostDeviceInterface::INT, true, // expecting integer return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                    HostDeviceInterface::INT, true, // expecting integer return value
+                                    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    exception);
 }
 
 // HamaPeer.sync
 // This method blocks.
 //<org.trifort.rootbeer.runtime.HamaPeer: void sync()>
 $$__device__$$
-void org_trifort_rootbeer_runtime_HamaPeer_sync($$__global$$ char * gc_info, 
-     int * exception) {
-
+void org_trifort_rootbeer_runtime_HamaPeer_sync($$__global$$ char * gc_info,
+                                                int * exception) {
+  
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::SYNC,
-    HostDeviceInterface::NOT_AVAILABLE, false, // do not use return value
-    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-    0, false,
-    0, false,
-    0, false,
-    0, false,
-    0, false,
-    0, false,
-    0, false,
-    0, false,
-    0, false,
-    0, false,
-    0, false,
-    0, false,
-    exception);
+                             HostDeviceInterface::NOT_AVAILABLE, false, // do not use return value
+                             0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             exception);
 }
 
 // HamaPeer.getSuperstepCount
 //<org.trifort.rootbeer.runtime.HamaPeer: long getSuperstepCount()>
 $$__device__$$
-long org_trifort_rootbeer_runtime_HamaPeer_getSuperstepCount($$__global$$ char * gc_info, 
-    int * exception) {
-
+long org_trifort_rootbeer_runtime_HamaPeer_getSuperstepCount($$__global$$ char * gc_info,
+                                                             int * exception) {
+  
   return at_illecker_getResult<long>(gc_info, HostDeviceInterface::GET_SUPERSTEP_COUNT,
-           HostDeviceInterface::LONG, true, // expecting long return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                     HostDeviceInterface::LONG, true, // expecting long return value
+                                     0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     0, false,
+                                     exception);
 }
 
 // HamaPeer.getPeerName
 // Returns own PeerName
 //<org.trifort.rootbeer.runtime.HamaPeer: String getPeerName()>
 $$__device__$$
-int org_trifort_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * gc_info, 
-    int * exception) {
-
-  return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_PEERNAME, 
-           HostDeviceInterface::STRING, true, // expecting string return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           -1, true, // -1 for own peername
-           0, false,
-           0, false,
-           0, false,
-           0, false, 
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false, 
-           0, false,
-           exception);
+int org_trifort_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * gc_info,
+                                                      int * exception) {
+  
+  return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_PEERNAME,
+                                    HostDeviceInterface::STRING, true, // expecting string return value
+                                    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                    -1, true, // -1 for own peername
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    exception);
 }
 
 // HamaPeer.getPeerName
 //<org.trifort.rootbeer.runtime.HamaPeer: String getPeerName(int index)>
 $$__device__$$
-int org_trifort_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * gc_info, 
-    int index, int * exception) {
-
+int org_trifort_rootbeer_runtime_HamaPeer_getPeerName($$__global$$ char * gc_info,
+                                                      int index, int * exception) {
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_PEERNAME,
-           HostDeviceInterface::STRING, true, // expecting string return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           index, true,
-           0, false,
-           0, false,
-           0, false,
-           0, false, 
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                    HostDeviceInterface::STRING, true, // expecting string return value
+                                    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                    index, true,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    exception);
 }
 
 // HamaPeer.getPeerIndex
 //<org.trifort.rootbeer.runtime.HamaPeer: int getPeerIndex()>
 $$__device__$$
-int org_trifort_rootbeer_runtime_HamaPeer_getPeerIndex($$__global$$ char * gc_info, 
-    int * exception) {
-
+int org_trifort_rootbeer_runtime_HamaPeer_getPeerIndex($$__global$$ char * gc_info,
+                                                       int * exception) {
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_PEER_INDEX,
-           HostDeviceInterface::INT, true, // expecting integer return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                    HostDeviceInterface::INT, true, // expecting integer return value
+                                    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    exception);
 }
 
 // HamaPeer.getAllPeerNames
 //<org.trifort.rootbeer.runtime.HamaPeer: String[] getAllPeerNames()>
 $$__device__$$
-int org_trifort_rootbeer_runtime_HamaPeer_getAllPeerNames($$__global$$ char * gc_info, 
-    int * exception) {
-
+int org_trifort_rootbeer_runtime_HamaPeer_getAllPeerNames($$__global$$ char * gc_info,
+                                                          int * exception) {
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_ALL_PEERNAME,
-           HostDeviceInterface::STRING_ARRAY, true, // expecting string array return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                    HostDeviceInterface::STRING_ARRAY, true, // expecting string array return value
+                                    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    exception);
 }
 
 // HamaPeer.getNumPeers
 //<org.trifort.rootbeer.runtime.HamaPeer: int getNumPeers()>
 $$__device__$$
-int org_trifort_rootbeer_runtime_HamaPeer_getNumPeers($$__global$$ char * gc_info, 
-    int * exception) {
-
+int org_trifort_rootbeer_runtime_HamaPeer_getNumPeers($$__global$$ char * gc_info,
+                                                      int * exception) {
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::GET_PEER_COUNT,
-           HostDeviceInterface::INT, true, // expecting integer return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false, 
-           0, false,
-           exception);
+                                    HostDeviceInterface::INT, true, // expecting integer return value
+                                    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    exception);
 }
 
 // HamaPeer.clear
 //<org.trifort.rootbeer.runtime.HamaPeer: void clear()>
 $$__device__$$
-void org_trifort_rootbeer_runtime_HamaPeer_clear($$__global$$ char * gc_info, 
-     int * exception) {
-
+void org_trifort_rootbeer_runtime_HamaPeer_clear($$__global$$ char * gc_info,
+                                                 int * exception) {
+  
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::CLEAR,
-           HostDeviceInterface::NOT_AVAILABLE, false, // do not use return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                             HostDeviceInterface::NOT_AVAILABLE, false, // do not use return value
+                             0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             exception);
 }
 
 // HamaPeer.reopenInput
 //<org.trifort.rootbeer.runtime.HamaPeer: void reopenInput()>
 $$__device__$$
-void org_trifort_rootbeer_runtime_HamaPeer_reopenInput($$__global$$ char * gc_info, 
-     int * exception) {
-
+void org_trifort_rootbeer_runtime_HamaPeer_reopenInput($$__global$$ char * gc_info,
+                                                       int * exception) {
+  
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::REOPEN_INPUT,
-           HostDeviceInterface::NOT_AVAILABLE, false, // do not use return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                             HostDeviceInterface::NOT_AVAILABLE, false, // do not use return value
+                             0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             0, false,
+                             exception);
 }
 
 // HamaPeer.readNext
 //<org.trifort.rootbeer.runtime.HamaPeer: boolean readNext(KeyValuePair key_value_pair)>
 $$__device__$$
-bool org_trifort_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_info, 
-     int key_value_pair_ref, int * exception) {
-
+bool org_trifort_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_info,
+                                                    int key_value_pair_ref, int * exception) {
+  
   int key_obj_ref;
   int value_obj_ref;
   HostDeviceInterface::TYPE key_type;
   HostDeviceInterface::TYPE value_type;
-
-  key_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_key(gc_info, 
-                key_value_pair_ref, exception);
-  value_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_value(gc_info, 
-                  key_value_pair_ref, exception);
-
+  
+  key_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_key(gc_info,
+                                                                                key_value_pair_ref, exception);
+  value_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_value(gc_info,
+                                                                                    key_value_pair_ref, exception);
+  
   // check key type
   if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
     key_type = HostDeviceInterface::INT;
@@ -3098,7 +3176,7 @@ bool org_trifort_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_info,
     printf("Exception in HamaPeer.readNext: unsupported Key Type\n");
     return false;
   }
-
+  
   // check value type
   if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
     value_type = HostDeviceInterface::INT;
@@ -3117,37 +3195,37 @@ bool org_trifort_rootbeer_runtime_HamaPeer_readNext($$__global$$ char * gc_info,
     printf("Exception in HamaPeer.readNext: unsupported Value Type\n");
     return false;
   }
-
+  
   if ( (key_type == HostDeviceInterface::NULL_TYPE) &&
-       (value_type == HostDeviceInterface::NULL_TYPE) ) {
+      (value_type == HostDeviceInterface::NULL_TYPE) ) {
     printf("Exception in HamaPeer.readNext: key and value are NULL!\n");
     return false;
   }
-
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::READ_KEYVALUE,
-           HostDeviceInterface::KEY_VALUE_PAIR, false, // do not use return value, because key_value_pair obj will be modified
-           key_value_pair_ref, key_type, value_type,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                    HostDeviceInterface::KEY_VALUE_PAIR, false, // do not use return value, because key_value_pair obj will be modified
+                                    key_value_pair_ref, key_type, value_type,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    exception);
 }
 
 // HamaPeer.write
 //<org.trifort.rootbeer.runtime.HamaPeer: void write(Object key, Object value)>
 $$__device__$$
-void org_trifort_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info, 
-     int key_obj_ref, int value_obj_ref, int * exception) {
-
+void org_trifort_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info,
+                                                 int key_obj_ref, int value_obj_ref, int * exception) {
+  
   // key values
   int int_val1 = 0;
   bool use_int_val1 = false;
@@ -3159,7 +3237,7 @@ void org_trifort_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info,
   bool use_double_val1 = false;
   int string_val1 = 0;
   bool use_string_val1 = false;
-
+  
   // value values
   int int_val2 = 0;
   bool use_int_val2 = false;
@@ -3171,20 +3249,20 @@ void org_trifort_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info,
   bool use_double_val2 = false;
   int string_val2 = 0;
   bool use_string_val2 = false;
-
+  
   HostDeviceInterface::TYPE key_type;
   HostDeviceInterface::TYPE value_type;
-
+  
   char * key_obj_deref;
   char * value_obj_deref;
-
+  
   // check key value
   if (key_obj_ref == -1) {
     key_type = HostDeviceInterface::NULL_TYPE;
-
+    
   } else {
     key_obj_deref = org_trifort_gc_deref(gc_info, key_obj_ref);
-
+    
     // check key type
     if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
       int_val1 = *(( int *) &key_obj_deref[32]);
@@ -3212,14 +3290,14 @@ void org_trifort_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info,
       return;
     }
   }
-
+  
   // check value value
   if (value_obj_ref == -1) {
     value_type = HostDeviceInterface::NULL_TYPE;
-
+    
   } else {
     value_obj_deref = org_trifort_gc_deref(gc_info, value_obj_ref);
-
+    
     // check value type
     if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
       int_val2 = *(( int *) &value_obj_deref[32]);
@@ -3247,47 +3325,47 @@ void org_trifort_rootbeer_runtime_HamaPeer_write($$__global$$ char * gc_info,
       return;
     }
   }
-
+  
   if ( (key_type == HostDeviceInterface::NULL_TYPE) &&
-       (value_type == HostDeviceInterface::NULL_TYPE) ) {
+      (value_type == HostDeviceInterface::NULL_TYPE) ) {
     printf("Exception in HamaPeer.write: key and value are NULL!\n");
     return;
   }
-
+  
   at_illecker_getResult<int>(gc_info, HostDeviceInterface::WRITE_KEYVALUE,
-    HostDeviceInterface::NOT_AVAILABLE, false, // do not use the return value
-    0, key_type, value_type,
-    int_val1, use_int_val1,
-    int_val2, use_int_val2,
-    0, false,
-    long_val1, use_long_val1,
-    long_val2, use_long_val2,
-    float_val1, use_float_val1,
-    float_val2, use_float_val2,
-    double_val1, use_double_val1,
-    double_val2, use_double_val2,
-    string_val1, use_string_val1,
-    string_val2, use_string_val2,
-    0, false,
-    exception);
+                             HostDeviceInterface::NOT_AVAILABLE, false, // do not use the return value
+                             0, key_type, value_type,
+                             int_val1, use_int_val1,
+                             int_val2, use_int_val2,
+                             0, false,
+                             long_val1, use_long_val1,
+                             long_val2, use_long_val2,
+                             float_val1, use_float_val1,
+                             float_val2, use_float_val2,
+                             double_val1, use_double_val1,
+                             double_val2, use_double_val2,
+                             string_val1, use_string_val1,
+                             string_val2, use_string_val2,
+                             0, false,
+                             exception);
 }
 
 // HamaPeer.sequenceFileReadNext
 //<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileReadNext(int file_id, KeyValuePair key_value_pair)>
 $$__device__$$
-bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$$ char * gc_info, 
-     int file_id, int key_value_pair_ref, int * exception) {
-
+bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$$ char * gc_info,
+                                                                int file_id, int key_value_pair_ref, int * exception) {
+  
   int key_obj_ref;
   int value_obj_ref;
   HostDeviceInterface::TYPE key_type;
   HostDeviceInterface::TYPE value_type;
-
+  
   key_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_key(gc_info, 
-                key_value_pair_ref, exception);
+                                                                                key_value_pair_ref, exception);
   value_obj_ref = instance_getter_org_trifort_rootbeer_runtime_KeyValuePair_m_value(gc_info, 
-                  key_value_pair_ref, exception);
-
+                                                                                    key_value_pair_ref, exception);
+  
   // check key type
   if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
     key_type = HostDeviceInterface::INT;
@@ -3306,7 +3384,7 @@ bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$$ cha
     printf("Exception in HamaPeer.sequenceFileReadNext: unsupported Key Type\n");
     return false;
   }
-
+  
   // check value type
   if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
     value_type = HostDeviceInterface::INT;
@@ -3325,37 +3403,37 @@ bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileReadNext($$__global$$ cha
     printf("Exception in HamaPeer.sequenceFileReadNext: unsupported Value Type\n");
     return false;
   }
-
+  
   if ( (key_type == HostDeviceInterface::NULL_TYPE) &&
-       (value_type == HostDeviceInterface::NULL_TYPE) ) {
+      (value_type == HostDeviceInterface::NULL_TYPE) ) {
     printf("Exception in HamaPeer.sequenceFileReadNext: key and value are NULL!\n");
     return false;
   }
-
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEQFILE_READNEXT,
-           HostDeviceInterface::KEY_VALUE_PAIR, false, // do not use return value, because obj is modified
-           key_value_pair_ref, key_type, value_type,
-           file_id, true,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                    HostDeviceInterface::KEY_VALUE_PAIR, false, // do not use return value, because obj is modified
+                                    key_value_pair_ref, key_type, value_type,
+                                    file_id, true,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    exception);
 }
 
 // HamaPeer.sequenceFileAppend
 //<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileAppend(int file_id, Object key, Object value)>
 $$__device__$$
 bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char * gc_info, 
-     int file_id, int key_obj_ref, int value_obj_ref, int * exception) {
-
+                                                              int file_id, int key_obj_ref, int value_obj_ref, int * exception) {
+  
   // key values
   int int_val1 = 0;
   bool use_int_val1 = false;
@@ -3367,7 +3445,7 @@ bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char 
   bool use_double_val1 = false;
   int string_val1 = 0;
   bool use_string_val1 = false;
-
+  
   // value values
   int int_val2 = 0;
   bool use_int_val2 = false;
@@ -3379,20 +3457,20 @@ bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char 
   bool use_double_val2 = false;
   int string_val2 = 0;
   bool use_string_val2 = false;
-
+  
   HostDeviceInterface::TYPE key_type;
   HostDeviceInterface::TYPE value_type;
-
+  
   char * key_obj_deref;
   char * value_obj_deref;
-
+  
   // check key value
   if (key_obj_ref == -1) {
     key_type = HostDeviceInterface::NULL_TYPE;
-
+    
   } else {
     key_obj_deref = org_trifort_gc_deref(gc_info, key_obj_ref);
-  
+    
     // check key type
     if (at_illecker_typeof_Integer(gc_info, key_obj_ref)) {
       int_val1 = *(( int *) &key_obj_deref[32]);
@@ -3420,14 +3498,14 @@ bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char 
       return false;
     }
   }
-
+  
   // check value value
   if (value_obj_ref == -1) {
     value_type = HostDeviceInterface::NULL_TYPE;
-
+    
   } else {
     value_obj_deref = org_trifort_gc_deref(gc_info, value_obj_ref);
-   
+    
     // check value type
     if (at_illecker_typeof_Integer(gc_info, value_obj_ref)) {
       int_val2 = *(( int *) &value_obj_deref[32]);
@@ -3455,78 +3533,77 @@ bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileAppend($$__global$$ char 
       return false;
     }
   }
-
+  
   if ( (key_type == HostDeviceInterface::NULL_TYPE) &&
-       (value_type == HostDeviceInterface::NULL_TYPE) ) {
+      (value_type == HostDeviceInterface::NULL_TYPE) ) {
     printf("Exception in HamaPeer.sequenceFileAppend: key and value are NULL!\n");
     return false;
   }
-
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEQFILE_APPEND,
-           HostDeviceInterface::INT, true, // expecting integer return value
-           0, key_type, value_type,
-           int_val1, use_int_val1,
-           int_val2, use_int_val2,
-           file_id, true,
-           long_val1, use_long_val1,
-           long_val2, use_long_val2,
-           float_val1, use_float_val1,
-           float_val2, use_float_val2,
-           double_val1, use_double_val1,
-           double_val2, use_double_val2,
-           string_val1, use_string_val1,
-           string_val2, use_string_val2,
-           0, false,
-           exception);
+                                    HostDeviceInterface::INT, true, // expecting integer return value
+                                    0, key_type, value_type,
+                                    int_val1, use_int_val1,
+                                    int_val2, use_int_val2,
+                                    file_id, true,
+                                    long_val1, use_long_val1,
+                                    long_val2, use_long_val2,
+                                    float_val1, use_float_val1,
+                                    float_val2, use_float_val2,
+                                    double_val1, use_double_val1,
+                                    double_val2, use_double_val2,
+                                    string_val1, use_string_val1,
+                                    string_val2, use_string_val2,
+                                    0, false,
+                                    exception);
 }
 
 // HamaPeer.sequenceFileOpen
 //<org.trifort.rootbeer.runtime.HamaPeer: int sequenceFileOpen(String path, char option, String keyType, String valueType)>
 $$__device__$$
 int org_trifort_rootbeer_runtime_HamaPeer_sequenceFileOpen($$__global$$ char * gc_info, 
-     int path_str_ref, char option, 
-     int key_type_str_ref, int value_type_str_ref, 
-     int * exception) {
-
+                                                           int path_str_ref, char option, 
+                                                           int key_type_str_ref, int value_type_str_ref, 
+                                                           int * exception) {
+  
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEQFILE_OPEN,
-           HostDeviceInterface::INT, true, // expecting integer return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           option, true,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           path_str_ref, true,
-           key_type_str_ref, true,
-           value_type_str_ref, true,
-           exception);
+                                    HostDeviceInterface::INT, true, // expecting integer return value
+                                    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                    option, true,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    path_str_ref, true,
+                                    key_type_str_ref, true,
+                                    value_type_str_ref, true,
+                                    exception);
 }
 
 // HamaPeer.sequenceFileClose
 //<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileClose(int file_id)>
 $$__device__$$
 bool org_trifort_rootbeer_runtime_HamaPeer_sequenceFileClose($$__global$$ char * gc_info, 
-     int file_id, int * exception) {
+                                                             int file_id, int * exception) {
   
   return at_illecker_getResult<int>(gc_info, HostDeviceInterface::SEQFILE_CLOSE,
-           HostDeviceInterface::INT, true, // expecting integer return value
-           0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
-           file_id, true,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           0, false,
-           exception);
+                                    HostDeviceInterface::INT, true, // expecting integer return value
+                                    0, HostDeviceInterface::NOT_AVAILABLE, HostDeviceInterface::NOT_AVAILABLE,
+                                    file_id, true,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    0, false,
+                                    exception);
 }
-
