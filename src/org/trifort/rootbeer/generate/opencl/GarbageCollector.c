@@ -1219,9 +1219,9 @@ int java_lang_StringBuilder_toString9_(char * gc_info, int thisref,
     exception);
 }
 
-//<java.lang.Integer: java.lang.Integer init(int)>
+//<java.lang.Integer: java.lang.Integer <init>(int)>
 $$__device__$$
-int java_lang_Integer_initab850b60f96d11de8a390800200c9a66(char * gc_info, 
+int java_lang_Integer_initab850b60f96d11de8a390800200c9a66(char * gc_info,
   int int_value, int * exception){
   int thisref;
   char * thisref_deref;
@@ -1258,6 +1258,148 @@ int java_lang_Integer_valueOf(char * gc_info, int int_value, int * exception) {
   }
 
   return return_obj;
+}
+
+// typeof_Boolean
+$$__device__$$
+bool at_illecker_typeof_Boolean(char * gc_info, int thisref){
+  char * thisref_deref;
+  GC_OBJ_TYPE_TYPE type;
+  if(thisref == -1){
+    return false;
+  }
+  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
+  type = org_trifort_gc_get_type(thisref_deref);
+  if(type==%%java_lang_Boolean_TypeNumber%%) {
+    return true;
+  }
+  return false;
+}
+
+// typeof_Integer
+$$__device__$$
+bool at_illecker_typeof_Integer(char * gc_info, int thisref){
+  char * thisref_deref;
+  GC_OBJ_TYPE_TYPE type;
+  if(thisref == -1){
+    return false;
+  }
+  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
+  type = org_trifort_gc_get_type(thisref_deref);
+  if(type==%%java_lang_Integer_TypeNumber%%) {
+    return true;
+  }
+  return false;
+}
+
+// typeof_Long
+$$__device__$$
+bool at_illecker_typeof_Long(char * gc_info, int thisref){
+  char * thisref_deref;
+  GC_OBJ_TYPE_TYPE type;
+  if(thisref == -1){
+    return false;
+  }
+  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
+  type = org_trifort_gc_get_type(thisref_deref);
+  if(type==%%java_lang_Long_TypeNumber%%) {
+    return true;
+  }
+  return false;
+}
+
+// typeof_Float
+$$__device__$$
+bool at_illecker_typeof_Float(char * gc_info, int thisref){
+  char * thisref_deref;
+  GC_OBJ_TYPE_TYPE type;
+  if(thisref == -1){
+    return false;
+  }
+  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
+  type = org_trifort_gc_get_type(thisref_deref);
+  if(type==%%java_lang_Float_TypeNumber%%) {
+    return true;
+  }
+  return false;
+}
+
+// typeof_Double
+$$__device__$$
+bool at_illecker_typeof_Double(char * gc_info, int thisref){
+  char * thisref_deref;
+  GC_OBJ_TYPE_TYPE type;
+  if(thisref == -1){
+    return false;
+  }
+  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
+  type = org_trifort_gc_get_type(thisref_deref);
+  if(type==%%java_lang_Double_TypeNumber%%) {
+    return true;
+  }
+  return false;
+}
+
+// typeof_String
+$$__device__$$
+bool at_illecker_typeof_String(char * gc_info, int thisref){
+  char * thisref_deref;
+  GC_OBJ_TYPE_TYPE type;
+  if(thisref == -1){
+    return false;
+  }
+  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
+  type = org_trifort_gc_get_type(thisref_deref);
+  if(type==%%java_lang_String_TypeNumber%%) {
+    return true;
+  }
+  return false;
+}
+
+//<java.lang.String: java.lang.String valueOf(java.lang.Object)>
+$$__device__$$
+int java_lang_String_valueOf9_11_(char * gc_info, int obj_ref, int * exception) {
+  int return_str = -1;
+  char bool_val;
+
+  if (obj_ref != -1) {
+    
+    // check type
+    if (at_illecker_typeof_Boolean(gc_info, obj_ref)) {
+      bool_val = instance_getter_java_lang_Boolean_value(gc_info, obj_ref, exception);
+      if (bool_val == 0) {
+        return_str = org_trifort_string_constant(gc_info, (char *) "false", exception);
+      } else {
+        return_str = org_trifort_string_constant(gc_info, (char *) "true", exception);
+      }
+      
+    } else if (at_illecker_typeof_Integer(gc_info, obj_ref)) {
+      return_str = java_lang_Integer_toString9_5_(gc_info,
+        instance_getter_java_lang_Integer_value(gc_info, obj_ref, exception), exception);
+      
+    } else if (at_illecker_typeof_Long(gc_info, obj_ref)) {
+      return_str = java_lang_Long_toString9_6_(gc_info,
+        instance_getter_java_lang_Long_value(gc_info, obj_ref, exception), exception);
+      
+    } else if (at_illecker_typeof_Float(gc_info, obj_ref)) {
+      return_str = java_lang_Float_toString9_7_(gc_info,
+        instance_getter_java_lang_Float_value(gc_info, obj_ref, exception), exception);
+      
+    } else if (at_illecker_typeof_Double(gc_info, obj_ref)) {
+      return_str = java_lang_Double_toString9_8_(gc_info,
+        instance_getter_java_lang_Double_value(gc_info, obj_ref, exception), exception);
+            
+    } else if (at_illecker_typeof_String(gc_info, obj_ref)) {
+      return_str = obj_ref;
+      
+    } else {
+      return_str = java_lang_Object_toString9_(gc_info, obj_ref, exception);
+    }
+  } else {
+    return_str = org_trifort_string_constant(gc_info, (char *) "null", exception);
+  }
+  
+  return return_str;
 }
 
 $$__device__$$
@@ -2202,80 +2344,6 @@ float java_lang_Float_parseFloat(char * gc_info, int str_obj_ref, int * exceptio
 
 /*****************************************************************************/
 /* HamaPeer Additions */
-
-// typeof_Integer
-__device__ bool at_illecker_typeof_Integer(char * gc_info, int thisref){
-  char * thisref_deref;
-  GC_OBJ_TYPE_TYPE type;
-  if(thisref == -1){
-    return false;
-  }
-  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
-  type = org_trifort_gc_get_type(thisref_deref);
-  if(type==%%java_lang_Integer_TypeNumber%%) {
-    return true;
-  }
-  return false;
-}
-
-// typeof_Long
-__device__ bool at_illecker_typeof_Long(char * gc_info, int thisref){
-  char * thisref_deref;
-  GC_OBJ_TYPE_TYPE type;
-  if(thisref == -1){
-    return false;
-  }
-  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
-  type = org_trifort_gc_get_type(thisref_deref);
-  if(type==%%java_lang_Long_TypeNumber%%) {
-    return true;
-  }
-  return false;
-}
-// typeof_Float
-__device__ bool at_illecker_typeof_Float(char * gc_info, int thisref){
-  char * thisref_deref;
-  GC_OBJ_TYPE_TYPE type;
-  if(thisref == -1){
-    return false;
-  }
-  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
-  type = org_trifort_gc_get_type(thisref_deref);
-  if(type==%%java_lang_Float_TypeNumber%%) {
-    return true;
-  }
-  return false;
-}
-
-// typeof_Double
-__device__ bool at_illecker_typeof_Double(char * gc_info, int thisref){
-  char * thisref_deref;
-  GC_OBJ_TYPE_TYPE type;
-  if(thisref == -1){
-    return false;
-  }
-  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
-  type = org_trifort_gc_get_type(thisref_deref);
-  if(type==%%java_lang_Double_TypeNumber%%) {
-    return true;
-  }
-  return false;
-}
-
-// typeof_String
-__device__ bool at_illecker_typeof_String(char * gc_info, int thisref){
-  char * thisref_deref;
-  GC_OBJ_TYPE_TYPE type;
-  if(thisref == -1){
-    return false;
-  }
-  thisref_deref = org_trifort_gc_deref(gc_info, thisref);
-  type = org_trifort_gc_get_type(thisref_deref);
-  if(type==%%java_lang_String_TypeNumber%%) {
-    return true;
-  }
-  return false;
-}
 
 // string length using volatile argument
 $$__device__$$

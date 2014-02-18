@@ -358,6 +358,10 @@ public class OpenCLScene {
     int double_number = RootbeerClassLoader.v().getClassNumber("java.lang.Double");
     String double_str = "" + double_number;
     cuda_code = cuda_code.replaceAll("%%java_lang_Double_TypeNumber%%", double_str);
+
+    int boolean_number = RootbeerClassLoader.v().getClassNumber("java.lang.Boolean");
+    String boolean_str = "" + boolean_number;
+    cuda_code = cuda_code.replaceAll("%%java_lang_Boolean_TypeNumber%%", boolean_str);
     
     return cuda_code;
   }
