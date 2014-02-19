@@ -582,6 +582,7 @@ void java_io_PrintStream_print0_9_($$__global$$ char * gc_info, int thisref, int
   int valueref;
   int count;
   int i;
+  int curr_offset;
 
   char * valueref_deref;
 
