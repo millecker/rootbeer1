@@ -60,7 +60,8 @@ void at_illecker_threadfence_system(){
   __threadfence_system();
 }
 
-// Inter-Block Lock-Based Synchronization
+// Inter-Block Lock-Based Synchronization based on
+// http://eprints.cs.vt.edu/archive/00001087/01/TR_GPU_synchronization.pdf
 /*
 __device__ int global_mutex = 0;
 __device__
@@ -90,7 +91,8 @@ void at_illecker_syncblocks(int goal_value) {
 }
 */
 
-// Inter-Block Lock-Free Synchronization
+// Inter-Block Lock-Free Synchronization based on
+// http://eprints.cs.vt.edu/archive/00001087/01/TR_GPU_synchronization.pdf
 __device__ int *syncblocks_barrier_array_in;
 __device__ int *syncblocks_barrier_array_out;
 __device__
@@ -100,15 +102,19 @@ void at_illecker_syncblocks(int goal_value) {
   int blockCount = gridDim.x; // * gridDim.y
   int threadCount = blockDim.x;
   int count = 0;
-
+  
+  // TODO
+  // Known Issue:
+  // blockCount might not be valid if using Rootbeer.run(List<Kernel>)
+  // because blockIdx.x != num_blocks
+  
   // only sync when gridSize > 1 and threadCount >= blockCount
   if ( (blockCount > 1) && (threadCount >= blockCount) ) {
 
     // only thread 0 is used for synchronization
     if (tid_in_block == 0) {
-      barrier_array_in[bid] = goal_value;
-      __threadfence();
-      // printf("block: %d goal_value: %d\n", bid, goal_value);
+      syncblocks_barrier_array_in[bid] = goal_value;
+      __threadfence(); // maybe needless
     }
 
     // only block 0 is used for synchronization
@@ -118,10 +124,10 @@ void at_illecker_syncblocks(int goal_value) {
         // busy wait
         count = 0;
         while (count < 100) {
-          if (barrier_array_in[tid_in_block] == goal_value) {
+          if (syncblocks_barrier_array_in[tid_in_block] == goal_value) {
             break;
           }
-          __threadfence();
+          __threadfence(); // maybe needless
           count++;
           if (count > 50) {
             count = 0;
@@ -132,8 +138,8 @@ void at_illecker_syncblocks(int goal_value) {
       __syncthreads();
 
       if (tid_in_block < blockCount) {
-        barrier_array_out[tid_in_block] = goal_value;
-        __threadfence();
+        syncblocks_barrier_array_out[tid_in_block] = goal_value;
+        __threadfence(); // maybe needless
       }
     }
 
@@ -141,10 +147,10 @@ void at_illecker_syncblocks(int goal_value) {
       // busy wait
       count = 0;
       while (count < 100) {
-        if (barrier_array_out[bid] == goal_value) {
+        if (syncblocks_barrier_array_out[bid] == goal_value) {
           break;
         }
-        __threadfence();
+        __threadfence(); // maybe needless
         count++;
         if (count > 50) {
           count = 0;
@@ -156,7 +162,6 @@ void at_illecker_syncblocks(int goal_value) {
 
   __syncthreads();
 }
-
 /*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_START*/
 
 #include <string>
