@@ -58,10 +58,10 @@ public class DontDfsMethods {
     m_methods.add("<org.trifort.rootbeer.runtime.RootbeerGpu: int getGridDimx()>");
     m_methods.add("<org.trifort.rootbeer.runtime.RootbeerGpu: long getRef(java.lang.Object)>");
     m_methods.add("<org.trifort.rootbeer.runtime.RootbeerGpu: void syncthreads()>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: void syncblocks(int)>");
+    m_methods.add("<org.trifort.rootbeer.runtime.RootbeerGpu: void syncblocks(int)>");
     m_methods.add("<org.trifort.rootbeer.runtime.RootbeerGpu: void threadfence()>");
     m_methods.add("<org.trifort.rootbeer.runtime.RootbeerGpu: void threadfenceBlock()>");
-    m_methods.add("<edu.syr.pcpratts.rootbeer.runtime.RootbeerGpu: void threadfenceSystem()>");
+    m_methods.add("<org.trifort.rootbeer.runtime.RootbeerGpu: void threadfenceSystem()>");
     m_methods.add("<org.trifort.rootbeer.runtime.RootbeerGpu: java.lang.Object getSharedObject(int)>");
     m_methods.add("<org.trifort.rootbeer.runtime.RootbeerGpu: void setSharedObject(int,java.lang.Object)>");
     m_methods.add("<org.trifort.rootbeer.runtime.RootbeerGpu: byte getSharedByte(int)>");
