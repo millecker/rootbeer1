@@ -29,6 +29,8 @@ public class ForcedFields {
     m_fields.add("<org.trifort.rootbeer.runtimegpu.GpuException: int m_array>");
     m_fields.add("<org.trifort.rootbeer.runtime.GpuStopwatch: long m_start>");
     m_fields.add("<org.trifort.rootbeer.runtime.GpuStopwatch: long m_stop>");
+    m_fields.add("<org.trifort.rootbeer.runtime.KeyValuePair: java.lang.Object m_key>");
+    m_fields.add("<org.trifort.rootbeer.runtime.KeyValuePair: java.lang.Object m_value>");
   }
   
   public List<String> get(){
