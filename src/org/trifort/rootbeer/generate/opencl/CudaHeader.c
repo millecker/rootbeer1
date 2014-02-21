@@ -60,11 +60,6 @@ void org_trifort_threadfence_system(){
 
 __device__ clock_t global_now;
 
-__device__
-void at_illecker_threadfence_system(){
-  __threadfence_system();
-}
-
 // Inter-Block Lock-Based Synchronization based on
 // http://eprints.cs.vt.edu/archive/00001087/01/TR_GPU_synchronization.pdf
 /*
