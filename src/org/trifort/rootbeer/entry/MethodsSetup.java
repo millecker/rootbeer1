@@ -259,6 +259,30 @@ public class MethodsSetup {
     ret.add("<java.lang.Double: double parseDouble(java.lang.String)>");
     ret.add("<org.trifort.rootbeer.runtime.RootbeerAtomicInt: int atomicAdd(int)>");
     ret.add("<org.trifort.rootbeer.runtimegpu.GpuException: org.trifort.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
+    
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: void send(java.lang.String,java.lang.Object)>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: int getCurrentIntMessage()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: long getCurrentLongMessage()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: float getCurrentFloatMessage()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: double getCurrentDoubleMessage()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: java.lang.String getCurrentStringMessage()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: int getNumCurrentMessages()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: void sync()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: long getSuperstepCount()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: java.lang.String getPeerName()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: java.lang.String getPeerName(int)>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: int getPeerIndex()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: java.lang.String[] getAllPeerNames()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: int getNumPeers()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: void clear()>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: void reopenInput()>");    
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean readNext(edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");  
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: void write(java.lang.Object,java.lang.Object)>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: int sequenceFileOpen(java.lang.String,char,java.lang.String,java.lang.String)>");
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileReadNext(int,edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");    
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileAppend(int,java.lang.Object,java.lang.Object)>");  
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileClose(int)>");
+    
     return ret;
   }
 
