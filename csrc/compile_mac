@@ -3,19 +3,13 @@
 CFLAGS="-fno-common -Os -arch x86_64"
 LDFLAGS="-arch x86_64 -dynamiclib"
 
-llvm-gcc $CFLAGS -g -c -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/FixedMemory.c -o FixedMemory.o
+llvm-gcc $CFLAGS -g -c -I/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/include/darwin/ -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/FixedMemory.c -o FixedMemory.o
 llvm-gcc $LDFLAGS -F/Library/Frameworks -framework CUDA -L/usr/local/cuda/lib -o rootbeer.dylib FixedMemory.o -lc -lcuda
 
-llvm-g++ $CFLAGS -g -c at/illecker/HadoopUtils.cpp -o HadoopUtils.o
-llvm-g++ $CFLAGS -g -c at/illecker/HostDeviceInterface.cpp -o HostDeviceInterface.o
-llvm-g++ $CFLAGS -g -c at/illecker/SocketClient.cpp -o SocketClient.o
-llvm-g++ $CFLAGS -g -c at/illecker/HostMonitor.cpp -o HostMonitor.o
-llvm-g++ $CFLAGS -g -c -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/HamaPeer.cpp -o HamaPeer.o
+llvm-gcc $CFLAGS -g -c -I/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/include/darwin/ -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/CUDARuntime.c -o CUDARuntime.o
+llvm-gcc $CFLAGS -g -c -I/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/include/darwin/ -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/CUDAContext.c -o CUDAContext.o
+llvm-gcc $LDFLAGS -F/Library/Frameworks -framework CUDA -o rootbeer_cuda.dylib CUDARuntime.o CUDAContext.o -lc -lcuda -L/usr/local/cuda/lib
 
-llvm-gcc $CFLAGS -g -c -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/CUDARuntime.c -o CUDARuntime.o
-llvm-g++ $CFLAGS -g -c -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/CUDAContext.c -o CUDAContext.o
-llvm-g++ $LDFLAGS -F/Library/Frameworks -framework CUDA -o rootbeer_cuda.dylib HadoopUtils.o SocketClient.o HostDeviceInterface.o HostMonitor.o HamaPeer.o CUDARuntime.o CUDAContext.o -lc -lcuda -L/usr/local/cuda/lib
-
-llvm-gcc $CFLAGS -g -c -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/OpenCLRuntime.c -o OpenCLRuntime.o
-llvm-gcc $CFLAGS -g -c -I/System/Library/Frameworks/JavaVM.framework/Headers -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/OpenCLContext.c -o OpenCLContext.o
-llvm-gcc $LDFLAGS -F/Library/Frameworks -framework OpenCL -o rootbeer_opencl.dylib OpenCLRuntime.o OpenCLContext.o -lc
+llvm-gcc $CFLAGS -g -c -I/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/include/darwin/ -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/OpenCLRuntime.c -o OpenCLRuntime.o
+llvm-gcc $CFLAGS -g -c -I/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/include/darwin/ -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/OpenCLContext.c -o OpenCLContext.o
+llvm-gcc $LDFLAGS -F/Library/Frameworks -framework CUDA -o rootbeer_opencl.dylib OpenCLRuntime.o OpenCLContext.o -lc -lcuda -L/usr/local/cuda/lib

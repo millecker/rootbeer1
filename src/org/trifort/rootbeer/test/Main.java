@@ -78,6 +78,7 @@ public class Main implements TestSerializationFactory {
     ret.add(new AbstractTest());
     ret.add(new PairHmmJimpleTest());
     ret.add(new AutoboxingTest());
+    ret.add(new Autoboxing2Test());
     ret.add(new ChangeThreadTest());
     ret.add(new ShiftTest());
     ret.add(new ArrayListTest());
@@ -112,6 +113,10 @@ public class Main implements TestSerializationFactory {
     ret.add(new StringToLongTest());
     ret.add(new StringToFloatTest());
     ret.add(new StringToDoubleTest());
+    ret.add(new ByteToStringTest());
+    ret.add(new CharToStringTest());
+    ret.add(new BooleanToStringTest());
+    ret.add(new ShortToStringTest());
     ret.add(new ObjectToStringTest());
     ret.add(new StringBuilderTest3());
             

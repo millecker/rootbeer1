@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.trifort.rootbeer.configuration.Configuration;
-import org.trifort.rootbeer.entry.DontDfsMethods;
+import org.trifort.rootbeer.entry.MethodsSetup;
 import org.trifort.rootbeer.generate.bytecode.StaticOffsets;
 import org.trifort.rootbeer.generate.opencl.body.MethodJimpleValueSwitch;
 import org.trifort.rootbeer.generate.opencl.body.OpenCLBody;
@@ -26,6 +26,7 @@ import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.options.Options;
+import soot.rbclassload.ClassHierarchy;
 import soot.rbclassload.MethodSignatureUtil;
 import soot.rbclassload.RootbeerClassLoader;
 import soot.util.Chain;
@@ -223,12 +224,14 @@ public class OpenCLMethod {
   }
   
   public String getMethodBody(){
+    SootMethod body_method = findBodyMethod();
+    
     StringBuilder ret = new StringBuilder();
     if(shouldEmitBody()){
       ret.append(getMethodDecl(false)+"{\n");
       try {
         if(methodIsKernel() == false){
-          OpenCLBody ocl_body = new OpenCLBody(m_sootMethod, isConstructor());
+          OpenCLBody ocl_body = new OpenCLBody(body_method, isConstructor());
           ret.append(ocl_body.getLocals());
           if(isSynchronized()){
             ret.append(synchronizedEnter()); 
@@ -237,7 +240,7 @@ public class OpenCLMethod {
             ret.append(ocl_body.getBodyNoLocals());
           } catch(Exception ex){
             ex.printStackTrace();
-            System.out.println("soot_method: "+m_sootMethod.getSignature());
+            System.out.println("soot_method: "+body_method.getSignature());
             System.exit(1);
           }
           if(isSynchronized()){
@@ -256,8 +259,8 @@ public class OpenCLMethod {
           }
         }
       } catch(RuntimeException ex){
-        System.out.println("error creating method body: "+m_sootMethod.getSignature());
-        OpenCLMethod ocl_method = new OpenCLMethod(m_sootMethod, m_sootClass);
+        System.out.println("error creating method body: "+body_method.getSignature());
+        OpenCLMethod ocl_method = new OpenCLMethod(body_method, body_method.getDeclaringClass());
         if(ocl_method.returnsAValue())
           ret.append("return 0;\n");
         else
@@ -269,7 +272,7 @@ public class OpenCLMethod {
       ret.append("}\n");
       if(isConstructor()){
         ret.append(getMethodDecl(true)+"{\n"); 
-        OpenCLBody ocl_body = new OpenCLBody(m_sootMethod.retrieveActiveBody());
+        OpenCLBody ocl_body = new OpenCLBody(body_method.retrieveActiveBody());
         ret.append(ocl_body.getBody());
         ret.append("}\n");
       }
@@ -277,6 +280,27 @@ public class OpenCLMethod {
     return ret.toString();
   }
   
+  private SootMethod findBodyMethod() {
+    if(m_sootMethod.isConcrete()){
+      return m_sootMethod;
+    }
+    IsPolymorphic is_poly = new IsPolymorphic();
+    if(is_poly.test(m_sootMethod)){
+      return m_sootMethod;
+    } else {
+      ConcreteMethods concrete_method_finder = new ConcreteMethods();
+      List<String> concrete_methods = concrete_method_finder.get(m_sootMethod.getSignature());
+      if(concrete_methods.size() == 1){
+        String method = concrete_methods.get(0);
+        MethodSignatureUtil util = new MethodSignatureUtil();
+        util.parse(method);
+        return util.getSootMethod();
+      } else {
+        return m_sootMethod;
+      }
+    }
+  }
+
   public String getConstructorBodyInvokeString(SpecialInvokeExpr arg0){
     StringBuilder ret = new StringBuilder();
 
@@ -478,35 +502,10 @@ public class OpenCLMethod {
   }
   
   private void createDontMangleMethods() {
-    m_dontMangleMethods = new HashSet<String>();
-    m_dontEmitMethods = new HashSet<String>();
-    m_emitUnmangled = new HashSet<String>();
-    
-    DontDfsMethods dont_dfs_methods = new DontDfsMethods();
-    for(String dont_dfs : dont_dfs_methods.get()){
-      m_dontMangleMethods.add(dont_dfs);
-    }
-    m_dontMangleMethods.add("<org.trifort.rootbeer.runtime.RootbeerAtomicInt: int atomicAdd(int)>");
-    m_dontMangleMethods.add("<java.lang.String: void <init>(char[])>");
-    m_dontMangleMethods.add("<org.trifort.rootbeer.runtimegpu.GpuException: org.trifort.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
-  
-    m_dontEmitMethods.add("<java.lang.StringBuilder: void <init>()>");
-    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(boolean)>");
-    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(char)>");
-    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(double)>");
-    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(float)>");
-    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(int)>");
-    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(long)>");
-    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>");
-    m_dontEmitMethods.add("<java.lang.StringBuilder: java.lang.String toString()>");
-    m_dontEmitMethods.add("<java.lang.Double: java.lang.String toString(double)>");
-    m_dontEmitMethods.add("<java.lang.Float: java.lang.String toString(float)>");
-    m_dontEmitMethods.add("<java.lang.Integer: java.lang.String toString(int)>");
-    m_dontEmitMethods.add("<java.lang.Long: java.lang.String toString(long)>");
-    m_dontEmitMethods.add("<java.lang.String: java.lang.String valueOf(java.lang.Object)>");
-    
-    m_emitUnmangled.add("<org.trifort.rootbeer.runtimegpu.GpuException: org.trifort.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
-    m_emitUnmangled.add("<org.trifort.rootbeer.runtime.KeyValuePair: void <init>(java.lang.Object,java.lang.Object)>");
+    MethodsSetup setup = new MethodsSetup();
+    m_dontMangleMethods = setup.getDontMangle();
+    m_dontEmitMethods = setup.getDontEmit();
+    m_emitUnmangled = setup.getEmitUnmanged();   
   }
 
   public String getSignature() {

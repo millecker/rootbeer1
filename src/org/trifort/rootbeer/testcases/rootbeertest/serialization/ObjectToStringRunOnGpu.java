@@ -8,6 +8,7 @@
 package org.trifort.rootbeer.testcases.rootbeertest.serialization;
 
 import org.trifort.rootbeer.runtime.Kernel;
+import org.trifort.rootbeer.runtime.RootbeerGpu;
 
 public class ObjectToStringRunOnGpu implements Kernel {
 
@@ -48,7 +49,7 @@ public class ObjectToStringRunOnGpu implements Kernel {
   }
   
   private Object returnObject2() {
-    return new Long(0);
+    return new Long(1);
   }
   
   private Object returnObject3() {
@@ -60,7 +61,7 @@ public class ObjectToStringRunOnGpu implements Kernel {
   }
   
   private Object returnObject5() {
-    return new String("");
+    return new String("str");
   }
   
   private Object returnObject6() {

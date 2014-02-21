@@ -36,7 +36,7 @@ public class StringBuilderRunOnGpu3 implements Kernel {
   }
   
   private Object returnObject2() {
-    return new Long(0); 
+    return new Long(1); 
   }
   
   private Object returnObject3() {
@@ -48,7 +48,7 @@ public class StringBuilderRunOnGpu3 implements Kernel {
   }
   
   private Object returnObject5() {
-    return new String("");
+    return new String("str");
   }
   
   private Object returnObject6() {
