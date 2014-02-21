@@ -2485,20 +2485,16 @@ int at_illecker_strlen(volatile char * str_constant) {
   }
 }
 
-// char* to String using volatile argument
+// volatile char* to char array
 $$__device__$$
-int at_illecker_string_constant(char * gc_info, volatile char * str_constant, int * exception) {
-  if (str_constant == 0) {
-    return 0;
-  }
+int at_illecker_char_constant($$__global$$ char * gc_info, volatile char * str_constant, int * exception){
   int i;
   int len = at_illecker_strlen(str_constant);
   int characters = char__array_new(gc_info, len, exception);
-  
   if (host_device_interface->is_debugging) {
-    printf("at_illecker_string_constant str: '");
+    printf("at_illecker_char_constant str: '");
   }
-  for(i = 0; i < len; ++i) {
+  for(i = 0; i < len; ++i){
     char__array_set(gc_info, characters, i, str_constant[i], exception);
     if (host_device_interface->is_debugging) {
       printf("%c",str_constant[i]);
@@ -2507,9 +2503,16 @@ int at_illecker_string_constant(char * gc_info, volatile char * str_constant, in
   if (host_device_interface->is_debugging) {
     printf("'\n");
   }
+  return characters;
+}
+
+// char* to String using volatile argument
+$$__device__$$
+int at_illecker_string_constant($$__global$$ char * gc_info, volatile char * str_constant, int * exception) {
+  int characters;
   
-  // make new String
-  return java_lang_String_initab850b60f96d11de8a390800200c9a66(gc_info, characters, exception);
+  characters = at_illecker_char_constant(gc_info, str_constant, exception);
+  return org_trifort_rootbeer_string_from_chars(gc_info, characters, exception);
 }
 
 // getResult is used to communicate with the host (HostMonitor) via pinned memory
