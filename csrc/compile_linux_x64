@@ -1,11 +1,17 @@
 #!/bin/sh
 
-gcc -fPIC -g -c -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/FixedMemory.c -o FixedMemory.o
+gcc -fPIC -g -c -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -I/usr/local/cuda/include org/trifort/rootbeer/runtime/FixedMemory.c -o FixedMemory.o
 gcc -shared -Wl,-soname,rootbeer -o rootbeer_x64.so.1 FixedMemory.o -lc
 
-gcc -fPIC -g -c -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/CUDARuntime.c -o CUDARuntime.o
-gcc -fPIC -g -c -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -I/usr/local/cuda/include/ org/trifort/rootbeer/runtime/CUDAContext.c -o CUDAContext.o
-gcc -shared -Wl,-soname,rootbeer_cuda -o rootbeer_cuda_x64.so.1 CUDARuntime.o CUDAContext.o -lc -lcuda
+g++ -fPIC -g -c at/illecker/HadoopUtils.cpp -o HadoopUtils.o
+g++ -fPIC -g -c at/illecker/HostDeviceInterface.cpp -o HostDeviceInterface.o
+g++ -fPIC -g -c at/illecker/SocketClient.cpp -o SocketClient.o
+g++ -fPIC -g -c at/illecker/HostMonitor.cpp -o HostMonitor.o
+g++ -fPIC -g -c -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -I/usr/local/cuda/include org/trifort/rootbeer/runtime/HamaPeer.cpp -o HamaPeer.o
 
-gcc -fPIC -g -c -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -I/usr/local/cuda/targets/x86_64-linux/include/ org/trifort/rootbeer/runtime/OpenCLRuntime.c -o OpenCLRuntime.o
+gcc -fPIC -g -c -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -I/usr/local/cuda/include org/trifort/rootbeer/runtime/CUDARuntime.c -o CUDARuntime.o
+g++ -fPIC -g -c -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -I/usr/local/cuda/include org/trifort/rootbeer/runtime/CUDAContext.c -o CUDAContext.o
+g++ -shared -Wl,-soname,rootbeer_cuda -o rootbeer_cuda_x64.so.1 HadoopUtils.o SocketClient.o HostDeviceInterface.o HostMonitor.o HamaPeer.o CUDARuntime.o CUDAContext.o -lc -lcuda
+
+gcc -fPIC -g -c -I/usr/lib/jvm/default-java/include/ -I/usr/lib/jvm/default-java/include/linux -I/usr/local/cuda/include org/trifort/rootbeer/runtime/OpenCLRuntime.c -o OpenCLRuntime.o
 gcc -shared -Wl,-soname,rootbeer_opencl -o rootbeer_opencl_x64.so.1 OpenCLRuntime.o -lc -lOpenCL
