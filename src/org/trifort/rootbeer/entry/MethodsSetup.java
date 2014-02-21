@@ -142,10 +142,10 @@ public class MethodsSetup {
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: int getNumPeers()>");
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: void clear()>");
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: void reopenInput()>");    
-    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean readNext(edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");  
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean readNext(org.trifort.rootbeer.runtime.KeyValuePair)>");  
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: void write(java.lang.Object,java.lang.Object)>");
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: int sequenceFileOpen(java.lang.String,char,java.lang.String,java.lang.String)>");
-    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileReadNext(int,edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");    
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileReadNext(int,org.trifort.rootbeer.runtime.KeyValuePair)>");    
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileAppend(int,java.lang.Object,java.lang.Object)>");  
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileClose(int)>");
     
@@ -276,10 +276,10 @@ public class MethodsSetup {
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: int getNumPeers()>");
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: void clear()>");
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: void reopenInput()>");    
-    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean readNext(edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");  
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean readNext(org.trifort.rootbeer.runtime.KeyValuePair)>");  
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: void write(java.lang.Object,java.lang.Object)>");
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: int sequenceFileOpen(java.lang.String,char,java.lang.String,java.lang.String)>");
-    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileReadNext(int,edu.syr.pcpratts.rootbeer.runtime.KeyValuePair)>");    
+    ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileReadNext(int,org.trifort.rootbeer.runtime.KeyValuePair)>");    
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileAppend(int,java.lang.Object,java.lang.Object)>");  
     ret.add("<org.trifort.rootbeer.runtime.HamaPeer: boolean sequenceFileClose(int)>");
     
@@ -289,6 +289,7 @@ public class MethodsSetup {
   public Set<String> getEmitUnmanged() {
     Set<String> ret = new HashSet<String>();
     ret.add("<org.trifort.rootbeer.runtimegpu.GpuException: org.trifort.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
+    //ret.add("<org.trifort.rootbeer.runtime.KeyValuePair: void <init>(java.lang.Object,java.lang.Object)>");
     return ret;
   }
 }
