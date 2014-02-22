@@ -217,6 +217,7 @@ public class MethodsSetup {
     ret.add("<org.trifort.rootbeer.runtime.RootbeerGpu: int getGridDimx()>");
     ret.add("<org.trifort.rootbeer.runtime.RootbeerGpu: long getRef(java.lang.Object)>");
     ret.add("<org.trifort.rootbeer.runtime.RootbeerGpu: void syncthreads()>");
+    ret.add("<org.trifort.rootbeer.runtime.RootbeerGpu: void syncblocks(int)>");
     ret.add("<org.trifort.rootbeer.runtime.RootbeerGpu: void threadfence()>");
     ret.add("<org.trifort.rootbeer.runtime.RootbeerGpu: void threadfenceBlock()>");
     ret.add("<org.trifort.rootbeer.runtime.RootbeerGpu: java.lang.Object getSharedObject(int)>");
