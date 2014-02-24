@@ -27,6 +27,7 @@ import java.util.Set;
 import org.trifort.rootbeer.configuration.Configuration;
 import org.trifort.rootbeer.configuration.RootbeerPaths;
 import org.trifort.rootbeer.entry.ForcedFields;
+import org.trifort.rootbeer.entry.CompilerSetup;
 import org.trifort.rootbeer.generate.bytecode.ReadOnlyTypes;
 import org.trifort.rootbeer.generate.codesegment.CodeSegment;
 import org.trifort.rootbeer.generate.opencl.fields.CompositeField;
@@ -243,8 +244,11 @@ public class OpenCLScene {
       OpenCLArrayType ocl_array_type = new OpenCLArrayType(array_type);
       addArrayType(ocl_array_type);
     }
-    OpenCLArrayType char_array = new OpenCLArrayType(ArrayType.v(CharType.v(), 1));
-    addArrayType(char_array);
+    CompilerSetup compiler_setup = new CompilerSetup();
+    for(ArrayType array_type : compiler_setup.getExtraArrayTypes()){
+      OpenCLArrayType ocl_array_type = new OpenCLArrayType(array_type);
+      addArrayType(ocl_array_type);
+    }
     
     Set<Type> instanceofs = RootbeerClassLoader.v().getDfsInfo().getInstanceOfs();
     for(Type type : instanceofs){
@@ -465,8 +469,10 @@ public class OpenCLScene {
 
   private String methodBodiesString() throws IOException{
     StringBuilder ret = new StringBuilder();
-    if(m_usesGarbageCollector)
+    if(m_usesGarbageCollector){
       ret.append("#define USING_GARBAGE_COLLECTOR\n");
+    }
+    
     //a set is used so duplicates get filtered out
     Set<String> bodies = new HashSet<String>();
     

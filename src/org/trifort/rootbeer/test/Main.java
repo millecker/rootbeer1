@@ -60,19 +60,19 @@ public class Main implements TestSerializationFactory {
     ret.add(new SameClassUsedTwiceTest2());
     ret.add(new RefTypeArrays());
     ret.add(new StrictMathTest()); 
-    //ret.add(new AtomicLongTest());
+    ret.add(new AtomicLongTest());
     ret.add(new NativeStrictMathTest());  
     ret.add(new SuperClass());
     ret.add(new StringTest());
     ret.add(new StepFilterTest());
     ret.add(new GpuListTest());
-    //ret.add(new WhileTrueTest());
+    ret.add(new WhileTrueTest());
     ret.add(new ArraySumTest());
     ret.add(new RemapTest());
     ret.add(new InstanceofTest());
-    //ret.add(new DotClassTest());
+    ret.add(new DotClassTest());
     ret.add(new PrintTest());
-    //ret.add(new BarrierTest());
+    ret.add(new BarrierTest());
     ret.add(new SharedMemSimpleTest());
     ret.add(new StringConstantTest());
     ret.add(new AbstractTest());
@@ -119,16 +119,17 @@ public class Main implements TestSerializationFactory {
     ret.add(new ShortToStringTest());
     ret.add(new ObjectToStringTest());
     ret.add(new StringBuilderTest3());
+    ret.add(new StaticInitTest());
+    ret.add(new PolymorphicNewTest());
+    ret.add(new NestedMonitorTest());
+    ret.add(new SimpleSynchronizedTest());
+    ret.add(new SynchronizedMethodTest());
+    ret.add(new SynchronizedMethod2Test());
+    ret.add(new SynchronizedMethod3Test());
+    ret.add(new SynchronizedStaticMethodTest());
+    ret.add(new SynchronizedObjectTest());
+    ret.add(new ForceArrayNewTest());
             
-    if(m_hardTests){
-      ret.add(new SimpleSynchronizedTest());
-      ret.add(new SynchronizedMethodTest());
-      ret.add(new SynchronizedMethod2Test());
-      ret.add(new SynchronizedMethod3Test());
-      ret.add(new SynchronizedStaticMethodTest());
-      ret.add(new SynchronizedObjectTest());
-    }
-    
     if(org.trifort.rootbeer.entry.Main.largeMemTests()){
       ret.add(new LargeMemTest());
     }

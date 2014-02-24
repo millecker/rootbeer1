@@ -32,7 +32,6 @@ import pack.Pack;
 import soot.*;
 import soot.options.Options;
 import soot.rbclassload.DfsInfo;
-import soot.rbclassload.HierarchySignature;
 import soot.rbclassload.ListClassTester;
 import soot.rbclassload.ListMethodTester;
 import soot.rbclassload.MethodTester;
@@ -173,7 +172,7 @@ public class RootbeerCompiler {
 
     ListMethodTester dont_dfs_tester = new ListMethodTester();
 
-    MethodsSetup setup = new MethodsSetup();
+    CompilerSetup setup = new CompilerSetup();
     for(String no_dfs : setup.getDontDfs()){
       dont_dfs_tester.addSignature(no_dfs);
     }
@@ -190,6 +189,9 @@ public class RootbeerCompiler {
     to_sig_methods.addSignature("<java.io.PrintStream: void println(int)>");
     to_sig_methods.addSignature("<java.io.PrintStream: void println(long)>");
     RootbeerClassLoader.v().addToSignaturesMethodTester(to_sig_methods);
+    
+    RootbeerClassLoader.v().addClassRemapping("java.util.concurrent.atomic.AtomicLong", "org.trifort.rootbeer.remap.GpuAtomicLong");
+    RootbeerClassLoader.v().addClassRemapping("org.trifort.rootbeer.testcases.rootbeertest.remaptest.CallsPrivateMethod", "org.trifort.rootbeer.remap.DoesntCallPrivateMethod");
     
     RootbeerClassLoader.v().loadNecessaryClasses();
   }
@@ -268,8 +270,8 @@ public class RootbeerCompiler {
         }
       }
       if(write){
-        writeClassFile(class_name);
         writeJimpleFile(class_name);
+        writeClassFile(class_name);
       }
     }
     
