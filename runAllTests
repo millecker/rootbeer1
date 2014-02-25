@@ -1,3 +1,4 @@
 #!/bin/sh
 
-java -Xmx8g -jar Rootbeer.jar -runtests
+ant clean && ant && ./pack-rootbeer
+java -Xmx10g -jar Rootbeer.jar -runtests
