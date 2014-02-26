@@ -178,18 +178,24 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   status = cuMemAlloc(&gpu_buffer_size, 8);
   CHECK_STATUS(env, "Error in cuMemAlloc: gpu_buffer_size", status, device)
 
+  // HamaPeer - allocate memory
   if (hama_peer != NULL) {
-
+    
+    // Get HostMonitor
     hama_peer_class = env->GetObjectClass(hama_peer);
     host_monitor_field = env->GetFieldID(hama_peer_class, "m_hostMonitor", "J");
     host_monitor = (HostMonitor*) env->GetLongField(hama_peer, host_monitor_field);
     if (host_monitor->isDebugging()) {
       printf("CUDAContext_cudaRun - host_monitor.ptr: %p\n", host_monitor);
     }
-      
-    // HamaPeer - Allocate gpuBarrierArrayIn for Inter-Block Lock-Free Synchronization
+    
+    // Allocate gpu_blocksync_barrier_array_in for Inter-Block Lock-Free Synchronization
     status = cuMemAlloc(&gpu_blocksync_barrier_array_in, grid_shape_x * sizeof(jint));
     CHECK_STATUS(env, "Error in cuMemAlloc: gpu_blocksync_barrier_array_in", status, device)
+    
+    // Initialize gpu_blocksync_barrier_array_in
+    status = cuMemsetD32(gpu_blocksync_barrier_array_in, 0, grid_shape_x);
+    CHECK_STATUS(env, "Error in cuMemsetD32: gpu_blocksync_barrier_array_in", status, device)
     if (host_monitor->isDebugging()) {
       printf("CUDAContext_cudaRun - allocate gpu_blocksync_barrier_array_in sizeof: %lld bytes\n", 
              (long long) grid_shape_x * sizeof(jint));
@@ -197,9 +203,13 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
              (void*)gpu_blocksync_barrier_array_in);
     }
     
-    // HamaPeer - Allocate gpuBarrierArrayOut for Inter-Block Lock-Free Synchronization
+    // Allocate gpu_blocksync_barrier_array_out for Inter-Block Lock-Free Synchronization
     status = cuMemAlloc(&gpu_blocksync_barrier_array_out, grid_shape_x * sizeof(jint));
     CHECK_STATUS(env, "Error in cuMemAlloc: gpu_blocksync_barrier_array_out", status, device)
+    
+    // Initialize gpu_blocksync_barrier_array_out
+    status = cuMemsetD32(gpu_blocksync_barrier_array_out, 0, grid_shape_x);
+    CHECK_STATUS(env, "Error in cuMemsetD32: gpu_blocksync_barrier_array_out", status, device)
     if (host_monitor->isDebugging()) {
       printf("CUDAContext_cudaRun - allocate gpu_blocksync_barrier_array_out sizeof: %lld bytes\n", 
              (long long) grid_shape_x * sizeof(jint));
@@ -207,7 +217,7 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
              (void*)gpu_blocksync_barrier_array_out);
     }
     
-    // HamaPeer - Allocate HostDeviceInterface Pinned Memory
+    // Allocate HostDeviceInterface Pinned Memory
     status = cuMemHostAlloc((void**)&cpu_host_device_interface, sizeof(HostDeviceInterface),
                           CU_MEMHOSTALLOC_WRITECOMBINED | CU_MEMHOSTALLOC_DEVICEMAP);
     CHECK_STATUS(env, "Error in cuMemHostAlloc: cpu_host_device_interface", status, device)
@@ -217,13 +227,13 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
       printf("CUDAContext_cudaRun - cpu_host_device_interface.ptr: %p\n", cpu_host_device_interface);
     }
     
-    // HamaPeer - initialize cpu_hostDeviceInterface
+    // Initialize cpu_hostDeviceInterface
     cpu_host_device_interface->init();
     
     // Set cpu_host_device_interface in HostMonitor
     host_monitor->updateHostDeviceInterface(cpu_host_device_interface);
     
-    // HamaPeer - Get device pointer of HostDeviceInterface object
+    // Get device pointer of HostDeviceInterface object
     status = cuMemHostGetDevicePointer(&gpu_host_device_interface, cpu_host_device_interface, 0);
     CHECK_STATUS(env, "Error in cuMemHostGetDevicePointer: gpu_host_device_interface", status, device)
     if (host_monitor->isDebugging()) {
@@ -271,18 +281,19 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_class_mem", status, device)
   offset += sizeof(CUdeviceptr);
 
+  // HamaPeer - set function parameters
   if (hama_peer != NULL) {
-    // HamaPeer - Pass PinnedMemory gpu_host_device_interface to kernel function
+    // Pass PinnedMemory gpu_host_device_interface to kernel function
     status = cuParamSetv(function, offset, (void *) &gpu_host_device_interface, sizeof(CUdeviceptr));
     CHECK_STATUS(env, "Error in cuParamSetv: gpu_host_device_interface", status, device)
     offset += sizeof(CUdeviceptr);
     
-    // HamaPeer - Pass gpu_blocksync_barrier_array_in to kernel function (Inter-Block Lock-Free Synchronization)
+    // Pass gpu_blocksync_barrier_array_in to kernel function (Inter-Block Lock-Free Synchronization)
     status = cuParamSetv(function, offset, (void *) &gpu_blocksync_barrier_array_in, sizeof(CUdeviceptr));
     CHECK_STATUS(env, "Error in cuParamSetv: gpu_blocksync_barrier_array_in", status, device)
     offset += sizeof(CUdeviceptr);
     
-    // HamaPeer - Pass gpu_blocksync_barrier_array_out to kernel function (Inter-Block Lock-Free Synchronization)
+    // Pass gpu_blocksync_barrier_array_out to kernel function (Inter-Block Lock-Free Synchronization)
     status = cuParamSetv(function, offset, (void *) &gpu_blocksync_barrier_array_out, sizeof(CUdeviceptr));
     CHECK_STATUS(env, "Error in cuParamSetv: gpu_blocksync_barrier_array_out", status, device)
     offset += sizeof(CUdeviceptr);

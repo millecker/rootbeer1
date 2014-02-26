@@ -85,6 +85,17 @@ public class RootbeerGpu {
   public static void threadfenceSystem(){
   }
   
+  /**
+   * Inter-Block Lock-Free Synchronization by
+   * http://eprints.cs.vt.edu/archive/00001087/01/TR_GPU_synchronization.pdf
+   * 
+   * This lock-free synchronization algorithm uses two arrays Arrayin and 
+   * Arrayout to coordinate the synchronization requests from various blocks.
+   * Arrayin and Arrayout are initialized to 0 by default.
+   * 
+   * 
+   * @param goalValue value to be set on Arrayin (first time: goalValue != 0)
+   */
   public static void syncblocks(int goalValue){ 
   }
   
