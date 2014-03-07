@@ -2795,9 +2795,14 @@ T at_illecker_getResult($$__global$$ char * gc_info,
           return_value = host_device_interface->double_val1;
           
         } else if (return_type == HostDeviceInterface::STRING) {
-          // make new String object
-          org_trifort_gc_assign(gc_info, (int*)&return_value,
-                                at_illecker_string_constant(gc_info, host_device_interface->str_val1, exception));
+          
+          if (!host_device_interface->end_of_data) {
+            // make new String object
+            org_trifort_gc_assign(gc_info, (int*)&return_value,
+                                  at_illecker_string_constant(gc_info, host_device_interface->str_val1, exception));
+          } else {
+            return_value = -1; // return NULL because of END_OF_DATA
+          }
           
         } else if (return_type == HostDeviceInterface::STRING_ARRAY) {
           
@@ -2837,7 +2842,7 @@ T at_illecker_getResult($$__global$$ char * gc_info,
             }
             
           } else {
-            return_value = 0;
+            return_value = -1;
           }
         }
         
@@ -2908,7 +2913,8 @@ T at_illecker_getResult($$__global$$ char * gc_info,
       host_device_interface->return_type = HostDeviceInterface::NOT_AVAILABLE;
       host_device_interface->key_type = HostDeviceInterface::NOT_AVAILABLE;
       host_device_interface->value_type = HostDeviceInterface::NOT_AVAILABLE;
-      
+      host_device_interface->end_of_data = false;
+
       /***********************************************************************/
       // Notify HostMonitor that result was received
       host_device_interface->is_result_available = false;

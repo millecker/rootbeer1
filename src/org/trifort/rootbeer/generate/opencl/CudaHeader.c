@@ -278,7 +278,7 @@ public:
     double_val2 = 0;
     key_type = NOT_AVAILABLE;
     value_type = NOT_AVAILABLE;
-    end_of_data = true;
+    end_of_data = false;
     is_result_available = false;
   }
 

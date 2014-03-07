@@ -162,7 +162,7 @@ public:
     } else if ( (expected_response_cmd == HostDeviceInterface::GET_MSG) &&
                (cmd == HostDeviceInterface::END_OF_DATA)) {
       
-      return result; // default constructor (empty string, int 0)
+      return result; // return default constructor (NULL pointer, empty string, int 0, ...)
       
     } else { // Not expected response
       

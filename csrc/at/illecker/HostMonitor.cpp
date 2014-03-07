@@ -238,10 +238,17 @@ void HostMonitor::processCommand() volatile {
         }
         
       } else if (host_device_interface->return_type == HostDeviceInterface::STRING) {
-        string result = socket_client_->getResult<string>(HostDeviceInterface::GET_MSG);
-        strcpy(const_cast<char *>(host_device_interface->str_val1), result.c_str());
-        if (host_device_interface->is_debugging) {
-          printf("HostMonitor got result: '%s' \n", host_device_interface->str_val1);
+        string* result = socket_client_->getResult<string*>(HostDeviceInterface::GET_MSG);
+        if (result != NULL) {
+          strcpy(const_cast<char *>(host_device_interface->str_val1), (*result).c_str());
+          if (host_device_interface->is_debugging) {
+            printf("HostMonitor got result: '%s' \n", host_device_interface->str_val1);
+          }
+        } else {
+          host_device_interface->end_of_data = true;
+          if (host_device_interface->is_debugging) {
+            printf("HostMonitor got result: END_OF_DATA\n");
+          }
         }
       }
       
