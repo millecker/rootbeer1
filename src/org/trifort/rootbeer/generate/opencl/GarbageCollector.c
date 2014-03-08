@@ -1709,16 +1709,16 @@ int at_illecker_double_to_string(char * gc_info, double fvalue, int max, int * e
 $$__device__$$ 
 int java_lang_Double_toString9_8_(char * gc_info, double double_val, int * exception) {
 
-  // Default is 6 digits after decimal point
-  return at_illecker_double_to_string(gc_info, double_val, 6, exception);
+  // Default is 9 digits after decimal point
+  return at_illecker_double_to_string(gc_info, double_val, 9, exception);
 }
 
 //<java.lang.Float: java.lang.String toString(float)>
 $$__device__$$ 
 int java_lang_Float_toString9_7_(char * gc_info, float float_val, int * exception){
 
-  // Default is 6 digits after decimal point
-  return at_illecker_double_to_string(gc_info, (double)float_val, 6, exception);
+  // Default is 9 digits after decimal point
+  return at_illecker_double_to_string(gc_info, (double)float_val, 9, exception);
 }
 
 // local long to string method
