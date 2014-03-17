@@ -58,7 +58,13 @@ long long java_lang_System_nanoTime(char * gc_info, int * exception){
 
 __global__ void entry(char * gc_info, char * to_space, int * handles, 
   long long * free_ptr, long long * space_size, int * exceptions,
-  int * java_lang_class_refs, int num_blocks){
+  int * java_lang_class_refs,
+  int * syncblocks_barrier_arr_in, int * syncblocks_barrier_arr_out,
+  int num_blocks) {
+
+  // Setup barrier arrays (size of blocks) for Inter-Block Lock-Free Synchronization
+  syncblocks_barrier_array_in = syncblocks_barrier_arr_in;
+  syncblocks_barrier_array_out = syncblocks_barrier_arr_out;
 
   org_trifort_gc_init(to_space, *space_size, java_lang_class_refs, *free_ptr);
   __syncthreads();
@@ -83,14 +89,17 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
 
 __global__ void entry(char * gc_info, char * to_space, int * handles,
   long long * free_ptr, long long * space_size, int * exceptions,
-  int * java_lang_class_refs, HostDeviceInterface * h_d_interface,
-  int * syncblocks_barrier_arr_in, int * syncblocks_barrier_arr_out, int num_blocks) {
+  int * java_lang_class_refs,
+  int * syncblocks_barrier_arr_in, int * syncblocks_barrier_arr_out,
+  HostDeviceInterface * h_d_interface,
+  int num_blocks) {
   
-  // HamaPeer - host_device_interface pinned memory parameter
-  host_device_interface = h_d_interface;
-  // Barrier arrays (size of blocks) for Inter-Block Lock-Free Synchronization
+  // Setup barrier arrays (size of blocks) for Inter-Block Lock-Free Synchronization
   syncblocks_barrier_array_in = syncblocks_barrier_arr_in;
   syncblocks_barrier_array_out = syncblocks_barrier_arr_out;
+  
+  // Setup HamaPeer - host_device_interface pinned memory
+  host_device_interface = h_d_interface;
   
   if (host_device_interface->is_debugging) {
     printf("host_device_interface.ptr: %p\n", host_device_interface);
