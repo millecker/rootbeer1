@@ -60,108 +60,150 @@ void org_trifort_threadfence_system(){
 
 __device__ clock_t global_now;
 
-// Inter-Block Lock-Based Synchronization based on
+__device__ __forceinline__
+unsigned int get_smid(void) {
+  unsigned int r;
+  asm("mov.u32 %0, %%smid;" : "=r"(r));
+  return r;
+}
+
+__device__ __forceinline__
+unsigned int get_nsmid() {
+  unsigned int r;
+  asm("mov.u32 %0, %%nsmid;" : "=r"(r));
+  return r;
+}
+
+__device__ __forceinline__
+unsigned int get_laneid() {
+  unsigned int r;
+  asm("mov.u32 %0, %%laneid ;" : "=r"(r));
+  return r;
+}
+
+__device__ __forceinline__
+unsigned int get_warpid() {
+  unsigned int r;
+  asm("mov.u32 %0, %%warpid ;" : "=r"(r))
+  return r;
+}
+
+// Inter-Block Simple Synchronization based on
 // http://eprints.cs.vt.edu/archive/00001087/01/TR_GPU_synchronization.pdf
 /*
-__device__ int global_mutex = 0;
+__device__ int syncblocks_global_mutex = 0;
 __device__
 void at_illecker_syncblocks(int goal_value) {
-  int tid_in_block = threadIdx.x; // * blockDim.y + threadIdx.y
+  int thread_idxx = threadIdx.x; // * blockDim.y + threadIdx.y
+  int grid_size = blockDim.x;
   int count = 0;
-  
-  // only thread 0 is used for synchronization
-  if (tid_in_block == 0) {
-    atomicAdd(&global_mutex, 1);
 
-    // only when all blocks add 1 to global_mutex
-    // global_mutex will equal to goal_value
-    // busy wait
+  // goal_value is a multiple of grid_size
+  goal_value = goal_value * grid_size;
+
+  // Each block increments the global mutex
+  if (thread_idxx == 0) {
+    atomicAdd(&syncblocks_global_mutex, 1);
+
+    // Busy wait until all blocks have incremented the mutex to goal_value
     while (count < 100) {
-      if (global_mutex == goal_value) {
+      if (syncblocks_global_mutex == goal_value) {
         break;
       }
-      __threadfence();
+      __threadfence(); // required
       count++;
       if (count > 50) {
         count = 0;
       }
     }
   }
+
   __syncthreads();
 }
 */
 
-// Inter-Block Lock-Free Synchronization based on
+// Inter-Block Synchronization based on
 // http://eprints.cs.vt.edu/archive/00001087/01/TR_GPU_synchronization.pdf
 __device__ int *syncblocks_barrier_array_in;
 __device__ int *syncblocks_barrier_array_out;
 __device__
 void at_illecker_syncblocks(int goal_value) {
-  int tid_in_block = threadIdx.x; // * blockDim.y + threadIdx.y
-  int bid = blockIdx.x; // * gridDim.y + blockIdx.y
-  int blockCount = gridDim.x; // * gridDim.y
-  int threadCount = blockDim.x;
+  int thread_idxx = threadIdx.x; // * blockDim.y + threadIdx.y
+  int block_idxx = blockIdx.x; // * gridDim.y + blockIdx.y
+  int block_size = gridDim.x; // * gridDim.y
+  int grid_size = blockDim.x;
   int count = 0;
-  
+
   // TODO
-  // Known Issue:
-  // blockCount might not be valid if using Rootbeer.run(List<Kernel>)
-  // because blockIdx.x != num_blocks
+  // Known Issues:
+  //  - grid_size <= amount of multiprocessors (nsmid) (non preemptive scheduling)
+  //  - grid_size might not be valid if using Rootbeer.run(List<Kernel>) 
+  //    because blockIdx.x != num_blocks
   
-  // only sync when gridSize > 1 and threadCount >= blockCount
-  if ( (blockCount > 1) && (threadCount >= blockCount) ) {
+  // Inter-Block Sync only when grid_size > 1
+  if (grid_size > 1) {
+    
+    // Inter-Block Lock-Free Sync algorithm when block_size >= grid_size
+    if (block_size >= grid_size) {
 
-    // only thread 0 is used for synchronization
-    if (tid_in_block == 0) {
-      syncblocks_barrier_array_in[bid] = goal_value;
-      __threadfence(); // maybe needless
-    }
+      // Each block sets goal_value in array_in
+      if (thread_idxx == 0) {
+        syncblocks_barrier_array_in[block_idxx] = goal_value;
+        // printf("%d\t(%d,%d)\n", block_idxx, get_smid(), get_nsmid());
+        //__threadfence(); // maybe needless
+      }
 
-    // only block 0 is used for synchronization
-    if (bid == 0) {
-   
-      if (tid_in_block < blockCount) {
+      // Only block 0 is used for synchronization
+      if (block_idxx == 0) {
+      
+        if (thread_idxx < grid_size) {
+          // busy wait
+          count = 0;
+          while (count < 100) {
+            if (syncblocks_barrier_array_in[thread_idxx] == goal_value) {
+              break;
+            }
+            __threadfence(); // required
+            count++;
+            if (count > 50) {
+              count = 0;
+            }
+          }
+        }
+    
+        __syncthreads();
+
+        if (thread_idxx < grid_size) {
+          syncblocks_barrier_array_out[thread_idxx] = goal_value;
+          // printf("%d\n", thread_idxx);
+          //__threadfence(); // maybe needless
+        }
+      }
+
+      // Each block waits for goal_value in array_out
+      if (thread_idxx == 0) {
         // busy wait
         count = 0;
         while (count < 100) {
-          if (syncblocks_barrier_array_in[tid_in_block] == goal_value) {
+          if (syncblocks_barrier_array_out[block_idxx] == goal_value) {
             break;
           }
-          __threadfence(); // maybe needless
+          __threadfence(); // required
+
           count++;
           if (count > 50) {
             count = 0;
           }
         }
       }
-    
-      __syncthreads();
 
-      if (tid_in_block < blockCount) {
-        syncblocks_barrier_array_out[tid_in_block] = goal_value;
-        __threadfence(); // maybe needless
-      }
     }
-
-    if (tid_in_block == 0) {
-      // busy wait
-      count = 0;
-      while (count < 100) {
-        if (syncblocks_barrier_array_out[bid] == goal_value) {
-          break;
-        }
-        __threadfence(); // maybe needless
-        count++;
-        if (count > 50) {
-          count = 0;
-        }
-      }
-    }
-
+  
   }
 
   __syncthreads();
 }
+
 /*HAMA_PIPES_HEADER_CODE_IGNORE_IN_TWEAKS_START*/
 
 #include <string>
