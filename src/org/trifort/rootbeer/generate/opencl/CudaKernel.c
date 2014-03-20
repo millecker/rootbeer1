@@ -60,53 +60,22 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
   long long * free_ptr, long long * space_size, int * exceptions,
   int * java_lang_class_refs,
   int * syncblocks_barrier_arr_in, int * syncblocks_barrier_arr_out,
-  int num_blocks) {
-
-  // Setup barrier arrays (size of blocks) for Inter-Block Lock-Free Synchronization
-  syncblocks_barrier_array_in = syncblocks_barrier_arr_in;
-  syncblocks_barrier_array_out = syncblocks_barrier_arr_out;
-
-  org_trifort_gc_init(to_space, *space_size, java_lang_class_refs, *free_ptr);
-  __syncthreads();
-
-  int loop_control = blockIdx.x * blockDim.x + threadIdx.x;
-  if(loop_control >= num_blocks){
-    return;
-  } else {
-    int handle = handles[loop_control];
-    int exception = 0;   
-    %%invoke_run%%(gc_info, handle, &exception);
-    exceptions[loop_control] = exception;
-
-    __syncthreads();
-
-    if(loop_control == 0){
-      unsigned long long * global_free_ptr = ( unsigned long long * ) (gc_info + TO_SPACE_FREE_POINTER_OFFSET);
-      *free_ptr = *global_free_ptr;    
-    }
-  }
-}
-
-__global__ void entry(char * gc_info, char * to_space, int * handles,
-  long long * free_ptr, long long * space_size, int * exceptions,
-  int * java_lang_class_refs,
-  int * syncblocks_barrier_arr_in, int * syncblocks_barrier_arr_out,
   HostDeviceInterface * h_d_interface,
   int num_blocks) {
-  
+
   // Setup barrier arrays (size of blocks) for Inter-Block Lock-Free Synchronization
   syncblocks_barrier_array_in = syncblocks_barrier_arr_in;
   syncblocks_barrier_array_out = syncblocks_barrier_arr_out;
-  
+
   // Setup HamaPeer - host_device_interface pinned memory
   host_device_interface = h_d_interface;
-  
-  if (host_device_interface->is_debugging) {
+
+  if ((host_device_interface != NULL) && (host_device_interface->is_debugging)) {
     printf("host_device_interface.ptr: %p\n", host_device_interface);
     printf("syncblocks_barrier_array_in.ptr: %p\n", syncblocks_barrier_array_in);
     printf("syncblocks_barrier_array_out.ptr: %p\n", syncblocks_barrier_array_out);
   }
-  
+
   org_trifort_gc_init(to_space, *space_size, java_lang_class_refs, *free_ptr);
   __syncthreads();
 

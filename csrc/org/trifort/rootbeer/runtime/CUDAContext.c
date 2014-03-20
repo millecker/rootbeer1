@@ -119,12 +119,8 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env, "Error in cuModuleLoad", status, device)
   free(fatcubin);
 
-  if (hama_peer == NULL) {
-    status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiPxS1_S0_S0_S0_S0_i");
-  } else {
-    // HamaPeer - Modify function name
-    status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiPxS1_S0_S0_S0_S0_P19HostDeviceInterfacei");
-  }
+  // HamaPeer - Modify function name
+  status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiPxS1_S0_S0_S0_S0_P19HostDeviceInterfacei");
   CHECK_STATUS(env, "Error in cuModuleGetFunction", status, device)
 
   //----------------------------------------------------------------------------
@@ -233,12 +229,8 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   //set function parameters
   //----------------------------------------------------------------------------
 
-  if (hama_peer == NULL) {
-    status = cuParamSetSize(function, (9 * sizeof(CUdeviceptr) + sizeof(int)));
-  } else {
-    // HamaPeer - Align argument count
-    status = cuParamSetSize(function, (10 * sizeof(CUdeviceptr) + sizeof(int)));
-  }
+  // HamaPeer - Align argument count
+  status = cuParamSetSize(function, (10 * sizeof(CUdeviceptr) + sizeof(int)));
   CHECK_STATUS(env, "Error in cuParamSetSize", status, device)
 
   offset = 0;
@@ -280,13 +272,14 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_blocksync_barrier_array_out", status, device)
   offset += sizeof(CUdeviceptr);
 
-  // HamaPeer - set function parameter
+  // Pass PinnedMemory gpu_host_device_interface to kernel function
   if (hama_peer != NULL) {
-    // Pass PinnedMemory gpu_host_device_interface to kernel function
     status = cuParamSetv(function, offset, (void *) &gpu_host_device_interface, sizeof(CUdeviceptr));
-    CHECK_STATUS(env, "Error in cuParamSetv: gpu_host_device_interface", status, device)
-    offset += sizeof(CUdeviceptr);
+  } else {
+    status = cuParamSetv(function, offset, (void *) NULL, sizeof(CUdeviceptr));
   }
+  CHECK_STATUS(env, "Error in cuParamSetv: gpu_host_device_interface", status, device)
+  offset += sizeof(CUdeviceptr);
   
   status = cuParamSeti(function, offset, num_threads); 
   CHECK_STATUS(env, "Error in cuParamSetv: num_threads", status, device)
