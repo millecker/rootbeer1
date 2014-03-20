@@ -88,69 +88,35 @@ unsigned int get_warpid() {
   return r;
 }
 
-// Inter-Block Simple Synchronization based on
-// http://eprints.cs.vt.edu/archive/00001087/01/TR_GPU_synchronization.pdf
-/*
-__device__ int syncblocks_global_mutex = 0;
-__device__
-void at_illecker_syncblocks(int goal_value) {
-  int thread_idxx = threadIdx.x; // * blockDim.y + threadIdx.y
-  int grid_size = blockDim.x;
-  int count = 0;
-
-  // goal_value is a multiple of grid_size
-  goal_value = goal_value * grid_size;
-
-  // Each block increments the global mutex
-  if (thread_idxx == 0) {
-    atomicAdd(&syncblocks_global_mutex, 1);
-
-    // Busy wait until all blocks have incremented the mutex to goal_value
-    while (count < 100) {
-      if (syncblocks_global_mutex == goal_value) {
-        break;
-      }
-      __threadfence(); // required
-      count++;
-      if (count > 50) {
-        count = 0;
-      }
-    }
-  }
-
-  __syncthreads();
-}
-*/
-
 // Inter-Block Synchronization based on
 // http://eprints.cs.vt.edu/archive/00001087/01/TR_GPU_synchronization.pdf
 __device__ int *syncblocks_barrier_array_in;
 __device__ int *syncblocks_barrier_array_out;
+__device__ int syncblocks_global_mutex = 0;
 __device__
 void at_illecker_syncblocks(int goal_value) {
   int thread_idxx = threadIdx.x; // * blockDim.y + threadIdx.y
   int block_idxx = blockIdx.x; // * gridDim.y + blockIdx.y
-  int block_size = gridDim.x; // * gridDim.y
-  int grid_size = blockDim.x;
+  int block_size = blockDim.x;
+  int grid_size = gridDim.x; // * gridDim.y
   int count = 0;
 
-  // TODO
   // Known Issues:
   //  - grid_size <= amount of multiprocessors (nsmid) (non preemptive scheduling)
   //  - grid_size might not be valid if using Rootbeer.run(List<Kernel>) 
   //    because blockIdx.x != num_blocks
   
   // Inter-Block Sync only when grid_size > 1
-  if (grid_size > 1) {
+  if ((grid_size > 1) && (grid_size <= get_nsmid())) {
     
-    // Inter-Block Lock-Free Sync algorithm when block_size >= grid_size
+    // if (block_size >= grid_size) => Inter-Block Lock-Free Sync algorithm
     if (block_size >= grid_size) {
 
       // Each block sets goal_value in array_in
       if (thread_idxx == 0) {
         syncblocks_barrier_array_in[block_idxx] = goal_value;
         // printf("%d\t(%d,%d)\n", block_idxx, get_smid(), get_nsmid());
-        //__threadfence(); // maybe needless
+        //__threadfence(); // needless
       }
 
       // Only block 0 is used for synchronization
@@ -176,7 +142,7 @@ void at_illecker_syncblocks(int goal_value) {
         if (thread_idxx < grid_size) {
           syncblocks_barrier_array_out[thread_idxx] = goal_value;
           // printf("%d\n", thread_idxx);
-          //__threadfence(); // maybe needless
+          //__threadfence(); // needless
         }
       }
 
@@ -197,10 +163,32 @@ void at_illecker_syncblocks(int goal_value) {
         }
       }
 
-    }
-  
+    } else { // if (block_size < grid_size) => Inter-Block Simple Sync algorithm
+
+      // goal_value is a multiple of grid_size
+      goal_value = goal_value * grid_size;
+
+      // Each block increments the global mutex
+      if (thread_idxx == 0) {
+        atomicAdd(&syncblocks_global_mutex, 1);
+
+        // Busy wait until all blocks have incremented the mutex to goal_value
+        while (count < 100) {
+          if (syncblocks_global_mutex == goal_value) {
+            break;
+          }
+          __threadfence(); // required
+          count++;
+          if (count > 50) {
+            count = 0;
+          }
+        }
+      }
+
+    }  
   }
 
+  // sync all threads within a block
   __syncthreads();
 }
 
