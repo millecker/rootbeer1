@@ -95,7 +95,7 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   jmethodID get_address_method;
   jmethodID get_size_method;
   jmethodID get_heap_end_method;
-   
+  
   jlong * info_space;
   
   jclass hama_peer_class;
@@ -192,7 +192,6 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
 
   // HamaPeer - allocate memory
   if (hama_peer != NULL) {
-    
     // Get HostMonitor
     hama_peer_class = env->GetObjectClass(hama_peer);
     host_monitor_field = env->GetFieldID(hama_peer_class, "m_hostMonitor", "J");
