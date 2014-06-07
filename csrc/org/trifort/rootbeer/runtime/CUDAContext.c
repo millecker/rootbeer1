@@ -266,11 +266,14 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   // Pass PinnedMemory gpu_host_device_interface to kernel function
   if (hama_peer != NULL) {
     status = cuParamSetv(function, offset, (void *) &gpu_host_device_interface, sizeof(CUdeviceptr));
-  } else {
-    status = cuParamSetv(function, offset, (void *) NULL, sizeof(CUdeviceptr));
   }
+  // Submitting a NULL parameter is not supported! -> CUDA_ERROR_INVALID_VALUE
+  // gpu_host_device_interface should be NULL if parameter is not submitted
+  // else {
+  //  status = cuParamSetv(function, offset, (void *) NULL, sizeof(CUdeviceptr));
+  //}
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_host_device_interface", status, device)
-  offset += sizeof(CUdeviceptr);
+  offset += sizeof(CUdeviceptr); // also increase parameter offset if hama_peer == NULL
   
   status = cuParamSeti(function, offset, num_threads); 
   CHECK_STATUS(env, "Error in cuParamSetv: num_threads", status, device)
