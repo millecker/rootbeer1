@@ -192,6 +192,7 @@ namespace HadoopUtils {
   template <> float deserialize<float>(FileInStream& stream);
   template <> double deserialize<double>(FileInStream& stream);
   template <> string deserialize<string>(FileInStream& stream);
+  template <> string* deserialize<string*>(FileInStream& stream);
 }
 
 #endif
