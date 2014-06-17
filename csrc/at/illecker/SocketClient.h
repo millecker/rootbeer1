@@ -178,7 +178,8 @@ public:
        break;
        }
        */
-      printf("SocketClient.getResult - Unknown binary command: %d\n", cmd);
+      printf("SocketClient.getResult(expected_cmd = %d) - Unknown binary command: %d\n", 
+             expected_response_cmd, cmd);
       HADOOP_ASSERT(false, "Unknown binary command " + toString(cmd));
     }
     return result;
