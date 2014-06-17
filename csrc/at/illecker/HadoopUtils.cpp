@@ -347,8 +347,7 @@ namespace HadoopUtils {
   }
 
   template <> string* deserialize<string*>(FileInStream& stream) {
-    string t = deserialize<string>(stream);
-    return &t;
+    return new string(deserialize<string>(stream));
   }
 
 }

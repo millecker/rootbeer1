@@ -241,6 +241,7 @@ void HostMonitor::processCommand() volatile {
         string* result = socket_client_->getResult<string*>(HostDeviceInterface::GET_MSG);
         if (result != NULL) {
           strcpy(const_cast<char *>(host_device_interface->str_val1), (*result).c_str());
+          delete result;
           if (host_device_interface->is_debugging) {
             printf("HostMonitor got result: '%s' \n", host_device_interface->str_val1);
           }
