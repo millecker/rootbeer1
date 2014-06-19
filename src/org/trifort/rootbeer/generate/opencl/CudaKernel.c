@@ -38,7 +38,7 @@ org_trifort_gc_malloc_no_fail(char * gc_info, int size){
 }
 
 __device__  void
-org_trifort_gc_init(char * to_space, size_t space_size, int * java_lang_class_refs,
+org_trifort_gc_init(char * gc_info, char * to_space, size_t space_size, int * java_lang_class_refs,
   int free_ptr){
   
   if(threadIdx.x == 0){
@@ -46,7 +46,7 @@ org_trifort_gc_init(char * to_space, size_t space_size, int * java_lang_class_re
     m_Local[1] = (size_t) space_size;
     m_Local[2] = (size_t) java_lang_class_refs;
     
-    unsigned long long * global_free_ptr = (unsigned long long *) (to_space + TO_SPACE_FREE_POINTER_OFFSET);
+    unsigned long long * global_free_ptr = (unsigned long long *) (gc_info + TO_SPACE_FREE_POINTER_OFFSET);
     *global_free_ptr = free_ptr;
   }
 }
@@ -76,7 +76,7 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
     printf("syncblocks_barrier_array_out.ptr: %p\n", syncblocks_barrier_array_out);
   }
 
-  org_trifort_gc_init(to_space, *space_size, java_lang_class_refs, *free_ptr);
+  org_trifort_gc_init(gc_info, to_space, *space_size, java_lang_class_refs, *free_ptr);
   __syncthreads();
 
   int loop_control = blockIdx.x * blockDim.x + threadIdx.x;
