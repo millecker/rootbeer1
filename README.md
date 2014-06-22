@@ -138,12 +138,16 @@ See the [example](https://github.com/pcpratts/rootbeer1/tree/master/examples/Mat
 ### Command Line Options
 
 * -nemu = test without GPU
+* -runtests = run test suite to see if things are working
 * -runeasytests = run test suite to see if things are working
+* -runtest = run specific test case
 * -printdeviceinfo = print out information regarding your GPU
 * -maxrregcount = sent to CUDA compiler to limit register count
 * -noarraychecks = remove array out of bounds checks once you get your application to work
 * -nodoubles = you are telling rootbeer that there are no doubles and we can compile with older versions of CUDA
+* -norecursion = you are telling rootbeer that there are no recursions and we can compile with older versions of CUDA
 * -noexceptions = remove exception checking
+* -keepmains = keep main methods
 * -shared-mem-size = specify the shared memory size
 * -32bit = compile with 32bit
 * -64bit = compile with 64bit (if you are on a 64bit machine you will want to use just this)
