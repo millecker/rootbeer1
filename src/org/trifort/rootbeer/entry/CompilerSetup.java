@@ -299,7 +299,7 @@ public class CompilerSetup {
   public Set<String> getEmitUnmanged() {
     Set<String> ret = new HashSet<String>();
     ret.add("<org.trifort.rootbeer.runtimegpu.GpuException: org.trifort.rootbeer.runtimegpu.GpuException arrayOutOfBounds(int,int,int)>");
-    //ret.add("<org.trifort.rootbeer.runtime.KeyValuePair: void <init>(java.lang.Object,java.lang.Object)>");
+    ret.add("<org.trifort.rootbeer.runtime.KeyValuePair: void <init>(java.lang.Object,java.lang.Object)>");
     return ret;
   }
 
