@@ -137,22 +137,50 @@ See the [example](https://github.com/pcpratts/rootbeer1/tree/master/examples/Mat
 
 ### Command Line Options
 
-* -nemu = test without GPU
-* -runtests = run test suite to see if things are working
-* -runeasytests = run test suite to see if things are working
-* -runtest = run specific test case
-* -printdeviceinfo = print out information regarding your GPU
-* -maxrregcount = sent to CUDA compiler to limit register count
-* -noarraychecks = remove array out of bounds checks once you get your application to work
-* -nodoubles = you are telling rootbeer that there are no doubles and we can compile with older versions of CUDA
-* -norecursion = you are telling rootbeer that there are no recursions and we can compile with older versions of CUDA
-* -noexceptions = remove exception checking
-* -keepmains = keep main methods
-* -shared-mem-size = specify the shared memory size
-* -32bit = compile with 32bit
-* -64bit = compile with 64bit (if you are on a 64bit machine you will want to use just this)
+* `-nemu` = test without GPU
+* `-runtests` = run test suite to see if things are working
+* `-runeasytests` = run test suite to see if things are working
+* `-runtest` = run specific test case
+* `-printdeviceinfo` = print out information regarding your GPU
+* `-maxrregcount` = sent to CUDA compiler to limit register count
+* `-noarraychecks` = remove array out of bounds checks once you get your application to work
+* `-nodoubles` = you are telling rootbeer that there are no doubles and we can compile with older versions of CUDA
+* `-norecursion` = you are telling rootbeer that there are no recursions and we can compile with older versions of CUDA
+* `-noexceptions` = remove exception checking
+* `-keepmains` = keep main methods
+* `-shared-mem-size` = specify the shared memory size
+* `-32bit` = compile with 32bit
+* `-64bit` = compile with 64bit (if you are on a 64bit machine you will want to use just this)
 
 Once you get started, you will find you want to use a combination of -maxregcount, -shared-mem-size and the thread count sent to the GPU to control occupancy.
+
+### Apache Hama Extension
+Currently the Apache Hama Extension does not support Windows.
+
+The following methods are supported by the Apache Hama Extension within the GPU kernel:
+* `void HamaPeer.send(String peerName, Object message)`
+* `int HamaPeer.getCurrentIntMessage()`
+* `long HamaPeer.getCurrentLongMessage()`
+* `float HamaPeer.getCurrentFloatMessage()`
+* `double HamaPeer.getCurrentDoubleMessage()`
+* `String HamaPeer.getCurrentStringMessage()`
+* `int HamaPeer.getNumCurrentMessages()`
+* `void HamaPeer.sync()`
+* `long HamaPeer.getSuperstepCount()`
+* `String HamaPeer.getPeerName()`
+* `String HamaPeer.getPeerName(int index)`
+* `int HamaPeer.getPeerIndex()`
+* `String[] HamaPeer.getAllPeerNames()`
+* `int HamaPeer.getNumPeers()`
+* `void HamaPeer.clear()`
+* `void HamaPeer.reopenInput()`
+* `boolean HamaPeer.readNext(KeyValuePair keyValuePair)`
+* `void HamaPeer.write(Object key, Object value)`
+* `int HamaPeer.sequenceFileOpen(String path, char option, String keyType, String valueType)`
+* `boolean HamaPeer.sequenceFileReadNext(int fileID, KeyValuePair keyValuePair)`
+* `boolean HamaPeer.sequenceFileAppend(int fileID, Object key, Object value)`
+* `boolean HamaPeer.sequenceFileClose(int fileID)`
+
 
 ### CUDA Setup
 
