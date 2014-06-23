@@ -1,7 +1,7 @@
 Test-Results
 ================
 
-| ID | Test Case |  Old Runtime 1.0.x (dd341e4510)  | New Runtime 1.1.13 (ab74f0c) | Hama Runtime 1.1.13 (65a2938) |
+| ID | Test Case |  Old Runtime 1.0.x (dd341e4510)  | New Runtime 1.1.13 (ab74f0c) | Hama Extension 1.1.13 (65a2938) |
 | :-: | ------------- | :-------------: | :-------------: | :-------------: |
 | 1 | NewOnGpu      |     PASS      |     PASS      |     PASS      |
 | 2 | SimpleTest    |     PASS      |     PASS      |     PASS      |
