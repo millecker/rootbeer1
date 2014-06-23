@@ -125,9 +125,9 @@ public class Main implements TestSerializationFactory {
     ret.add(new PolymorphicNewTest());
     ret.add(new NestedMonitorTest());
     ret.add(new SimpleSynchronizedTest());
-    ret.add(new SynchronizedMethodTest());
+    //ret.add(new SynchronizedMethodTest());
     ret.add(new SynchronizedMethod2Test());
-    ret.add(new SynchronizedMethod3Test());
+    //ret.add(new SynchronizedMethod3Test());
     ret.add(new SynchronizedStaticMethodTest());
     ret.add(new SynchronizedObjectTest());
     ret.add(new ForceArrayNewTest());
