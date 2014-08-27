@@ -123,7 +123,9 @@ public class Main {
       } else if(arg.equals("-computecapability")){
         String computeCapability = safeGet(args, i+1, "-computecapability");
         ++i;
-        if (computeCapability.equalsIgnoreCase("sm_12")) {
+        if (computeCapability.equalsIgnoreCase("sm_11")) {
+          Configuration.compilerInstance().setComputeCapability(ComputeCapability.SM_11);
+        } else if (computeCapability.equalsIgnoreCase("sm_12")) {
           Configuration.compilerInstance().setComputeCapability(ComputeCapability.SM_12);
         } else if (computeCapability.equalsIgnoreCase("sm_20")) {
           Configuration.compilerInstance().setComputeCapability(ComputeCapability.SM_20);
@@ -134,7 +136,7 @@ public class Main {
         } else if (computeCapability.equalsIgnoreCase("sm_35")) {
           Configuration.compilerInstance().setComputeCapability(ComputeCapability.SM_35);
         } else {
-          System.out.println("Unsupported Compute Capability! ignoring argument: "+ computeCapability);
+          System.out.println("Unsupported compute capability: "+ computeCapability);
         }
       } else if(m_simpleCompile == false){      
         m_mainJar = arg;
