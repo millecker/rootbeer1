@@ -1308,7 +1308,7 @@ int java_lang_StringBuilder_append10_6_(int thisref,
 $$__device__$$ 
 int java_lang_StringBuilder_toString9_(int thisref,
   int * exception){
- 
+
   int value;
   int count;
   int new_chars; 
