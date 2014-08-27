@@ -6,9 +6,15 @@ The Rootbeer GPU Compiler lets you use GPUs from within Java. It allows you to u
   2. Static and instance methods and fields
   3. Arrays of primitive and reference types of any dimension.
 
+ROOTBEER IS PRE-PRODUCTION BETA. IF ROOTBEER WORKS FOR YOU, PLEASE LET ME KNOW AT PCPRATTS@TRIFORT.ORG
+
 Be aware that you should not expect to get a speedup using a GPU by doing something simple
 like multiplying each element in an array by a scalar. Serialization time is a large bottleneck
-and usually you need an algorithm that is O(n^2) to O(n^3).
+and usually you need an algorithm that is O(n^2) to O(n^3) per O(n) elements of data.
+
+GPU PROGRAMMING IS NOT FOR THE FAINT OF HEART, EVEN WITH ROOTBEER. EXPECT TO SPEND A MONTH OPTIMIZING TRIVIAL EXAMPLES.
+
+FEEL FREE TO EMAIL ME FOR DISCUSSIONS BEFORE ATTEMPTING TO USE ROOTBEER
 
 An experienced GPU developer will look at existing code and find places where control can 
 be transfered to the GPU. Optimal performance in an application will have places with serial
@@ -138,7 +144,10 @@ See the [example](https://github.com/pcpratts/rootbeer1/tree/master/examples/Mat
 ### Command Line Options
 
 * `-nemu` = test without GPU
+<<<<<<< HEAD
 * `-runtests` = run test suite to see if things are working
+=======
+>>>>>>> d0bd8f46cdab27136fd330ecccd5d7b021f0007f
 * `-runeasytests` = run test suite to see if things are working
 * `-runtest` = run specific test case
 * `-printdeviceinfo` = print out information regarding your GPU
@@ -151,6 +160,7 @@ See the [example](https://github.com/pcpratts/rootbeer1/tree/master/examples/Mat
 * `-shared-mem-size` = specify the shared memory size
 * `-32bit` = compile with 32bit
 * `-64bit` = compile with 64bit (if you are on a 64bit machine you will want to use just this)
+<<<<<<< HEAD
 * `-computecapability` = specify the Compute Capability {sm_12,sm_20,sm_21,sm_30,sm_35} (default ALL)
 
 Once you get started, you will find you want to use a combination of -maxregcount, -shared-mem-size and the thread count sent to the GPU to control occupancy.
@@ -183,6 +193,11 @@ The following methods are supported by the Apache Hama Extension within the GPU 
 * `boolean HamaPeer.sequenceFileClose(int fileID)`
 
 
+=======
+
+Once you get started, you will find you want to use a combination of -maxregcount, -shared-mem-size and the thread count sent to the GPU to control occupancy.
+
+>>>>>>> d0bd8f46cdab27136fd330ecccd5d7b021f0007f
 ### CUDA Setup
 
 You need to have the CUDA Toolkit and CUDA Driver installed to use Rootbeer.
