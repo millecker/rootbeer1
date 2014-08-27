@@ -39,11 +39,9 @@ public class CUDAContext implements Context, Runnable {
   private BlockingQueue<KernelLaunch> m_toThread;
   private BlockingQueue<KernelLaunch> m_fromThread;
   
-<<<<<<< HEAD
-  private HamaPeer m_hamaPeer = null;
-=======
   private boolean m_usingUncheckedMemory;
->>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
+  
+  private HamaPeer m_hamaPeer = null;
   
   public CUDAContext(GpuDevice device){
     m_usingUncheckedMemory = true;
@@ -95,11 +93,7 @@ public class CUDAContext implements Context, Runnable {
     if(free_mem_size <= 0){
       StringBuilder error = new StringBuilder();
       error.append("OutOfMemory while allocating Java CPU and GPU memory.\n");
-<<<<<<< HEAD
       error.append("  Try increasing the max Java Heap Size using -Xmx and the initial Java Heap Size using -Xms.\n");
-=======
-      error.append("  Try increasing the the initial Java Heap Size using -Xms.\n");
->>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
       error.append("  Try reducing the number of threads you are using.\n");
       error.append("  Try using kernel templates.\n");
       error.append("  Debugging Output:\n");
@@ -402,12 +396,8 @@ public class CUDAContext implements Context, Runnable {
     KernelLaunch item = new KernelLaunch(m_device.getDeviceId(), cubin_file, 
       cubin_file.length, thread_config.getBlockShapeX(), 
       thread_config.getGridShapeX(), thread_config.getNumThreads(), 
-<<<<<<< HEAD
-      m_objectMemory, m_handlesMemory, m_exceptionsMemory, m_classMemory, m_hamaPeer);
-=======
       m_objectMemory, m_handlesMemory, m_exceptionsMemory, m_classMemory,
-      m_usingKernelTemplates);
->>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
+      m_usingKernelTemplates, m_hamaPeer);
     
     m_toThread.put(item);
     item = m_fromThread.take();
@@ -463,12 +453,9 @@ public class CUDAContext implements Context, Runnable {
         cudaRun(item.getDeviceIndex(), item.getCubinFile(), item.getCubinLength(),
           item.getBlockShapeX(), item.getGridShapeX(), item.getNumThreads(), 
           item.getObjectMem(), item.getHandlesMem(), item.getExceptionsMem(),
-<<<<<<< HEAD
-          item.getClassMem(), item.getHamaPeer());
-=======
           item.getClassMem(), b2i(item.getUsingKernelTemplates()),
-          b2i(Configuration.runtimeInstance().getExceptions()));
->>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
+          b2i(Configuration.runtimeInstance().getExceptions()),
+          item.getHamaPeer());
         
         m_fromThread.put(item);
       } catch(Exception ex){
@@ -488,10 +475,6 @@ public class CUDAContext implements Context, Runnable {
   
   private native void cudaRun(int device_index, byte[] cubin_file, int cubin_length,
     int block_shape_x, int grid_shape_x, int num_threads, Memory object_mem,
-<<<<<<< HEAD
-    Memory handles_mem, Memory exceptions_mem, Memory class_mem, HamaPeer hama_peer);
-=======
     Memory handles_mem, Memory exceptions_mem, Memory class_mem, 
-    int usingKernelTemplates, int usingExceptions);
->>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
+    int usingKernelTemplates, int usingExceptions, HamaPeer hama_peer);
 }
