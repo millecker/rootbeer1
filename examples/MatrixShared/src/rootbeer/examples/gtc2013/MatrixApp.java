@@ -1,10 +1,12 @@
 package rootbeer.examples.gtc2013;
 
 import org.trifort.rootbeer.runtime.util.Stopwatch;
+import org.trifort.rootbeer.runtime.Context;
 import org.trifort.rootbeer.runtime.Rootbeer;
 import org.trifort.rootbeer.runtime.Kernel;
 import org.trifort.rootbeer.runtime.StatsRow;
 import org.trifort.rootbeer.runtime.ThreadConfig;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -128,8 +130,9 @@ public class MatrixApp {
     MatrixKernel matrix_kernel = new MatrixKernel(m_a, m_bgpu, m_cgpu, m_blockSize, 
       m_gridSize, m_blockIters);
     Rootbeer rootbeer = new Rootbeer();
+    Context context = rootbeer.createDefaultContext();
     ThreadConfig thread_config = new ThreadConfig(1024, m_gridSize, 1024 * m_gridSize);
-    rootbeer.run(matrix_kernel, thread_config);
+    rootbeer.run(matrix_kernel, thread_config, context);
     m_gpuWatch.stop();
     System.out.println("avg gpu time: "+m_gpuWatch.getAverageTime()+" ms");
 
@@ -141,16 +144,15 @@ public class MatrixApp {
       System.out.println(calc.toString());
     }
 
-    //List<StatsRow> stats = rootbeer.getStats();
-    //for(StatsRow row : stats){
-    //  System.out.println("  StatsRow:");
-    //  System.out.println("    init time: "+row.getInitTime());
-    //  System.out.println("    serial time: "+row.getSerializationTime());
-    //  System.out.println("    exec time: "+row.getExecutionTime());
-    //  System.out.println("    deserial time: "+row.getDeserializationTime());
-    //  System.out.println("    num blocks: "+row.getNumBlocks());
-    //  System.out.println("    num threads: "+row.getNumThreads());
-    //}
+    List<StatsRow> stats = context.getStats();
+    for(StatsRow row : stats){
+      System.out.println("  StatsRow:");
+      System.out.println("    serial time: "+row.getSerializationTime());
+      System.out.println("    exec time: "+row.getExecutionTime());
+      System.out.println("    deserial time: "+row.getDeserializationTime());
+      System.out.println("    num blocks: "+row.getNumBlocks());
+      System.out.println("    num threads: "+row.getNumThreads());
+    }
   }
 
   private void verifyCpuTranspose(){
