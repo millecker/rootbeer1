@@ -114,12 +114,8 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env, "Error in cuModuleLoad", status, device)
   free(fatcubin);
 
-<<<<<<< HEAD
   // HamaPeer - Modify function name
-  status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiPxS1_S0_S0_S0_S0_P19HostDeviceInterfacei");
-=======
-  status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiS0_PxS0_S0_i"); 
->>>>>>> d0bd8f46cdab27136fd330ecccd5d7b021f0007f
+  status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiS0_PxS0_S0_S0_S0_P19HostDeviceInterfacei");
   CHECK_STATUS(env, "Error in cuModuleGetFunction", status, device)
 
   //----------------------------------------------------------------------------
@@ -130,16 +126,10 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   get_size_method = env->GetMethodID(cuda_memory_class, "getSize", "()J");
   get_heap_end_method = env->GetMethodID(cuda_memory_class, "getHeapEndPtr", "()J");
 
-<<<<<<< HEAD
   cpu_object_mem = (void *) env->CallLongMethod(object_mem, get_address_method);
   cpu_object_mem_size = env->CallLongMethod(object_mem, get_size_method);
   cpu_heap_end = env->CallLongMethod(object_mem, get_heap_end_method);
-=======
-  cpu_object_mem = (void *) (*env)->CallLongMethod(env, object_mem, get_address_method);
-  cpu_object_mem_size = (*env)->CallLongMethod(env, object_mem, get_size_method);
-  cpu_heap_end = (*env)->CallLongMethod(env, object_mem, get_heap_end_method);
   cpu_heap_end >>= 4;
->>>>>>> d0bd8f46cdab27136fd330ecccd5d7b021f0007f
 
   cpu_handles_mem = (void *) env->CallLongMethod(handles_mem, get_address_method);
   cpu_handles_mem_size = env->CallLongMethod(handles_mem, get_size_method);
