@@ -49,7 +49,7 @@ public class MethodAnnotator {
           if(c2 == ' ' || c2 == '\n'){
             pos++;
             continue;
-          } else if ((c2 == '(') || (c2 == '<')){ // '<' support templates
+          } else if ((c2 == '(') || (c2 == '<')){ // '<' support C++ template functions
             invoked.add(method_name);
             break outer_while;
           } else {
