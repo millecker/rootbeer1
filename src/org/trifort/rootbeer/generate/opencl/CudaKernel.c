@@ -59,8 +59,7 @@ long long java_lang_System_nanoTime(int * exception){
 }
 
 __global__ void entry(char * gc_info, char * to_space, int * handles, 
-<<<<<<< HEAD
-  long long * free_pointer, long long * space_size, int * exceptions,
+  int * free_pointer, long long * space_size, int * exceptions,
   int * java_lang_class_refs,
   int * syncblocks_barrier_arr_in, int * syncblocks_barrier_arr_out,
   HostDeviceInterface * h_d_interface,
@@ -78,10 +77,6 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
   //  printf("syncblocks_barrier_array_in.ptr: %p\n", syncblocks_barrier_array_in);
   //  printf("syncblocks_barrier_array_out.ptr: %p\n", syncblocks_barrier_array_out);
   //}
-=======
-  int * free_pointer, long long * space_size, int * exceptions,
-  int * java_lang_class_refs, int num_blocks){
->>>>>>> d0bd8f46cdab27136fd330ecccd5d7b021f0007f
 
   org_trifort_gc_init(free_pointer, to_space, *space_size, java_lang_class_refs);
   __syncthreads();
