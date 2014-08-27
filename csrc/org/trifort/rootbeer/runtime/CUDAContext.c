@@ -51,10 +51,17 @@ extern "C" {
 #endif
 
 JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
+<<<<<<< HEAD
   (JNIEnv *env, jobject this_ref, jint device_index, jbyteArray cubin_file, 
    jint cubin_length, jint block_shape_x, jint grid_shape_x, jint num_threads, 
    jobject object_mem, jobject handles_mem, jobject exceptions_mem, 
    jobject class_mem, jobject hama_peer)
+=======
+  (JNIEnv *env, jobject this_ref, jint device_index, jbyteArray cubin_file,
+   jint cubin_length, jint block_shape_x, jint grid_shape_x, jint num_threads,
+   jobject object_mem, jobject handles_mem, jobject exceptions_mem,
+   jobject class_mem, jint using_kernel_templates, jint using_exceptions)
+>>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
 {
   CUresult status;
   CUdevice device;
@@ -91,7 +98,7 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   jmethodID get_address_method;
   jmethodID get_size_method;
   jmethodID get_heap_end_method;
-  
+
   jlong * info_space;
   
   jclass hama_peer_class;
@@ -104,7 +111,7 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   status = cuDeviceGet(&device, device_index);
   CHECK_STATUS(env, "Error in cuDeviceGet", status, device)
 
-  status = cuCtxCreate(&context, CU_CTX_MAP_HOST, device);  
+  status = cuCtxCreate(&context, CU_CTX_MAP_HOST, device);
   CHECK_STATUS(env,"Error in cuCtxCreate", status, device)
 
   fatcubin = malloc(cubin_length);
@@ -114,8 +121,12 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env, "Error in cuModuleLoad", status, device)
   free(fatcubin);
 
+<<<<<<< HEAD
   // HamaPeer - Modify function name
   status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiS0_PxS0_S0_S0_S0_P19HostDeviceInterfacei");
+=======
+  status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiS0_PxS0_S0_ii");
+>>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
   CHECK_STATUS(env, "Error in cuModuleGetFunction", status, device)
 
   //----------------------------------------------------------------------------
@@ -147,17 +158,19 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   //----------------------------------------------------------------------------
   //allocate mem
   //----------------------------------------------------------------------------
-  status = cuMemAlloc(&gpu_info_space, info_space_size);  
+  status = cuMemAlloc(&gpu_info_space, info_space_size);
   CHECK_STATUS(env, "Error in cuMemAlloc: gpu_info_mem", status, device)
 
-  status = cuMemAlloc(&gpu_object_mem, cpu_object_mem_size);  
+  status = cuMemAlloc(&gpu_object_mem, cpu_object_mem_size);
   CHECK_STATUS(env, "Error in cuMemAlloc: gpu_object_mem", status, device)
 
-  status = cuMemAlloc(&gpu_handles_mem, cpu_handles_mem_size); 
+  status = cuMemAlloc(&gpu_handles_mem, cpu_handles_mem_size);
   CHECK_STATUS(env, "Error in cuMemAlloc: gpu_handles_mem", status, device)
-    
-  status = cuMemAlloc(&gpu_exceptions_mem, cpu_exceptions_mem_size); 
-  CHECK_STATUS(env, "Error in cuMemAlloc: gpu_exceptions_mem", status, device)
+
+  if(using_exceptions){
+    status = cuMemAlloc(&gpu_exceptions_mem, cpu_exceptions_mem_size);
+    CHECK_STATUS(env, "Error in cuMemAlloc: gpu_exceptions_mem", status, device)
+  }
 
   status = cuMemAlloc(&gpu_class_mem, cpu_class_mem_size);
   CHECK_STATUS(env, "Error in cuMemAlloc: gpu_class_mem", status, device)
@@ -221,36 +234,40 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   //----------------------------------------------------------------------------
   //set function parameters
   //----------------------------------------------------------------------------
+<<<<<<< HEAD
   // HamaPeer - Align argument count
   status = cuParamSetSize(function, (10 * sizeof(CUdeviceptr) + sizeof(int)));
+=======
+  status = cuParamSetSize(function, (7 * sizeof(CUdeviceptr)) + (2 * sizeof(int)));
+>>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
   CHECK_STATUS(env, "Error in cuParamSetSize", status, device)
 
   offset = 0;
-  status = cuParamSetv(function, offset, (void *) &gpu_info_space, sizeof(CUdeviceptr)); 
+  status = cuParamSetv(function, offset, (void *) &gpu_info_space, sizeof(CUdeviceptr));
   CHECK_STATUS(env, "Error in cuParamSetv gpu_info_space", status, device)
   offset += sizeof(CUdeviceptr);
 
-  status = cuParamSetv(function, offset, (void *) &gpu_object_mem, sizeof(CUdeviceptr)); 
+  status = cuParamSetv(function, offset, (void *) &gpu_object_mem, sizeof(CUdeviceptr));
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_object_mem", status, device)
   offset += sizeof(CUdeviceptr);
 
-  status = cuParamSetv(function, offset, (void *) &gpu_handles_mem, sizeof(CUdeviceptr)); 
+  status = cuParamSetv(function, offset, (void *) &gpu_handles_mem, sizeof(CUdeviceptr));
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_handles_mem %", status, device)
   offset += sizeof(CUdeviceptr);
 
-  status = cuParamSetv(function, offset, (void *) &gpu_heap_end, sizeof(CUdeviceptr)); 
+  status = cuParamSetv(function, offset, (void *) &gpu_heap_end, sizeof(CUdeviceptr));
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_heap_end", status, device)
   offset += sizeof(CUdeviceptr);
 
   status = cuParamSetv(function, offset, (void *) &gpu_buffer_size, sizeof(CUdeviceptr));
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_buffer_size", status, device)
-  offset += sizeof(CUdeviceptr); 
+  offset += sizeof(CUdeviceptr);
 
-  status = cuParamSetv(function, offset, (void *) &gpu_exceptions_mem, sizeof(CUdeviceptr)); 
+  status = cuParamSetv(function, offset, (void *) &gpu_exceptions_mem, sizeof(CUdeviceptr));
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_exceptions_mem", status, device)
   offset += sizeof(CUdeviceptr);
 
-  status = cuParamSetv(function, offset, (void *) &gpu_class_mem, sizeof(CUdeviceptr)); 
+  status = cuParamSetv(function, offset, (void *) &gpu_class_mem, sizeof(CUdeviceptr));
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_class_mem", status, device)
   offset += sizeof(CUdeviceptr);
   
@@ -264,6 +281,7 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_blocksync_barrier_array_out", status, device)
   offset += sizeof(CUdeviceptr);
 
+<<<<<<< HEAD
   // Pass PinnedMemory gpu_host_device_interface to kernel function
   if (hama_peer != NULL) {
     status = cuParamSetv(function, offset, (void *) &gpu_host_device_interface, sizeof(CUdeviceptr));
@@ -277,6 +295,13 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   offset += sizeof(CUdeviceptr); // also increase parameter offset if hama_peer == NULL
   
   status = cuParamSeti(function, offset, num_threads); 
+=======
+  status = cuParamSeti(function, offset, num_threads);
+  CHECK_STATUS(env, "Error in cuParamSetv: num_threads", status, device)
+  offset += sizeof(int);
+
+  status = cuParamSeti(function, offset, using_kernel_templates);
+>>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
   CHECK_STATUS(env, "Error in cuParamSetv: num_threads", status, device)
   offset += sizeof(int);
 
@@ -301,8 +326,10 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   status = cuMemcpyHtoD(gpu_buffer_size, &cpu_object_mem_size, sizeof(jlong));
   CHECK_STATUS(env, "Error in cuMemcpyHtoD: gpu_buffer_size", status, device)
 
-  status = cuMemcpyHtoD(gpu_exceptions_mem, cpu_exceptions_mem, cpu_exceptions_mem_size);
-  CHECK_STATUS(env, "Error in cuMemcpyDtoH: gpu_exceptions_mem", status, device)
+  if(using_exceptions){
+    status = cuMemcpyHtoD(gpu_exceptions_mem, cpu_exceptions_mem, cpu_exceptions_mem_size);
+    CHECK_STATUS(env, "Error in cuMemcpyDtoH: gpu_exceptions_mem", status, device)
+  }
 
   //----------------------------------------------------------------------------
   // HamaPeer - start HostMonitor
@@ -328,7 +355,7 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   status = cuLaunchGrid(function, grid_shape_x, 1);
   CHECK_STATUS(env, "Error in cuLaunchGrid", status, device)
 
-  status = cuCtxSynchronize();  
+  status = cuCtxSynchronize();
   CHECK_STATUS(env, "Error in cuCtxSynchronize", status, device)
 
   //----------------------------------------------------------------------------
@@ -358,8 +385,10 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   status = cuMemcpyDtoH(cpu_object_mem, gpu_object_mem, cpu_heap_end);
   CHECK_STATUS(env, "Error in cuMemcpyDtoH: gpu_object_mem", status, device)
 
-  status = cuMemcpyDtoH(cpu_exceptions_mem, gpu_exceptions_mem, cpu_exceptions_mem_size);
-  CHECK_STATUS(env, "Error in cuMemcpyDtoH: gpu_exceptions_mem", status, device)
+  if(using_exceptions){
+    status = cuMemcpyDtoH(cpu_exceptions_mem, gpu_exceptions_mem, cpu_exceptions_mem_size);
+    CHECK_STATUS(env, "Error in cuMemcpyDtoH: gpu_exceptions_mem", status, device)
+  }
 
   //----------------------------------------------------------------------------
   //free resources

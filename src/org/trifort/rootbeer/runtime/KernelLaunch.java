@@ -7,18 +7,28 @@ public class KernelLaunch {
   private int m_cubinFileLength;
   private int m_blockShapeX;
   private int m_gridShapeX;
-  private int m_numThreads;
+  private long m_numThreads;
   private Memory m_objectMem;
   private Memory m_handlesMem;
   private Memory m_exceptionsMem;
   private Memory m_classMem;
+<<<<<<< HEAD
   private HamaPeer m_hamaPeer;
+=======
+  private boolean m_usingKernelTemplates;
+>>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
   private boolean m_quit;
   private Exception m_exception;
   
   public KernelLaunch(int device_index, byte[] cubin_file, int cubin_file_length, 
+<<<<<<< HEAD
     int block_shape_x, int grid_shape_x, int num_threads, Memory object_mem, 
     Memory handles_mem, Memory exceptions_mem, Memory class_mem, HamaPeer hama_peer) {
+=======
+    int block_shape_x, int grid_shape_x, long num_threads, Memory object_mem, 
+    Memory handles_mem, Memory exceptions_mem, Memory class_mem, 
+    boolean usingKernelTemplates){
+>>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
     
     m_deviceIndex = device_index;
     m_cubinFile = cubin_file;
@@ -30,7 +40,11 @@ public class KernelLaunch {
     m_handlesMem = handles_mem;
     m_exceptionsMem = exceptions_mem;
     m_classMem = class_mem;
+<<<<<<< HEAD
     m_hamaPeer = hama_peer;
+=======
+    m_usingKernelTemplates = usingKernelTemplates;
+>>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
     m_quit = false;
   }
   
@@ -63,7 +77,7 @@ public class KernelLaunch {
   }
 
   public int getNumThreads() {
-    return m_numThreads;
+    return (int) m_numThreads;
   }
 
   public Memory getObjectMem() {
@@ -82,8 +96,13 @@ public class KernelLaunch {
     return m_classMem;
   }
   
+<<<<<<< HEAD
   public HamaPeer getHamaPeer() {
     return m_hamaPeer;
+=======
+  public boolean getUsingKernelTemplates(){
+    return m_usingKernelTemplates;
+>>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
   }
   
   public void setException(Exception exception){
