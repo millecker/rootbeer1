@@ -60,11 +60,10 @@ long long java_lang_System_nanoTime(int * exception){
 
 __global__ void entry(char * gc_info, char * to_space, int * handles, 
   int * free_pointer, long long * space_size, int * exceptions,
-<<<<<<< HEAD
   int * java_lang_class_refs,
   int * syncblocks_barrier_arr_in, int * syncblocks_barrier_arr_out,
   HostDeviceInterface * h_d_interface,
-  int num_blocks) {
+  int num_blocks, int using_kernel_templates) {
 
   // Setup barrier arrays (size of blocks) for Inter-Block Lock-Free Synchronization
   syncblocks_barrier_array_in = syncblocks_barrier_arr_in;
@@ -78,9 +77,6 @@ __global__ void entry(char * gc_info, char * to_space, int * handles,
   //  printf("syncblocks_barrier_array_in.ptr: %p\n", syncblocks_barrier_array_in);
   //  printf("syncblocks_barrier_array_out.ptr: %p\n", syncblocks_barrier_array_out);
   //}
-=======
-  int * java_lang_class_refs, int num_blocks, int using_kernel_templates){
->>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
 
   org_trifort_gc_init(free_pointer, to_space, *space_size, java_lang_class_refs);
   __syncthreads();
