@@ -51,17 +51,11 @@ extern "C" {
 #endif
 
 JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
-<<<<<<< HEAD
-  (JNIEnv *env, jobject this_ref, jint device_index, jbyteArray cubin_file, 
-   jint cubin_length, jint block_shape_x, jint grid_shape_x, jint num_threads, 
-   jobject object_mem, jobject handles_mem, jobject exceptions_mem, 
-   jobject class_mem, jobject hama_peer)
-=======
   (JNIEnv *env, jobject this_ref, jint device_index, jbyteArray cubin_file,
    jint cubin_length, jint block_shape_x, jint grid_shape_x, jint num_threads,
    jobject object_mem, jobject handles_mem, jobject exceptions_mem,
-   jobject class_mem, jint using_kernel_templates, jint using_exceptions)
->>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
+   jobject class_mem, jint using_kernel_templates, jint using_exceptions,
+   jobject hama_peer)
 {
   CUresult status;
   CUdevice device;
@@ -121,12 +115,8 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env, "Error in cuModuleLoad", status, device)
   free(fatcubin);
 
-<<<<<<< HEAD
   // HamaPeer - Modify function name
-  status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiS0_PxS0_S0_S0_S0_P19HostDeviceInterfacei");
-=======
-  status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiS0_PxS0_S0_ii");
->>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
+  status = cuModuleGetFunction(&function, module, "_Z5entryPcS_PiS0_PxS0_S0_S0_S0_P19HostDeviceInterfaceii");
   CHECK_STATUS(env, "Error in cuModuleGetFunction", status, device)
 
   //----------------------------------------------------------------------------
@@ -234,12 +224,8 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   //----------------------------------------------------------------------------
   //set function parameters
   //----------------------------------------------------------------------------
-<<<<<<< HEAD
   // HamaPeer - Align argument count
-  status = cuParamSetSize(function, (10 * sizeof(CUdeviceptr) + sizeof(int)));
-=======
-  status = cuParamSetSize(function, (7 * sizeof(CUdeviceptr)) + (2 * sizeof(int)));
->>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
+  status = cuParamSetSize(function, (10 * sizeof(CUdeviceptr)) + (2 * sizeof(int)));
   CHECK_STATUS(env, "Error in cuParamSetSize", status, device)
 
   offset = 0;
@@ -281,28 +267,25 @@ JNIEXPORT void JNICALL Java_org_trifort_rootbeer_runtime_CUDAContext_cudaRun
   CHECK_STATUS(env, "Error in cuParamSetv: gpu_blocksync_barrier_array_out", status, device)
   offset += sizeof(CUdeviceptr);
 
-<<<<<<< HEAD
   // Pass PinnedMemory gpu_host_device_interface to kernel function
   if (hama_peer != NULL) {
     status = cuParamSetv(function, offset, (void *) &gpu_host_device_interface, sizeof(CUdeviceptr));
+    CHECK_STATUS(env, "Error in cuParamSetv: gpu_host_device_interface", status, device)
   }
   // Submitting a NULL parameter is not supported! -> CUDA_ERROR_INVALID_VALUE
   // gpu_host_device_interface should be NULL if parameter is not submitted
+  //
   // else {
   //  status = cuParamSetv(function, offset, (void *) NULL, sizeof(CUdeviceptr));
   //}
-  CHECK_STATUS(env, "Error in cuParamSetv: gpu_host_device_interface", status, device)
   offset += sizeof(CUdeviceptr); // also increase parameter offset if hama_peer == NULL
-  
-  status = cuParamSeti(function, offset, num_threads); 
-=======
+
   status = cuParamSeti(function, offset, num_threads);
-  CHECK_STATUS(env, "Error in cuParamSetv: num_threads", status, device)
+  CHECK_STATUS(env, "Error in cuParamSeti: num_threads", status, device)
   offset += sizeof(int);
 
   status = cuParamSeti(function, offset, using_kernel_templates);
->>>>>>> 36575e07a2395316c69a17b7ffb41fe069ccde4c
-  CHECK_STATUS(env, "Error in cuParamSetv: num_threads", status, device)
+  CHECK_STATUS(env, "Error in cuParamSeti: using_kernel_templates", status, device)
   offset += sizeof(int);
 
   //----------------------------------------------------------------------------
