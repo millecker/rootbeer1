@@ -144,10 +144,6 @@ See the [example](https://github.com/pcpratts/rootbeer1/tree/master/examples/Mat
 ### Command Line Options
 
 * `-nemu` = test without GPU
-<<<<<<< HEAD
-* `-runtests` = run test suite to see if things are working
-=======
->>>>>>> d0bd8f46cdab27136fd330ecccd5d7b021f0007f
 * `-runeasytests` = run test suite to see if things are working
 * `-runtest` = run specific test case
 * `-printdeviceinfo` = print out information regarding your GPU
@@ -160,7 +156,6 @@ See the [example](https://github.com/pcpratts/rootbeer1/tree/master/examples/Mat
 * `-shared-mem-size` = specify the shared memory size
 * `-32bit` = compile with 32bit
 * `-64bit` = compile with 64bit (if you are on a 64bit machine you will want to use just this)
-<<<<<<< HEAD
 * `-computecapability` = specify the Compute Capability {sm_12,sm_20,sm_21,sm_30,sm_35} (default ALL)
 
 Once you get started, you will find you want to use a combination of -maxregcount, -shared-mem-size and the thread count sent to the GPU to control occupancy.
@@ -192,12 +187,6 @@ The following methods are supported by the Apache Hama Extension within the GPU 
 * `boolean HamaPeer.sequenceFileAppend(int fileID, Object key, Object value)`
 * `boolean HamaPeer.sequenceFileClose(int fileID)`
 
-
-=======
-
-Once you get started, you will find you want to use a combination of -maxregcount, -shared-mem-size and the thread count sent to the GPU to control occupancy.
-
->>>>>>> d0bd8f46cdab27136fd330ecccd5d7b021f0007f
 ### CUDA Setup
 
 You need to have the CUDA Toolkit and CUDA Driver installed to use Rootbeer.
