@@ -29,10 +29,10 @@ public class MatrixMultiplicationTest implements TestKernelTemplate {
   private int m_subMatricesPerThread;
 
   public MatrixMultiplicationTest() {
-    m_N = 1024;
-    m_M = 1024;
-    m_L = 1024;
-    m_tileWidth = 32;
+    m_N = 4; // 1024;
+    m_M = 4; // 1024;
+    m_L = 4; // 1024;
+    m_tileWidth = 4; // 32;
 
     int subMatrixSize = m_tileWidth * m_tileWidth;
     m_blockSize = subMatrixSize;
@@ -46,6 +46,14 @@ public class MatrixMultiplicationTest implements TestKernelTemplate {
     m_transposedMatrixAgpu = transposeMatrix(m_matrixA, m_N, m_M);
     m_matrixB = createRandomMatrix(m_M, m_L, new Random(1337L));
     m_matrixC = new double[m_N * m_L];
+
+    System.out.println("tileWidth: " + m_tileWidth);
+    System.out.println("gridSize: " + m_gridSize);
+    System.out.println("blockSize: " + m_blockSize);
+    System.out.println("n: " + m_N);
+    System.out.println("m: " + m_M);
+    System.out.println("l: " + m_L);
+    System.out.println("subMatricesPerThread: " + m_subMatricesPerThread);
   }
 
   private int divup(int x, int y) {
@@ -77,6 +85,47 @@ public class MatrixMultiplicationTest implements TestKernelTemplate {
     return transposedMatrix;
   }
 
+  private double[] multiply(double[] matrixA, double[] matrixB, int n, int m,
+      int l) {
+    final double matrix[] = new double[n * l];
+    for (int i = 0; i < n; i++) { // for each row of A
+      for (int j = 0; j < l; j++) { // for each col of B
+        int sum = 0;
+        for (int k = 0; k < m; k++) { // for each col of A and row of B
+          sum += (matrixA[i * m + k] * matrixB[k * l + j]); // A[i][k] * B[k][j]
+        }
+        matrix[i * l + j] = sum; // C[i][j] += A[i][k] * B[k][j]
+      }
+    }
+    return matrix;
+  }
+
+  private boolean verify(double[] matrixA, double[] matrixB, int n, int l) {
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < l; ++j) {
+        if (matrixA[i * l + j] != matrixB[i * l + j]) {
+          System.out.println("Verify error at [" + i + "," + j + "]: "
+              + matrixA[i * l + j] + " != " + matrixB[i * l + j]);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  private void printMatrix(double[] matrix, int n, int m) {
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < m; ++j) {
+        if (j == m - 1) {
+          System.out.println(matrix[i * m + j]);
+        } else {
+          System.out.print(matrix[i * m + j] + ",");
+        }
+      }
+    }
+    System.out.println();
+  }
+
   public Kernel create() {
     Kernel ret = new MatrixMultiplicationRunOnGpu(m_transposedMatrixAgpu,
         m_matrixB, m_matrixC, m_N, m_M, m_L, m_gridSize, m_blockSize,
@@ -93,7 +142,38 @@ public class MatrixMultiplicationTest implements TestKernelTemplate {
   public boolean compare(Kernel original, Kernel from_heap) {
     MatrixMultiplicationRunOnGpu lhs = (MatrixMultiplicationRunOnGpu) original;
     MatrixMultiplicationRunOnGpu rhs = (MatrixMultiplicationRunOnGpu) from_heap;
-    return lhs.compare(rhs);
-  }
+    if (lhs.compare(rhs) == false) {
+      return false;
+    }
 
+    // compute matrix multiplication
+    double[] matrixC = multiply(m_matrixA, m_matrixB, m_N, m_M, m_L);
+
+    // debug output
+    if ((m_N < 11) && (m_L < 11)) {
+      System.out.println("MatrixA:");
+      printMatrix(m_matrixA, m_N, m_M);
+      System.out.println("TransposedMatrixA:");
+      printMatrix(m_transposedMatrixAgpu, m_M, m_N);
+      System.out.println("MatrixB:");
+      printMatrix(m_matrixB, m_M, m_L);
+      System.out.println("Reference result:");
+      printMatrix(matrixC, m_N, m_L);
+      System.out.println("CPU result:");
+      printMatrix(rhs.m_matrixC, m_N, m_L);
+      System.out.println("GPU result:");
+      printMatrix(lhs.m_matrixC, m_N, m_L);
+    }
+
+    // verify results
+    System.out.println("Verify CPU result...");
+    if (verify(rhs.m_matrixC, matrixC, m_N, m_L) == false) {
+      return false;
+    }
+    System.out.println("Verify GPU result...");
+    if (verify(lhs.m_matrixC, matrixC, m_N, m_L) == false) {
+      return false;
+    }
+    return true;
+  }
 }

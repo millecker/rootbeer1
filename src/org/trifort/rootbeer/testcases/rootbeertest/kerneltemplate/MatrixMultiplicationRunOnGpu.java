@@ -14,7 +14,7 @@ public class MatrixMultiplicationRunOnGpu implements Kernel {
 
   private double[] m_matrixA; // matrix A is transposed
   private double[] m_matrixB;
-  private double[] m_matrixC;
+  public double[] m_matrixC;
   private int m_N;
   private int m_M;
   private int m_L;
