@@ -47,7 +47,8 @@ public class MatrixMultiplicationRunOnGpu implements Kernel {
     int thread_idxx = RootbeerGpu.getThreadIdxx();
 
     // store fields into local variables
-    int M = m_M;
+    int N = m_N;
+    // int M = m_M;
     int L = m_L;
     int tileWidth = m_tileWidth;
     int subMatricesPerThread = m_subMatricesPerThread;
@@ -73,7 +74,7 @@ public class MatrixMultiplicationRunOnGpu implements Kernel {
     for (int m = 0; m < subMatricesPerThread; m++) {
       int aRowIndex = (m * tileWidth) + threadRow;
       int aColIndex = (blockRow * tileWidth) + threadCol;
-      int aValueIndex = (aRowIndex * M) + aColIndex;
+      int aValueIndex = (aRowIndex * N) + aColIndex;
 
       int bRowIndex = (m * tileWidth) + threadRow;
       int bColIndex = destCol;
@@ -86,7 +87,7 @@ public class MatrixMultiplicationRunOnGpu implements Kernel {
       RootbeerGpu.setSharedDouble(thread_idxx * 8, aValue);
       // store the bValue into shared memory at location
       // 1024 is the offset for the row of matrix A
-      RootbeerGpu.setSharedDouble(1024 + (thread_idxx * 8), bValue);
+      RootbeerGpu.setSharedDouble((1024 + thread_idxx) * 8, bValue);
 
       // sync threads within a block to make sure the sub-matrices are loaded
       RootbeerGpu.syncthreads();
@@ -97,7 +98,7 @@ public class MatrixMultiplicationRunOnGpu implements Kernel {
         aValue = RootbeerGpu.getSharedDouble((k * tileWidth + threadRow) * 8);
         // read the bValue from shared memory
         bValue = RootbeerGpu
-            .getSharedDouble(1024 + (k * tileWidth + threadCol) * 8);
+            .getSharedDouble((1024 + k * tileWidth + threadCol) * 8);
 
         // multiply aValue and bValue and accumulate
         sum += aValue * bValue;
